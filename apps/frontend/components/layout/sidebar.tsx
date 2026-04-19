@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { useAuth } from "@/lib/auth-context"
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -38,6 +39,7 @@ const navigation = [
 
 export function Sidebar() {
     const pathname = usePathname()
+    const { user, logout } = useAuth()
     const [collapsed, setCollapsed] = React.useState(false)
 
     return (
@@ -99,13 +101,15 @@ export function Sidebar() {
                         collapsed && "justify-center mx-2 p-3"
                     )}>
                         <Avatar className={cn("ring-2 ring-primary/10 ring-offset-2 ring-offset-background", collapsed ? "h-10 w-10" : "h-11 w-11")}>
-                            <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Indica" />
-                            <AvatarFallback className="bg-primary text-primary-foreground font-bold">IW</AvatarFallback>
+                            <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
+                            <AvatarFallback className="bg-primary text-primary-foreground font-bold">
+                                {user?.name?.split(' ').map(n => n[0]).join('') || "IW"}
+                            </AvatarFallback>
                         </Avatar>
                         {!collapsed && (
                             <div className="flex-1 min-w-0">
-                                <h2 className="text-sm font-semibold text-foreground truncate">Indica Watson</h2>
-                                <p className="text-xs text-muted-foreground truncate">Executive Partner</p>
+                                <h2 className="text-sm font-semibold text-foreground truncate">{user?.name || "Indica Watson"}</h2>
+                                <p className="text-xs text-muted-foreground truncate capitalize">{user?.role || "Executive Partner"}</p>
                             </div>
                         )}
                     </div>
@@ -194,10 +198,7 @@ export function Sidebar() {
                         <Tooltip>
                             <TooltipTrigger asChild>
                                 <button
-                                    onClick={() => {
-                                        console.log("Logout clicked - Auth system integration required")
-                                        alert("Logout requires backend authentication integration")
-                                    }}
+                                    onClick={logout}
                                     className={cn(
                                         "flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-red-400 transition-all hover:bg-red-500/10 hover:text-red-300",
                                         collapsed && "justify-center px-2"

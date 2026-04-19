@@ -15,6 +15,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useAuth } from "@/lib/auth-context"
 import { AddLeadDialogControlled } from "@/components/leads/add-lead-dialog-controlled"
 import { AddDealDialog } from "@/components/deals/add-deal-dialog"
 import { AddPropertyDialog } from "@/components/properties/add-property-dialog"
@@ -28,6 +29,7 @@ type DialogType = "lead" | "deal" | "property" | "task" | null
 
 export function Header() {
     const router = useRouter()
+    const { user, logout } = useAuth()
     const [activeDialog, setActiveDialog] = React.useState<DialogType>(null)
     const [searchQuery, setSearchQuery] = React.useState("")
     const [searchResults, setSearchResults] = React.useState<SearchResult[]>([])
@@ -289,16 +291,16 @@ export function Header() {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full">
                                     <Avatar className="h-9 w-9">
-                                        <AvatarImage src="https://api.dicebear.com/7.x/avataaars/svg?seed=Indica" />
-                                        <AvatarFallback>IW</AvatarFallback>
+                                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
+                                        <AvatarFallback>{user?.name?.split(' ').map(n => n[0]).join('') || "IW"}</AvatarFallback>
                                     </Avatar>
                                 </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end" className="w-56">
                                 <DropdownMenuLabel>
                                     <div className="flex flex-col space-y-1">
-                                        <p className="text-sm font-medium">Indica Watson</p>
-                                        <p className="text-xs text-muted-foreground">indica@realestate.com</p>
+                                        <p className="text-sm font-medium">{user?.name || "Indica Watson"}</p>
+                                        <p className="text-xs text-muted-foreground">{user?.email || "indica@realestate.com"}</p>
                                     </div>
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
@@ -306,7 +308,7 @@ export function Header() {
                                 <DropdownMenuItem>Billing</DropdownMenuItem>
                                 <DropdownMenuItem>Team</DropdownMenuItem>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => alert("Logout requires backend authentication integration")}>
+                                <DropdownMenuItem onClick={logout}>
                                     Log out
                                 </DropdownMenuItem>
                             </DropdownMenuContent>

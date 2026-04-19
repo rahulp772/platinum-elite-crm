@@ -1,11 +1,38 @@
+"use client"
+
+import * as React from "react"
+import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Header } from "@/components/layout/header"
+import { Loader2 } from "lucide-react"
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
+    const { user, isLoading } = useAuth()
+    const router = useRouter()
+
+    React.useEffect(() => {
+        if (!isLoading && !user) {
+            router.push("/login")
+        }
+    }, [user, isLoading, router])
+
+    if (isLoading) {
+        return (
+            <div className="h-screen w-full flex items-center justify-center bg-background">
+                <Loader2 className="h-8 w-8 animate-spin text-realty-gold" />
+            </div>
+        )
+    }
+
+    if (!user) {
+        return null // Will redirect via useEffect
+    }
+
     return (
         <div className="flex h-screen overflow-hidden bg-background">
             {/* Background Effects */}
