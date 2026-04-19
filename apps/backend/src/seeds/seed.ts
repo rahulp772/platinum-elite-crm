@@ -83,7 +83,7 @@ export class SeedService implements OnModuleInit {
   ) { }
 
   async onModuleInit() {
-    // Run seed automatically on startup
+    console.log('=== RUNNING SEED ON STARTUP ===');
     // await this.seed();
   }
 
@@ -115,24 +115,59 @@ export class SeedService implements OnModuleInit {
   }
 
   private async seedTenantsAndRoles() {
-    console.log('🏢 Creating tenants and roles...');
+    console.log('🏢 Creating tenants, roles, and users...');
 
     for (const tenantData of TENANTS) {
       const tenant = this.tenantRepository.create(tenantData);
       await this.tenantRepository.save(tenant);
       console.log(`   Created tenant: ${tenant.name}`);
 
-      for (const roleData of ROLES_PER_TENANT) {
-        const role = this.roleRepository.create({
-          ...roleData,
-          tenantId: tenant.id,
-        });
-        await this.roleRepository.save(role);
-        console.log(`   Created role: ${role.name} for ${tenant.name}`);
-      }
+      const adminRole = this.roleRepository.create({
+        name: 'Admin',
+        description: 'Full access to all features',
+        permissions: BASE_PERMISSIONS,
+        isSystem: true,
+        tenantId: tenant.id,
+      });
+      await this.roleRepository.save(adminRole);
+      console.log(`   Created role: Admin for ${tenant.name}`);
+
+      const seniorRole = this.roleRepository.create({
+        name: 'Senior Agent',
+        description: 'Can manage leads, properties, and deals',
+        permissions: [
+          'leads:read', 'leads:write',
+          'deals:read', 'deals:write',
+          'properties:read', 'properties:write',
+          'tasks:read', 'tasks:write',
+        ],
+        isSystem: false,
+        tenantId: tenant.id,
+      });
+      await this.roleRepository.save(seniorRole);
+
+      const juniorRole = this.roleRepository.create({
+        name: 'Junior Agent',
+        description: 'Can view leads and properties',
+        permissions: ['leads:read', 'properties:read', 'tasks:read'],
+        isSystem: false,
+        tenantId: tenant.id,
+      });
+      await this.roleRepository.save(juniorRole);
+
+      const hashedPassword = await bcrypt.hash('admin123', 10);
+      const adminUser = this.userRepository.create({
+        email: `admin@${tenantData.domain}`,
+        password: hashedPassword,
+        name: 'Admin',
+        tenantId: tenant.id,
+        roleId: adminRole.id,
+      });
+      await this.userRepository.save(adminUser);
+      console.log(`   Created admin user: admin@${tenantData.domain} / admin123`);
     }
 
-    console.log('   Tenants and roles seeded.');
+    console.log('   Tenants, roles, and users seeded.');
   }
 
   private async seedSuperAdmin() {

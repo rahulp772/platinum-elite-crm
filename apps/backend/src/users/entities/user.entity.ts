@@ -8,6 +8,7 @@ import {
   ManyToMany,
   ManyToOne,
   JoinColumn,
+  Unique,
 } from 'typeorm';
 import { UserStatus } from '../enums/user.enum';
 import { Property } from '../../properties/entities/property.entity';
@@ -19,11 +20,12 @@ import { Tenant } from '../../tenants/entities/tenant.entity';
 import { Role } from '../../roles/entities/role.entity';
 
 @Entity('users')
+@Unique(['email', 'tenantId'])
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
   @Column({ select: false })

@@ -5,6 +5,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { RolesModule } from './roles/roles.module';
+import { TenantsModule } from './tenants/tenants.module';
 import { PropertiesModule } from './properties/properties.module';
 import { LeadsModule } from './leads/leads.module';
 import { DealsModule } from './deals/deals.module';
@@ -36,6 +38,8 @@ import { SeedsModule } from './seeds/seeds.module';
     SeedsModule,
     AuthModule,
     UsersModule,
+    RolesModule,
+    TenantsModule,
     PropertiesModule,
     LeadsModule,
     DealsModule,

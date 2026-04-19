@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
+import { Tenant } from '../tenants/entities/tenant.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -19,6 +20,8 @@ export class AuthService {
     private userRepository: Repository<User>,
     @InjectRepository(Role)
     private roleRepository: Repository<Role>,
+    @InjectRepository(Tenant)
+    private tenantRepository: Repository<Tenant>,
     private jwtService: JwtService,
   ) {}
 
@@ -73,13 +76,47 @@ export class AuthService {
   }
 
   async login(loginDto: LoginDto) {
-    const { email, password } = loginDto;
-    const user = await this.userRepository.findOne({
+    const { email, password, tenantId: requestedTenantId } = loginDto;
+
+    const users = await this.userRepository.find({
       where: { email },
       select: ['id', 'email', 'password', 'name', 'tenantId', 'roleId', 'isSuperAdmin'],
     });
 
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!users || users.length === 0) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    let user = users[0];
+
+    if (users.length > 1) {
+      if (!requestedTenantId) {
+        const tenantList: { tenantId: string; name: string }[] = [];
+        for (const u of users) {
+          let name = u.name;
+          if (u.tenantId) {
+            const tenant = await this.tenantRepository.findOne({
+              where: { id: u.tenantId },
+            });
+            if (tenant) {
+              name = tenant.name;
+            }
+          }
+          tenantList.push({ tenantId: u.tenantId, name });
+        }
+        return {
+          tenants: tenantList,
+          message: 'Please select a workspace',
+        };
+      }
+      const foundUser = users.find((u) => u.tenantId === requestedTenantId);
+      if (!foundUser) {
+        throw new UnauthorizedException('Invalid workspace for this user');
+      }
+      user = foundUser;
+    }
+
+    if (!(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 

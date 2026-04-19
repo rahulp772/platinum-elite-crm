@@ -5,10 +5,15 @@ import { useRouter } from "next/navigation"
 import { User, AuthResponse } from "@/types/user"
 import { api } from "./api"
 
+interface TenantInfo {
+  tenantId: string
+  name: string
+}
+
 interface AuthContextType {
   user: User | null
   isLoading: boolean
-  login: (data: any) => Promise<void>
+  login: (data: any) => Promise<{ tenants?: TenantInfo[] } | void>
   register: (data: any) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
@@ -23,7 +28,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   React.useEffect(() => {
-    // Check for stored user and token on mount
     const storedUser = localStorage.getItem("user")
     const token = localStorage.getItem("token")
 
@@ -34,30 +38,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const login = async (data: any) => {
-    try {
-      const response = await api.post<AuthResponse>("/auth/login", data)
-      const { access_token, user: userData } = response.data
-      
-      localStorage.setItem("token", access_token)
-      localStorage.setItem("user", JSON.stringify(userData))
-      setUser(userData)
-      
-      router.push("/")
-    } catch (error) {
-      console.error("Login failed:", error)
-      throw error
+    const response = await api.post("/auth/login", data)
+    const responseData = response.data
+
+    if (responseData.tenants && responseData.tenants.length > 0) {
+      return { tenants: responseData.tenants }
     }
+
+    const { access_token, user: userData } = responseData
+
+    localStorage.setItem("token", access_token)
+    localStorage.setItem("user", JSON.stringify(userData))
+    setUser(userData)
+
+    router.push("/")
   }
 
   const register = async (data: any) => {
     try {
       const response = await api.post<AuthResponse>("/auth/register", data)
       const { access_token, user: userData } = response.data
-      
+
       localStorage.setItem("token", access_token)
       localStorage.setItem("user", JSON.stringify(userData))
       setUser(userData)
-      
+
       router.push("/")
     } catch (error) {
       console.error("Registration failed:", error)

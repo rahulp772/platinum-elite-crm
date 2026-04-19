@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Body,
   Patch,
   Param,
@@ -11,6 +12,7 @@ import {
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { InviteUserDto } from './dto/invite-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
@@ -28,6 +30,14 @@ export class UsersController {
   @ApiOperation({ summary: 'Get all users' })
   findAll(@Request() req) {
     return this.usersService.findAll(req.user);
+  }
+
+  @Post('invite')
+  @RequirePermissions('users:write')
+  @UseGuards(PermissionsGuard)
+  @ApiOperation({ summary: 'Invite a new team member' })
+  invite(@Body() inviteDto: InviteUserDto, @Request() req) {
+    return this.usersService.invite(inviteDto, req.user);
   }
 
   @Get(':id')
