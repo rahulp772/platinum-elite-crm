@@ -4,7 +4,10 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: UserRole;
+  tenantId?: string;
+  roleId?: string;
+  isSuperAdmin?: boolean;
+  permissions?: string[];
 }
 
 export interface AuthResponse {

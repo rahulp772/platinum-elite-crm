@@ -12,6 +12,7 @@ import { TasksModule } from './tasks/tasks.module';
 import { ChatModule } from './chat/chat.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SearchModule } from './search/search.module';
+import { SeedsModule } from './seeds/seeds.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { SearchModule } from './search/search.module';
       }),
       inject: [ConfigService],
     }),
+    SeedsModule,
     AuthModule,
     UsersModule,
     PropertiesModule,

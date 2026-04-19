@@ -17,25 +17,31 @@ export class PropertiesService {
     const property = this.propertyRepository.create({
       ...createPropertyDto,
       agent: user,
+      tenantId: user.tenantId,
     });
     return this.propertyRepository.save(property);
   }
 
-  async findAll() {
-    return this.propertyRepository.find({ relations: ['agent'] });
+  async findAll(user: User) {
+    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    return this.propertyRepository.find({ where, relations: ['agent'] });
   }
 
-  async findRelated(id: string, type: string, limit = 3) {
+  async findRelated(id: string, type: string, limit = 3, user: User) {
+    const baseCondition = user.isSuperAdmin
+      ? {}
+      : { tenantId: user.tenantId };
     return this.propertyRepository.find({
-      where: { id: Not(id), type: type as any },
+      where: { ...baseCondition, id: Not(id), type: type as any },
       relations: ['agent'],
       take: limit,
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, user: User) {
+    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
     const property = await this.propertyRepository.findOne({
-      where: { id },
+      where,
       relations: ['agent'],
     });
     if (!property) {
@@ -44,21 +50,22 @@ export class PropertiesService {
     return property;
   }
 
-  async update(id: string, updatePropertyDto: UpdatePropertyDto) {
-    const property = await this.findOne(id);
+  async update(id: string, updatePropertyDto: UpdatePropertyDto, user: User) {
+    const property = await this.findOne(id, user);
     Object.assign(property, updatePropertyDto);
     return this.propertyRepository.save(property);
   }
 
-  async remove(id: string) {
-    const property = await this.findOne(id);
+  async remove(id: string, user: User) {
+    const property = await this.findOne(id, user);
     await this.propertyRepository.remove(property);
     return { message: 'Property deleted successfully' };
   }
 
   async toggleFavorite(id: string, user: User) {
+    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
     const property = await this.propertyRepository.findOne({
-      where: { id },
+      where,
       relations: ['favoritedBy'],
     });
     if (!property) {

@@ -30,25 +30,25 @@ export class DealsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all deals' })
-  findAll() {
-    return this.dealsService.findAll();
+  findAll(@Request() req) {
+    return this.dealsService.findAll(req.user);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a deal by ID' })
-  findOne(@Param('id') id: string) {
-    return this.dealsService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.dealsService.findOne(id, req.user);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a deal' })
-  update(@Param('id') id: string, @Body() updateDealDto: UpdateDealDto) {
-    return this.dealsService.update(id, updateDealDto);
+  update(@Param('id') id: string, @Body() updateDealDto: UpdateDealDto, @Request() req) {
+    return this.dealsService.update(id, updateDealDto, req.user);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a deal' })
-  remove(@Param('id') id: string) {
-    return this.dealsService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.dealsService.remove(id, req.user);
   }
 }

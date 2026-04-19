@@ -69,8 +69,11 @@ export class ChatService {
   }
 
   async sendMessage(conversationId: string, content: string, sender: User) {
+    const where = sender.isSuperAdmin
+      ? { id: conversationId }
+      : { id: conversationId, tenantId: sender.tenantId };
     const conversation = await this.conversationRepository.findOne({
-      where: { id: conversationId },
+      where,
       relations: ['participants'],
     });
 
@@ -84,15 +87,23 @@ export class ChatService {
       content,
       sender,
       conversation,
+      tenantId: sender.tenantId,
     });
 
     return this.messageRepository.save(message);
   }
 
-  async createConversation(participantIds: string[]) {
-    const participants = await this.userRepository.findByIds(participantIds);
+  async createConversation(participantIds: string[], user: User) {
+    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    const participants = await this.userRepository.find({
+      where: { ...where, id: user.id },
+    });
+    const otherParticipants = await this.userRepository.findByIds(participantIds);
+    participants.push(...otherParticipants);
+    
     const conversation = this.conversationRepository.create({
       participants,
+      tenantId: user.tenantId,
     });
     return this.conversationRepository.save(conversation);
   }

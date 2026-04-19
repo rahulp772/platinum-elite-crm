@@ -32,17 +32,20 @@ export class LeadsService {
     const lead = this.leadRepository.create({
       ...leadData,
       assignedTo,
+      tenantId: currentUser.tenantId,
     });
     return this.leadRepository.save(lead);
   }
 
-  async findAll() {
-    return this.leadRepository.find({ relations: ['assignedTo'] });
+  async findAll(user: User) {
+    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    return this.leadRepository.find({ where, relations: ['assignedTo'] });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, user: User) {
+    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
     const lead = await this.leadRepository.findOne({
-      where: { id },
+      where,
       relations: ['assignedTo'],
     });
     if (!lead) {
@@ -51,8 +54,8 @@ export class LeadsService {
     return lead;
   }
 
-  async update(id: string, updateLeadDto: UpdateLeadDto) {
-    const lead = await this.findOne(id);
+  async update(id: string, updateLeadDto: UpdateLeadDto, user: User) {
+    const lead = await this.findOne(id, user);
     const { assignedToId, ...leadData } = updateLeadDto;
 
     if (assignedToId) {
@@ -69,8 +72,8 @@ export class LeadsService {
     return this.leadRepository.save(lead);
   }
 
-  async remove(id: string) {
-    const lead = await this.findOne(id);
+  async remove(id: string, user: User) {
+    const lead = await this.findOne(id, user);
     await this.leadRepository.remove(lead);
     return { message: 'Lead deleted successfully' };
   }

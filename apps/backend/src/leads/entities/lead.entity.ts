@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Tenant } from '../../tenants/entities/tenant.entity';
 import { LeadStatus, LeadSource } from '../enums/lead.enum';
 
 @Entity('leads')
@@ -51,6 +53,13 @@ export class Lead {
 
   @ManyToOne(() => User, (user) => user.leads)
   assignedTo: User;
+
+  @Column({ nullable: true })
+  tenantId: string;
+
+  @ManyToOne(() => Tenant, (tenant) => tenant.leads, { nullable: true })
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
 
   @Column({ nullable: true })
   lastContact: Date;

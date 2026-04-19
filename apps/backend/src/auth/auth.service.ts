@@ -8,6 +8,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../users/entities/user.entity';
+import { Role } from '../roles/entities/role.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
@@ -16,6 +17,8 @@ export class AuthService {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private roleRepository: Repository<Role>,
     private jwtService: JwtService,
   ) {}
 
@@ -39,15 +42,33 @@ export class AuthService {
 
     await this.userRepository.save(user);
 
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      tenantId: user.tenantId,
+      roleId: user.roleId,
+    };
+    const userResponse = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      tenantId: user.tenantId,
+      roleId: user.roleId,
+      isSuperAdmin: user.isSuperAdmin,
+    };
+
+    if (user.roleId) {
+      const role = await this.roleRepository.findOne({
+        where: { id: user.roleId },
+      });
+      if (role) {
+        (userResponse as any).permissions = role.permissions;
+      }
+    }
+
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
+      user: userResponse,
     };
   }
 
@@ -55,22 +76,40 @@ export class AuthService {
     const { email, password } = loginDto;
     const user = await this.userRepository.findOne({
       where: { email },
-      select: ['id', 'email', 'password', 'name', 'role'],
+      select: ['id', 'email', 'password', 'name', 'tenantId', 'roleId', 'isSuperAdmin'],
     });
 
     if (!user || !(await bcrypt.compare(password, user.password))) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { email: user.email, sub: user.id, role: user.role };
+    const payload = {
+      email: user.email,
+      sub: user.id,
+      tenantId: user.tenantId,
+      roleId: user.roleId,
+    };
+    const userResponse = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      tenantId: user.tenantId,
+      roleId: user.roleId,
+      isSuperAdmin: user.isSuperAdmin,
+    };
+
+    if (user.roleId) {
+      const role = await this.roleRepository.findOne({
+        where: { id: user.roleId },
+      });
+      if (role) {
+        (userResponse as any).permissions = role.permissions;
+      }
+    }
+
     return {
       access_token: this.jwtService.sign(payload),
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        role: user.role,
-      },
+      user: userResponse,
     };
   }
 }

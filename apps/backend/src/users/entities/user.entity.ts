@@ -6,13 +6,17 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
+  ManyToOne,
+  JoinColumn,
 } from 'typeorm';
-import { UserRole, UserStatus } from '../enums/user.enum';
+import { UserStatus } from '../enums/user.enum';
 import { Property } from '../../properties/entities/property.entity';
 import { Lead } from '../../leads/entities/lead.entity';
 import { Deal } from '../../deals/entities/deal.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Message } from '../../chat/entities/message.entity';
+import { Tenant } from '../../tenants/entities/tenant.entity';
+import { Role } from '../../roles/entities/role.entity';
 
 @Entity('users')
 export class User {
@@ -47,12 +51,24 @@ export class User {
   })
   status: UserStatus;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.AGENT,
-  })
-  role: UserRole;
+  @Column({ nullable: true })
+  tenantId: string;
+
+  @ManyToOne(() => Tenant, (tenant) => tenant.users, { nullable: true })
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
+
+  @Column({ nullable: true })
+  roleId: string;
+
+  @ManyToOne(() => Role, (role) => role.users, { nullable: true })
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
+
+  @Column({ default: false })
+  isSuperAdmin: boolean;
+
+  permissions: string[];
 
   @OneToMany(() => Property, (property) => property.agent)
   properties: Property[];

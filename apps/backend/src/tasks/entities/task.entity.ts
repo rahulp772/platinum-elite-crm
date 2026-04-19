@@ -5,8 +5,10 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Tenant } from '../../tenants/entities/tenant.entity';
 import { TaskStatus, TaskPriority, TaskType } from '../enums/task.enum';
 
 @Entity('tasks')
@@ -56,6 +58,13 @@ export class Task {
 
   @ManyToOne(() => User, (user) => user.tasks)
   assignedTo: User;
+
+  @Column({ nullable: true })
+  tenantId: string;
+
+  @ManyToOne(() => Tenant, (tenant) => tenant.tasks, { nullable: true })
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
 
   @CreateDateColumn()
   createdAt: Date;

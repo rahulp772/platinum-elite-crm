@@ -32,17 +32,20 @@ export class TasksService {
     const task = this.taskRepository.create({
       ...taskData,
       assignedTo,
+      tenantId: currentUser.tenantId,
     });
     return this.taskRepository.save(task);
   }
 
-  async findAll() {
-    return this.taskRepository.find({ relations: ['assignedTo'] });
+  async findAll(user: User) {
+    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    return this.taskRepository.find({ where, relations: ['assignedTo'] });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, user: User) {
+    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
     const task = await this.taskRepository.findOne({
-      where: { id },
+      where,
       relations: ['assignedTo'],
     });
     if (!task) {
@@ -51,8 +54,8 @@ export class TasksService {
     return task;
   }
 
-  async update(id: string, updateTaskDto: UpdateTaskDto) {
-    const task = await this.findOne(id);
+  async update(id: string, updateTaskDto: UpdateTaskDto, user: User) {
+    const task = await this.findOne(id, user);
     const { assignedToId, ...taskData } = updateTaskDto;
 
     if (assignedToId) {
@@ -69,8 +72,8 @@ export class TasksService {
     return this.taskRepository.save(task);
   }
 
-  async remove(id: string) {
-    const task = await this.findOne(id);
+  async remove(id: string, user: User) {
+    const task = await this.findOne(id, user);
     await this.taskRepository.remove(task);
     return { message: 'Task deleted successfully' };
   }

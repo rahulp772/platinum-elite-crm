@@ -34,17 +34,20 @@ export class DealsService {
       ...dealData,
       agent: user,
       property,
+      tenantId: user.tenantId,
     });
     return this.dealRepository.save(deal);
   }
 
-  async findAll() {
-    return this.dealRepository.find({ relations: ['agent', 'property'] });
+  async findAll(user: User) {
+    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    return this.dealRepository.find({ where, relations: ['agent', 'property'] });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, user: User) {
+    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
     const deal = await this.dealRepository.findOne({
-      where: { id },
+      where,
       relations: ['agent', 'property'],
     });
     if (!deal) {
@@ -53,8 +56,8 @@ export class DealsService {
     return deal;
   }
 
-  async update(id: string, updateDealDto: UpdateDealDto) {
-    const deal = await this.findOne(id);
+  async update(id: string, updateDealDto: UpdateDealDto, user: User) {
+    const deal = await this.findOne(id, user);
     const { propertyId, ...dealData } = updateDealDto;
 
     if (propertyId) {
@@ -71,8 +74,8 @@ export class DealsService {
     return this.dealRepository.save(deal);
   }
 
-  async remove(id: string) {
-    const deal = await this.findOne(id);
+  async remove(id: string, user: User) {
+    const deal = await this.findOne(id, user);
     await this.dealRepository.remove(deal);
     return { message: 'Deal deleted successfully' };
   }

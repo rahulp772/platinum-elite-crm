@@ -12,6 +12,7 @@ interface AuthContextType {
   register: (data: any) => Promise<void>
   logout: () => void
   isAuthenticated: boolean
+  hasPermission: (permission: string) => boolean
 }
 
 const AuthContext = React.createContext<AuthContextType | undefined>(undefined)
@@ -71,6 +72,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login")
   }
 
+  const hasPermission = (permission: string): boolean => {
+    if (!user) return false
+    if (user.isSuperAdmin) return true
+    return user.permissions?.includes(permission) ?? false
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -80,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         register,
         logout,
         isAuthenticated: !!user,
+        hasPermission,
       }}
     >
       {children}

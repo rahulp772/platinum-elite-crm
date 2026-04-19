@@ -30,25 +30,25 @@ export class LeadsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all leads' })
-  findAll() {
-    return this.leadsService.findAll();
+  findAll(@Request() req) {
+    return this.leadsService.findAll(req.user);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a lead by ID' })
-  findOne(@Param('id') id: string) {
-    return this.leadsService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.leadsService.findOne(id, req.user);
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a lead' })
-  update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
-    return this.leadsService.update(id, updateLeadDto);
+  update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto, @Request() req) {
+    return this.leadsService.update(id, updateLeadDto, req.user);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a lead' })
-  remove(@Param('id') id: string) {
-    return this.leadsService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.leadsService.remove(id, req.user);
   }
 }

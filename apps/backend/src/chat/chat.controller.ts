@@ -42,7 +42,7 @@ export class ChatController {
 
   @Post('conversations')
   @ApiOperation({ summary: 'Create a new conversation' })
-  createConversation(@Body('participantIds') participantIds: string[]) {
-    return this.chatService.createConversation(participantIds);
+  createConversation(@Body('participantIds') participantIds: string[], @Request() req) {
+    return this.chatService.createConversation(participantIds, req.user);
   }
 }
