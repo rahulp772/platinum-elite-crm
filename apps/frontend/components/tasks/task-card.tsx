@@ -28,9 +28,10 @@ const priorityColors = {
 }
 
 export function TaskCard({ task, onStatusChange }: TaskCardProps) {
-    const Icon = typeIcons[task.type]
-
-    const isOverdue = new Date() > task.dueDate && task.status !== "done"
+    const Icon = typeIcons[task.type] || FileText
+    
+    const dueDate = new Date(task.dueDate)
+    const isOverdue = dueDate > new Date() && task.status !== "done"
     const isDone = task.status === "done"
 
     return (
@@ -65,9 +66,9 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
                         <div className={cn("flex items-center gap-1.5", isOverdue && "text-rose-600 font-medium")}>
                             <Calendar className="h-3.5 w-3.5" />
                             <span>
-                                {task.dueDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
+                                {dueDate.toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                                 {", "}
-                                {task.dueDate.toLocaleTimeString(undefined, { hour: "numeric", minute: "numeric" })}
+                                {dueDate.toLocaleTimeString(undefined, { hour: "numeric", minute: "numeric" })}
                             </span>
                         </div>
 
@@ -77,11 +78,11 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
                             <span className="capitalize">{task.type}</span>
                         </div>
 
-                        {/* Related To */}
-                        {task.relatedTo && (
+                        {/* Assigned To */}
+                        {task.assignedTo && (
                             <div className="flex items-center gap-1.5 text-primary">
                                 <span className="opacity-60">For:</span>
-                                <span className="font-medium hover:underline cursor-pointer">{task.relatedTo.name}</span>
+                                <span className="font-medium">{task.assignedTo.name}</span>
                             </div>
                         )}
                     </div>

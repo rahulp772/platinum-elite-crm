@@ -16,7 +16,10 @@ export class UsersService {
     private configService: ConfigService,
   ) {}
 
-  async findAll(user: User) {
+  async findAll(user: User, tenantId?: string) {
+    if (user.isSuperAdmin && tenantId) {
+      return this.userRepository.find({ where: { tenantId } });
+    }
     const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
     return this.userRepository.find({ where });
   }

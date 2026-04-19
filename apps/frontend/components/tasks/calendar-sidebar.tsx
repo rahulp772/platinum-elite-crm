@@ -12,8 +12,13 @@ interface CalendarSidebarProps {
 }
 
 export function CalendarSidebar({ tasks, selectedDate, onSelectDate }: CalendarSidebarProps) {
-    // Identify days with tasks
-    const daysWithTasks = tasks.map((t) => new Date(t.dueDate.setHours(0, 0, 0, 0)))
+    const daysWithTasks = React.useMemo(() => {
+        return [...new Set(tasks.map((t) => {
+            const date = new Date(t.dueDate)
+            date.setHours(0, 0, 0, 0)
+            return date.getTime()
+        }))].map(ts => new Date(ts))
+    }, [tasks])
 
     return (
         <div className="space-y-6">

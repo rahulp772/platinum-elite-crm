@@ -109,7 +109,7 @@ export function Sidebar() {
                         {!collapsed && (
                             <div className="flex-1 min-w-0">
                                 <h2 className="text-sm font-semibold text-foreground truncate">{user?.name || "Indica Watson"}</h2>
-                                <p className="text-xs text-muted-foreground truncate capitalize">{user?.role || "Executive Partner"}</p>
+                                <p className="text-xs text-muted-foreground truncate capitalize">{user?.role?.name || user?.role?.toString() || "Executive Partner"}</p>
                             </div>
                         )}
                     </div>

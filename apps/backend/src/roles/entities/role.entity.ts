@@ -36,7 +36,10 @@ export class Role {
   users: User[];
 
   @Column({ default: false })
-  isSystem: boolean; // True for default roles like 'Admin' that cannot be deleted
+  isSystem: boolean;
+
+  @Column({ type: 'int', default: 10 })
+  level: number;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -121,15 +121,15 @@ export default function SettingsPage() {
     queryKey: ["roles", currentUser?.tenantId],
     queryFn: async () => {
       const res = await api.get("/roles")
-      const allRoles = res.data as Role[]
+      const allRoles = res.data as any[]
       const uniqueByName = allRoles.filter((role, index, self) => 
-        index === self.findIndex((r) => r.name === role.name)
+        index === self.findIndex((r: any) => r.name === role.name)
       )
       if (!currentUser?.isSuperAdmin) {
-        return uniqueByName.filter((r) => r.tenantId === currentUser?.tenantId)
+        return uniqueByName.filter((r: any) => r.tenantId === currentUser?.tenantId)
       }
       if (currentUser?.tenantId) {
-        return uniqueByName.filter((r) => r.tenantId === currentUser.tenantId || !r.tenantId)
+        return uniqueByName.filter((r: any) => r.tenantId === currentUser.tenantId || !r.tenantId)
       }
       return uniqueByName
     },
@@ -473,7 +473,7 @@ export default function SettingsPage() {
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
-                          {role.permissions.slice(0, 3).map((p) => (
+                          {role.permissions.slice(0, 3).map((p: string) => (
                             <span
                               key={p}
                               className="inline-flex items-center rounded-full bg-muted px-2 py-0.5 text-xs"

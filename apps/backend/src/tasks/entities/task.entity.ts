@@ -57,7 +57,18 @@ export class Task {
   relatedToType: 'deal' | 'property' | 'lead';
 
   @ManyToOne(() => User, (user) => user.tasks)
+  @JoinColumn({ name: 'assignedToId' })
   assignedTo: User;
+
+  @Column({ nullable: true })
+  assignedToId: string;
+
+  @Column({ nullable: true })
+  createdById: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  @JoinColumn({ name: 'createdById' })
+  createdBy: User;
 
   @Column({ nullable: true })
   tenantId: string;

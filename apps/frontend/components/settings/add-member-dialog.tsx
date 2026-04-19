@@ -23,11 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Loader2, AlertCircle } from "lucide-react"
-
-interface Role {
-  id: string
-  name: string
-}
+import { Role } from "@/types/role"
 
 interface AddMemberDialogProps {
   open: boolean
@@ -47,15 +43,15 @@ export function AddMemberDialog({ open, onOpenChange, onSuccess }: AddMemberDial
     queryKey: ["roles", currentUser?.tenantId],
     queryFn: async () => {
       const res = await api.get("/roles")
-      const allRoles = res.data as Role[]
+      const allRoles = res.data as any[]
       const uniqueByName = allRoles.filter((role, index, self) => 
-        index === self.findIndex((r) => r.name === role.name)
+        index === self.findIndex((r: any) => r.name === role.name)
       )
       if (!currentUser?.isSuperAdmin) {
-        return uniqueByName.filter((r) => r.tenantId === currentUser?.tenantId)
+        return uniqueByName.filter((r: any) => r.tenantId === currentUser?.tenantId)
       }
       if (currentUser?.tenantId) {
-        return uniqueByName.filter((r) => r.tenantId === currentUser.tenantId || !r.tenantId)
+        return uniqueByName.filter((r: any) => r.tenantId === currentUser.tenantId || !r.tenantId)
       }
       return uniqueByName
     },

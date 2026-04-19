@@ -3,21 +3,24 @@
 import * as React from "react"
 import { TaskCard } from "@/components/tasks/task-card"
 import { CalendarSidebar } from "@/components/tasks/calendar-sidebar"
-import { mockTasks } from "@/lib/mock-data/tasks"
+import { AddTaskDialog } from "@/components/tasks/add-task-dialog"
+import { useTasks, useUpdateTask } from "@/hooks/use-tasks"
 import { Task } from "@/types/task"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Plus, Search, Filter } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 
 export default function TasksPage() {
-    const [tasks, setTasks] = React.useState<Task[]>(mockTasks)
+    const { data: tasks = [], isLoading } = useTasks()
+    const updateTask = useUpdateTask()
+    const [addTaskOpen, setAddTaskOpen] = React.useState(false)
     const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date())
     const [searchQuery, setSearchQuery] = React.useState("")
     const [statusFilter, setStatusFilter] = React.useState<"all" | "todo" | "done">("all")
 
-    const handleStatusChange = (id: string, newStatus: Task["status"]) => {
-        setTasks(tasks.map(t => t.id === id ? { ...t, status: newStatus } : t))
+    const handleStatusChange = async (id: string, newStatus: Task["status"]) => {
+        await updateTask.mutateAsync({ id, status: newStatus })
     }
 
     // Filter logic
@@ -70,10 +73,12 @@ export default function TasksPage() {
                         Manage your daily to-do list and schedule
                     </p>
                 </div>
-                <Button>
+                <Button onClick={() => setAddTaskOpen(true)}>
                     <Plus className="mr-2 h-4 w-4" />
                     Add Task
                 </Button>
+
+                <AddTaskDialog open={addTaskOpen} onOpenChange={setAddTaskOpen} />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full">

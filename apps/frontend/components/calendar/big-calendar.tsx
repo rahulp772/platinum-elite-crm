@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button"
 
 interface BigCalendarProps {
     tasks: Task[]
+    onTaskClick?: (task: Task) => void
 }
 
-export function BigCalendar({ tasks }: BigCalendarProps) {
+export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
     const [currentDate, setCurrentDate] = React.useState(new Date())
 
     const nextMonth = () => {
@@ -99,6 +100,7 @@ export function BigCalendar({ tasks }: BigCalendarProps) {
                                 {dayTasks.map(task => (
                                     <div
                                         key={task.id}
+                                        onClick={() => onTaskClick?.(task)}
                                         className={cn(
                                             "text-[10px] px-2 py-1 rounded truncate border-l-2 font-medium cursor-pointer hover:opacity-80",
                                             task.priority === 'high' ? "bg-rose-100 dark:bg-rose-900/30 border-rose-500 text-rose-700 dark:text-rose-300" :
@@ -107,7 +109,7 @@ export function BigCalendar({ tasks }: BigCalendarProps) {
                                             task.status === "done" && "opacity-50 line-through"
                                         )}
                                     >
-                                        {format(task.dueDate, "h:mm a")} {task.title}
+                                        {format(new Date(task.dueDate), "h:mm a")} {task.title}
                                     </div>
                                 ))}
                             </div>

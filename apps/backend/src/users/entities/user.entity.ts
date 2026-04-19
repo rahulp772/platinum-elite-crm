@@ -84,6 +84,9 @@ export class User {
   @OneToMany(() => Task, (task) => task.assignedTo)
   tasks: Task[];
 
+  @OneToMany(() => Task, (task) => task.createdBy)
+  createdTasks: Task[];
+
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
 

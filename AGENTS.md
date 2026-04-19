@@ -27,8 +27,9 @@ The Real Estate CRM is a full-stack application designed to streamline property 
 - One-to-Many with: User, Property, Lead, Deal, Task, Role
 
 #### 2. Role (Dynamic)
-- `id`, `name`, `tenantId`, `permissions` (JSONB array), `isSystem`
+- `id`, `name`, `tenantId`, `permissions` (JSONB array), `isSystem`, `level` (int)
 - `tenantId` is nullable for global/system roles
+- `level` = 100 (Admin), 80 (Manager), 50 (Team Lead), 10 (Agent), 200 (Super Admin)
 - One-to-Many with: User
 
 #### 3. User
@@ -70,6 +71,51 @@ import { HasPermission } from '@/components/auth/has-permission';
   <ReportsWidget />
 </HasPermission>
 ```
+
+---
+
+## 📊 Role Level Hierarchy
+
+The system implements a strict visibility hierarchy for data access. This is primarily used for **Task visibility** but can be extended to other entities.
+
+### Level Definitions
+| Level | Role | Description |
+|-------|------|-------------|
+| 200 | Super Admin | System-wide access across all tenants |
+| 100 | Admin | Full access within a tenant |
+| 80 | Manager | Can view tasks assigned to users with lower levels |
+| 50 | Team Lead | Can view tasks assigned to users with lower levels |
+| 10 | Agent | Can only see own tasks and tasks they created |
+
+### Task Visibility Rules
+A user can view a task if ANY of these conditions are met:
+1. **Task is assigned to them**: `task.assignedToId === user.id`
+2. **Task was created by them**: `task.createdById === user.id`
+3. **Assignee is lower in hierarchy**: `assignee.role.level < currentUser.role.level` (same tenant)
+
+### Implementation (Backend)
+```typescript
+// In TasksService.findAll()
+const currentLevel = userWithRole.role.level || 0;
+const subQuery = userRepository
+  .createQueryBuilder('user')
+  .select('user.id')
+  .leftJoin('user.role', 'role')
+  .where('user.tenantId = :tenantId', { tenantId })
+  .andWhere('role.level < :level', { level: currentLevel });
+
+// Query returns tasks where:
+// - assignedToId = currentUser OR
+// - createdById = currentUser OR
+// - assignedToId IN (users with lower role level)
+```
+
+### Seeded Roles (Default)
+Each tenant gets these roles by default:
+- **Admin** (Level 100): Full access, all permissions
+- **Manager** (Level 80): Manage agents, most permissions
+- **Team Lead** (Level 50): Lead team tasks
+- **Agent** (Level 10): Basic access, own work only
 
 ---
 
@@ -117,6 +163,7 @@ Activity tracking linked to other entities.
 - **Polymorphism**: Uses `relatedToId` and `relatedToType` (`deal`, `property`, `lead`).
 - **Relationships**:
   - `Many-to-One` with **User** (Assignee).
+  - `Many-to-One` with **User** (Creator - `createdById`).
   - `Many-to-One` with **Tenant**.
 
 ### 6. Chat (Conversation & Message)

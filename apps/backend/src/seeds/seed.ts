@@ -33,10 +33,11 @@ const ROLES_PER_TENANT = [
     description: 'Full access to all features',
     permissions: BASE_PERMISSIONS,
     isSystem: true,
+    level: 100,
   },
   {
-    name: 'Senior Agent',
-    description: 'Can manage leads, properties, and deals',
+    name: 'Manager',
+    description: 'Can manage agents and view all data',
     permissions: [
       'leads:read',
       'leads:write',
@@ -46,18 +47,40 @@ const ROLES_PER_TENANT = [
       'properties:write',
       'tasks:read',
       'tasks:write',
+      'users:read',
     ],
     isSystem: false,
+    level: 80,
   },
   {
-    name: 'Junior Agent',
-    description: 'Can view leads and properties',
+    name: 'Team Lead',
+    description: 'Can manage team tasks and view agents',
     permissions: [
       'leads:read',
+      'leads:write',
+      'deals:read',
+      'deals:write',
       'properties:read',
+      'properties:write',
       'tasks:read',
+      'tasks:write',
+      'users:read',
     ],
     isSystem: false,
+    level: 50,
+  },
+  {
+    name: 'Agent',
+    description: 'Can view and manage own work',
+    permissions: [
+      'leads:read',
+      'leads:write',
+      'properties:read',
+      'tasks:read',
+      'tasks:write',
+    ],
+    isSystem: false,
+    level: 10,
   },
 ];
 
@@ -67,6 +90,7 @@ const SYSTEM_ROLES = [
     description: 'System-wide admin access',
     permissions: BASE_PERMISSIONS,
     isSystem: true,
+    level: 200,
   },
 ];
 
@@ -117,43 +141,31 @@ export class SeedService implements OnModuleInit {
   private async seedTenantsAndRoles() {
     console.log('🏢 Creating tenants, roles, and users...');
 
+    const roleDefinitions = [
+      { name: 'Admin', level: 100, permissions: BASE_PERMISSIONS, isSystem: true },
+      { name: 'Manager', level: 80, permissions: [...BASE_PERMISSIONS.filter(p => p !== 'roles:write'), 'users:read', 'users:write'], isSystem: false },
+      { name: 'Team Lead', level: 50, permissions: ['leads:read', 'leads:write', 'deals:read', 'deals:write', 'properties:read', 'properties:write', 'tasks:read', 'tasks:write', 'users:read'], isSystem: false },
+      { name: 'Agent', level: 10, permissions: ['leads:read', 'leads:write', 'properties:read', 'tasks:read', 'tasks:write'], isSystem: false },
+    ];
+
     for (const tenantData of TENANTS) {
       const tenant = this.tenantRepository.create(tenantData);
       await this.tenantRepository.save(tenant);
       console.log(`   Created tenant: ${tenant.name}`);
 
-      const adminRole = this.roleRepository.create({
-        name: 'Admin',
-        description: 'Full access to all features',
-        permissions: BASE_PERMISSIONS,
-        isSystem: true,
-        tenantId: tenant.id,
-      });
-      await this.roleRepository.save(adminRole);
-      console.log(`   Created role: Admin for ${tenant.name}`);
-
-      const seniorRole = this.roleRepository.create({
-        name: 'Senior Agent',
-        description: 'Can manage leads, properties, and deals',
-        permissions: [
-          'leads:read', 'leads:write',
-          'deals:read', 'deals:write',
-          'properties:read', 'properties:write',
-          'tasks:read', 'tasks:write',
-        ],
-        isSystem: false,
-        tenantId: tenant.id,
-      });
-      await this.roleRepository.save(seniorRole);
-
-      const juniorRole = this.roleRepository.create({
-        name: 'Junior Agent',
-        description: 'Can view leads and properties',
-        permissions: ['leads:read', 'properties:read', 'tasks:read'],
-        isSystem: false,
-        tenantId: tenant.id,
-      });
-      await this.roleRepository.save(juniorRole);
+      const roles: Role[] = [];
+      for (const roleDef of roleDefinitions) {
+        const role = this.roleRepository.create({
+          ...roleDef,
+          description: roleDef.name === 'Admin' ? 'Full access to all features' :
+            roleDef.name === 'Manager' ? 'Can manage all agents and data' :
+              roleDef.name === 'Team Lead' ? 'Can manage team tasks' : 'Can view and manage own work',
+          tenantId: tenant.id,
+        });
+        await this.roleRepository.save(role);
+        roles.push(role);
+        console.log(`   Created role: ${roleDef.name} (Level ${roleDef.level})`);
+      }
 
       const hashedPassword = await bcrypt.hash('admin123', 10);
       const adminUser = this.userRepository.create({
@@ -161,7 +173,7 @@ export class SeedService implements OnModuleInit {
         password: hashedPassword,
         name: 'Admin',
         tenantId: tenant.id,
-        roleId: adminRole.id,
+        roleId: roles[0].id,
       });
       await this.userRepository.save(adminUser);
       console.log(`   Created admin user: admin@${tenantData.domain} / admin123`);
@@ -178,6 +190,7 @@ export class SeedService implements OnModuleInit {
       description: 'System-wide admin access',
       permissions: BASE_PERMISSIONS,
       isSystem: true,
+      level: 200,
       tenantId: null as any,
     });
     await this.roleRepository.save(superAdminRole);

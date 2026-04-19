@@ -6,10 +6,11 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InviteUserDto } from './dto/invite-user.dto';
@@ -25,11 +26,10 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Get()
-  @RequirePermissions('users:read')
-  @UseGuards(PermissionsGuard)
   @ApiOperation({ summary: 'Get all users' })
-  findAll(@Request() req) {
-    return this.usersService.findAll(req.user);
+  @ApiQuery({ name: 'tenantId', required: false })
+  findAll(@Request() req, @Query('tenantId') tenantId?: string) {
+    return this.usersService.findAll(req.user, tenantId);
   }
 
   @Post('invite')

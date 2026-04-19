@@ -15,6 +15,13 @@ export class TasksService {
     private userRepository: Repository<User>,
   ) {}
 
+  private async getUserWithRole(userId: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['role'],
+    });
+  }
+
   async create(createTaskDto: CreateTaskDto, currentUser: User) {
     const { assignedToId, ...taskData } = createTaskDto;
     let assignedTo = currentUser;
@@ -22,6 +29,7 @@ export class TasksService {
     if (assignedToId) {
       const user = await this.userRepository.findOne({
         where: { id: assignedToId },
+        relations: ['role'],
       });
       if (!user) {
         throw new NotFoundException(`User with ID ${assignedToId} not found`);
@@ -32,25 +40,85 @@ export class TasksService {
     const task = this.taskRepository.create({
       ...taskData,
       assignedTo,
+      createdBy: currentUser,
+      createdById: currentUser.id,
       tenantId: currentUser.tenantId,
     });
     return this.taskRepository.save(task);
   }
 
-  async findAll(user: User) {
-    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
-    return this.taskRepository.find({ where, relations: ['assignedTo'] });
+  async findAll(currentUser: User) {
+    if (currentUser.isSuperAdmin) {
+      return this.taskRepository.find({
+        relations: ['assignedTo', 'createdBy'],
+      });
+    }
+
+    const userWithRole = await this.getUserWithRole(currentUser.id);
+    if (!userWithRole || !userWithRole.role) {
+      return this.taskRepository.find({
+        where: { assignedTo: currentUser },
+        relations: ['assignedTo', 'createdBy'],
+      });
+    }
+
+    const currentLevel = userWithRole.role.level || 0;
+
+    const subQuery = this.userRepository
+      .createQueryBuilder('user')
+      .select('user.id')
+      .leftJoin('user.role', 'role')
+      .where('user.tenantId = :tenantId', { tenantId: currentUser.tenantId })
+      .andWhere('role.level < :level', { level: currentLevel });
+
+    return this.taskRepository
+      .createQueryBuilder('task')
+      .leftJoinAndSelect('task.assignedTo', 'assignedTo')
+      .leftJoinAndSelect('assignedTo.role', 'assignedToRole')
+      .leftJoinAndSelect('task.createdBy', 'createdBy')
+      .where('task.tenantId = :tenantId', { tenantId: currentUser.tenantId })
+      .andWhere(
+        '(task.assignedToId = :userId OR task.createdById = :userId OR (task.assignedToId IN (' + subQuery.getQuery() + ')))',
+        { userId: currentUser.id }
+      )
+      .setParameters(subQuery.getParameters())
+      .getMany();
   }
 
-  async findOne(id: string, user: User) {
-    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
+  async findOne(id: string, currentUser: User) {
     const task = await this.taskRepository.findOne({
-      where,
-      relations: ['assignedTo'],
+      where: { id },
+      relations: ['assignedTo', 'createdBy'],
     });
+
     if (!task) {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
+
+    if (currentUser.isSuperAdmin) {
+      return task;
+    }
+
+    const userWithRole = await this.getUserWithRole(currentUser.id);
+    if (!userWithRole || !userWithRole.role) {
+      if (task.assignedToId === currentUser.id || task.createdById === currentUser.id) {
+        return task;
+      }
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+
+    const currentLevel = userWithRole.role.level || 0;
+    const assignedToLevel = task.assignedTo?.role?.level || 0;
+
+    const hasAccess =
+      task.assignedToId === currentUser.id ||
+      task.createdById === currentUser.id ||
+      (assignedToLevel < currentLevel && task.tenantId === currentUser.tenantId);
+
+    if (!hasAccess) {
+      throw new NotFoundException(`Task with ID ${id} not found`);
+    }
+
     return task;
   }
 
