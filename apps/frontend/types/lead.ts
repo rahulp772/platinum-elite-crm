@@ -12,7 +12,10 @@ export interface Lead {
     location: string
     propertyType: string
     notes: string
-    assignedTo: string
+    assignedTo: {
+        id: string
+        name: string
+    }
     createdAt: Date
     lastContact?: Date
 }

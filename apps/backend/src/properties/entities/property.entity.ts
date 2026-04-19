@@ -1,4 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  ManyToOne,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { PropertyStatus, PropertyType } from '../enums/property.enum';
 
@@ -65,8 +74,18 @@ export class Property {
   @Column({ default: 0 })
   views: number;
 
+  @Column({ nullable: true })
+  mlsId: string;
+
+  @Column('float', { nullable: true, default: 0 })
+  rating: number;
+
   @ManyToOne(() => User, (user) => user.properties)
   agent: User;
+
+  @ManyToMany(() => User)
+  @JoinTable({ name: 'property_favorites' })
+  favoritedBy: User[];
 
   @CreateDateColumn()
   listed: Date;

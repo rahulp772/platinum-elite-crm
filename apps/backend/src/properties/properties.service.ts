@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Property } from './entities/property.entity';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
@@ -25,6 +25,14 @@ export class PropertiesService {
     return this.propertyRepository.find({ relations: ['agent'] });
   }
 
+  async findRelated(id: string, type: string, limit = 3) {
+    return this.propertyRepository.find({
+      where: { id: Not(id), type: type as any },
+      relations: ['agent'],
+      take: limit,
+    });
+  }
+
   async findOne(id: string) {
     const property = await this.propertyRepository.findOne({
       where: { id },
@@ -46,5 +54,25 @@ export class PropertiesService {
     const property = await this.findOne(id);
     await this.propertyRepository.remove(property);
     return { message: 'Property deleted successfully' };
+  }
+
+  async toggleFavorite(id: string, user: User) {
+    const property = await this.propertyRepository.findOne({
+      where: { id },
+      relations: ['favoritedBy'],
+    });
+    if (!property) {
+      throw new NotFoundException(`Property with ID ${id} not found`);
+    }
+
+    const index = property.favoritedBy.findIndex((u) => u.id === user.id);
+    if (index === -1) {
+      property.favoritedBy.push(user);
+    } else {
+      property.favoritedBy.splice(index, 1);
+    }
+
+    await this.propertyRepository.save(property);
+    return { favorited: index === -1 };
   }
 }

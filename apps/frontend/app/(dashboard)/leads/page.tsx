@@ -4,18 +4,24 @@ import * as React from "react"
 import { LeadsTable } from "@/components/leads/leads-table"
 import { LeadFilters } from "@/components/leads/lead-filters"
 import { AddLeadDialog } from "@/components/leads/add-lead-dialog"
-import { mockLeads } from "@/lib/mock-data/leads"
+import { useLeads } from "@/hooks/use-leads"
 import { Card } from "@/components/ui/card"
+import { LoaderCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Lead } from "@/types/lead"
 
 export default function LeadsPage() {
-    const [filteredLeads, setFilteredLeads] = React.useState(mockLeads)
+    const { data: leads, isLoading, isError } = useLeads()
+    const [filteredLeads, setFilteredLeads] = React.useState<Lead[]>([])
     const [searchQuery, setSearchQuery] = React.useState("")
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [sourceFilter, setSourceFilter] = React.useState("all")
 
     // Apply filters
     React.useEffect(() => {
-        let filtered = mockLeads
+        if (!leads) return
+
+        let filtered = [...leads]
 
         // Search filter
         if (searchQuery) {
@@ -38,7 +44,25 @@ export default function LeadsPage() {
         }
 
         setFilteredLeads(filtered)
-    }, [searchQuery, statusFilter, sourceFilter])
+    }, [searchQuery, statusFilter, sourceFilter, leads])
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <LoaderCircle className="h-8 w-8 animate-spin text-realty-gold" />
+                <p className="text-muted-foreground animate-pulse">Loading leads...</p>
+            </div>
+        )
+    }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <p className="text-destructive font-semibold">Failed to load leads.</p>
+                <Button onClick={() => window.location.reload()}>Retry</Button>
+            </div>
+        )
+    }
 
     return (
         <div className="space-y-8">

@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Property } from "@/types/property"
 import { cn } from "@/lib/utils"
+import { useToggleFavorite } from "@/hooks/use-properties"
 
 const statusColors = {
     available: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
@@ -35,6 +36,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "grid" }: PropertyCardProps) {
     const router = useRouter()
+    const toggleFavorite = useToggleFavorite()
     
     const handleClick = () => {
         if (onClick) {
@@ -75,7 +77,7 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                         )}
                         onClick={(e) => {
                             e.stopPropagation()
-                            onFavoriteToggle?.(property.id)
+                            toggleFavorite.mutate(property.id)
                         }}
                     >
                         <Heart className={cn("h-3 w-3", property.favorited && "fill-current")} />
@@ -166,7 +168,7 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                     )}
                     onClick={(e) => {
                         e.stopPropagation()
-                        onFavoriteToggle?.(property.id)
+                        toggleFavorite.mutate(property.id)
                     }}
                 >
                     <Heart className={cn(isCompact ? "h-3 w-3" : "h-4 w-4", property.favorited && "fill-current")} />
@@ -211,7 +213,7 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
             {!isCompact && (
                 <CardFooter className="p-4 pt-0 border-t bg-muted/50">
                     <div className="flex items-center justify-between w-full text-sm">
-                        <span className="text-muted-foreground">Listed by {property.agent}</span>
+                        <span className="text-muted-foreground">Listed by {property.agent?.name || "Unknown"}</span>
                         <span className="text-muted-foreground">
                             {new Date(property.listed).toLocaleDateString()}
                         </span>

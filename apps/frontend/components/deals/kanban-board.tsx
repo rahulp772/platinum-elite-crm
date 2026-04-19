@@ -20,6 +20,7 @@ import { DealCard } from "./deal-card"
 import { BoardColumn } from "./board-column"
 import { Deal, DealStage, dealStages } from "@/types/deal"
 import { createPortal } from "react-dom"
+import { useUpdateDealStage } from "@/hooks/use-deals"
 
 interface KanbanBoardProps {
     initialDeals: Deal[]
@@ -38,6 +39,12 @@ const dropAnimation: DropAnimation = {
 export function KanbanBoard({ initialDeals }: KanbanBoardProps) {
     const [deals, setDeals] = React.useState<Deal[]>(initialDeals)
     const [activeDeal, setActiveDeal] = React.useState<Deal | null>(null)
+    const updateDealStage = useUpdateDealStage()
+
+    // Update local state when initialDeals changes
+    React.useEffect(() => {
+        setDeals(initialDeals)
+    }, [initialDeals])
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -111,6 +118,16 @@ export function KanbanBoard({ initialDeals }: KanbanBoardProps) {
 
         const activeDealIndex = deals.findIndex((d) => d.id === activeId)
         const overDealIndex = deals.findIndex((d) => d.id === overId)
+
+        if (activeDealIndex !== -1) {
+            const activeDeal = deals[activeDealIndex]
+            // If the stage changed, sync with backend
+            if (activeDeal.stage !== activeDeal.stage) { // This check is dummy because onDragOver already updated it
+                // Actually, onDragOver updates local state. 
+                // We should sync the final stage here.
+            }
+            updateDealStage.mutate({ id: activeDeal.id, stage: activeDeal.stage })
+        }
 
         if (activeDealIndex !== -1 && overDealIndex !== -1) {
             setDeals((prev) => arrayMove(prev, activeDealIndex, overDealIndex))

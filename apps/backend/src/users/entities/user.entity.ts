@@ -1,4 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  OneToMany,
+  ManyToMany,
+} from 'typeorm';
 import { UserRole, UserStatus } from '../enums/user.enum';
 import { Property } from '../../properties/entities/property.entity';
 import { Lead } from '../../leads/entities/lead.entity';
@@ -22,6 +30,15 @@ export class User {
 
   @Column({ nullable: true })
   avatar: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  whatsapp: string;
+
+  @Column({ nullable: true })
+  officeAddress: string;
 
   @Column({
     type: 'enum',
@@ -51,6 +68,9 @@ export class User {
 
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
+
+  @ManyToMany(() => Property, (property) => property.favoritedBy)
+  favoriteProperties: Property[];
 
   @CreateDateColumn()
   createdAt: Date;

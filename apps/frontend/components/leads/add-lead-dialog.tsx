@@ -21,14 +21,35 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { useCreateLead } from "@/hooks/use-leads"
+import { LeadStatus, LeadSource } from "@/types/lead"
 
 export function AddLeadDialog() {
     const [open, setOpen] = React.useState(false)
+    const createLead = useCreateLead()
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        // TODO: Handle form submission
-        setOpen(false)
+        const formData = new FormData(e.currentTarget)
+        
+        const leadData = {
+            name: formData.get('name') as string,
+            email: formData.get('email') as string,
+            phone: formData.get('phone') as string,
+            status: formData.get('status') as LeadStatus,
+            source: formData.get('source') as LeadSource,
+            budget: Number(formData.get('budget')) || 0,
+            location: formData.get('location') as string,
+            propertyType: formData.get('propertyType') as string,
+            notes: formData.get('notes') as string,
+        }
+
+        try {
+            await createLead.mutateAsync(leadData)
+            setOpen(false)
+        } catch (error) {
+            console.error("Failed to create lead:", error)
+        }
     }
 
     return (
@@ -47,26 +68,26 @@ export function AddLeadDialog() {
                     </DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
-                    <div className="grid gap-4 py-4">
+                    <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto px-1">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Name *</Label>
-                                <Input id="name" placeholder="John Doe" required />
+                                <Input id="name" name="name" placeholder="John Doe" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email">Email *</Label>
-                                <Input id="email" type="email" placeholder="john@example.com" required />
+                                <Input id="email" name="email" type="email" placeholder="john@example.com" required />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="phone">Phone *</Label>
-                                <Input id="phone" type="tel" placeholder="+1 (555) 123-4567" required />
+                                <Input id="phone" name="phone" type="tel" placeholder="+1 (555) 123-4567" required />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="status">Status</Label>
-                                <Select defaultValue="new">
+                                <Select name="status" defaultValue="new">
                                     <SelectTrigger id="status">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -74,6 +95,7 @@ export function AddLeadDialog() {
                                         <SelectItem value="new">New</SelectItem>
                                         <SelectItem value="contacted">Contacted</SelectItem>
                                         <SelectItem value="qualified">Qualified</SelectItem>
+                                        <SelectItem value="lost">Lost</SelectItem>
                                     </SelectContent>
                                 </Select>
                             </div>
@@ -82,7 +104,7 @@ export function AddLeadDialog() {
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="source">Source</Label>
-                                <Select defaultValue="website">
+                                <Select name="source" defaultValue="website">
                                     <SelectTrigger id="source">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -97,18 +119,18 @@ export function AddLeadDialog() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="budget">Budget</Label>
-                                <Input id="budget" type="number" placeholder="500000" />
+                                <Input id="budget" name="budget" type="number" placeholder="500000" />
                             </div>
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
                                 <Label htmlFor="location">Location</Label>
-                                <Input id="location" placeholder="Manhattan, New York" />
+                                <Input id="location" name="location" placeholder="Manhattan, New York" />
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="propertyType">Property Type</Label>
-                                <Select defaultValue="apartment">
+                                <Select name="propertyType" defaultValue="apartment">
                                     <SelectTrigger id="propertyType">
                                         <SelectValue />
                                     </SelectTrigger>
@@ -125,14 +147,16 @@ export function AddLeadDialog() {
 
                         <div className="space-y-2">
                             <Label htmlFor="notes">Notes</Label>
-                            <Input id="notes" placeholder="Additional information..." />
+                            <Input id="notes" name="notes" placeholder="Additional information..." />
                         </div>
                     </div>
-                    <DialogFooter>
+                    <DialogFooter className="mt-4">
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit">Add Lead</Button>
+                        <Button type="submit" disabled={createLead.isPending}>
+                            {createLead.isPending ? "Adding..." : "Add Lead"}
+                        </Button>
                     </DialogFooter>
                 </form>
             </DialogContent>

@@ -1,5 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsNumber, IsEnum, IsOptional, IsArray, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+  IsArray,
+  Min,
+} from 'class-validator';
 import { PropertyStatus, PropertyType } from '../enums/property.enum';
 
 export class CreatePropertyDto {
@@ -80,4 +88,14 @@ export class CreatePropertyDto {
   @IsArray()
   @IsOptional()
   features?: string[];
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  mlsId?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  rating?: number;
 }

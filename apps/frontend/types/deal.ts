@@ -8,10 +8,16 @@ export interface Deal {
     stage: DealStage
     customerName: string
     customerEmail: string
-    propertyName: string
+    property?: {
+        id: string
+        title: string
+    }
     expectedCloseDate: Date
     priority: DealPriority
-    agent: string
+    agent: {
+        id: string
+        name: string
+    }
     createdAt: Date
     updatedAt: Date
 }

@@ -24,6 +24,13 @@ export class PropertiesController {
     return this.propertiesService.findAll();
   }
 
+  @Get(':id/related')
+  @ApiOperation({ summary: 'Get related properties by type' })
+  async findRelated(@Param('id') id: string) {
+    const property = await this.propertiesService.findOne(id);
+    return this.propertiesService.findRelated(id, property.type);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a property by ID' })
   findOne(@Param('id') id: string) {
@@ -40,5 +47,11 @@ export class PropertiesController {
   @ApiOperation({ summary: 'Delete a property listing' })
   remove(@Param('id') id: string) {
     return this.propertiesService.remove(id);
+  }
+
+  @Post(':id/favorite')
+  @ApiOperation({ summary: 'Toggle favorite status for a property' })
+  toggleFavorite(@Param('id') id: string, @Request() req) {
+    return this.propertiesService.toggleFavorite(id, req.user);
   }
 }

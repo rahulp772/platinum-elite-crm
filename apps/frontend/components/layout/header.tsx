@@ -24,6 +24,7 @@ import { mockProperties } from "@/lib/mock-data/properties"
 import { mockLeads } from "@/lib/mock-data/leads"
 import { mockDeals } from "@/lib/mock-data/deals"
 import { SearchResult } from "@/types/search"
+import { useSearch } from "@/hooks/use-search"
 
 type DialogType = "lead" | "deal" | "property" | "task" | null
 
@@ -32,10 +33,11 @@ export function Header() {
     const { user, logout } = useAuth()
     const [activeDialog, setActiveDialog] = React.useState<DialogType>(null)
     const [searchQuery, setSearchQuery] = React.useState("")
-    const [searchResults, setSearchResults] = React.useState<SearchResult[]>([])
     const [isSearchOpen, setIsSearchOpen] = React.useState(false)
     const searchInputRef = React.useRef<HTMLInputElement>(null)
     const searchContainerRef = React.useRef<HTMLDivElement>(null)
+
+    const { data: searchResults = [], isLoading: isSearchLoading } = useSearch(searchQuery)
 
     React.useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -59,59 +61,9 @@ export function Header() {
     }, [])
 
     React.useEffect(() => {
-        if (searchQuery.trim().length > 0) {
-            const q = searchQuery.toLowerCase()
-
-            const properties: SearchResult[] = mockProperties
-                .filter(p =>
-                    p.title.toLowerCase().includes(q) ||
-                    p.address.toLowerCase().includes(q) ||
-                    p.city.toLowerCase().includes(q)
-                )
-                .slice(0, 3)
-                .map(p => ({
-                    id: p.id,
-                    title: p.title,
-                    subtitle: p.address,
-                    type: "property" as const,
-                    status: p.status
-                }))
-
-            const leads: SearchResult[] = mockLeads
-                .filter(l =>
-                    l.name.toLowerCase().includes(q) ||
-                    l.email.toLowerCase().includes(q) ||
-                    l.phone.includes(q)
-                )
-                .slice(0, 3)
-                .map(l => ({
-                    id: l.id,
-                    title: l.name,
-                    subtitle: l.email,
-                    type: "lead" as const,
-                    status: l.status
-                }))
-
-            const deals: SearchResult[] = mockDeals
-                .filter(d =>
-                    d.title.toLowerCase().includes(q) ||
-                    d.customerName.toLowerCase().includes(q) ||
-                    d.propertyName.toLowerCase().includes(q)
-                )
-                .slice(0, 3)
-                .map(d => ({
-                    id: d.id,
-                    title: d.title,
-                    subtitle: d.propertyName,
-                    type: "deal" as const,
-                    value: d.value
-                }))
-
-            const results = [...properties, ...leads, ...deals]
-            setSearchResults(results)
+        if (searchQuery.trim().length >= 2) {
             setIsSearchOpen(true)
         } else {
-            setSearchResults([])
             setIsSearchOpen(false)
         }
     }, [searchQuery])
@@ -119,7 +71,6 @@ export function Header() {
     const handleResultClick = (result: SearchResult) => {
         setSearchQuery("")
         setIsSearchOpen(false)
-        setSearchResults([])
 
         switch (result.type) {
             case "property":
@@ -190,7 +141,6 @@ export function Header() {
                                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                     onClick={() => {
                                         setSearchQuery("")
-                                        setSearchResults([])
                                         setIsSearchOpen(false)
                                     }}
                                 >

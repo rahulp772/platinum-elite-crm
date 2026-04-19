@@ -22,10 +22,10 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { mockProperties } from "@/lib/mock-data/properties"
 import { Property, PropertyStatus, PropertyType } from "@/types/property"
 import { cn } from "@/lib/utils"
 import { PropertyCard } from "@/components/properties/property-card"
+import { useProperty, useRelatedProperties } from "@/hooks/use-properties"
 
 const statusColors: Record<PropertyStatus, string> = {
     available: "bg-teal-500/10 text-teal-600 border-teal-500/20",
@@ -55,11 +55,12 @@ export default function PropertyDetailPage() {
     const router = useRouter()
     const propertyId = params.id as string
     
-    const property = mockProperties.find(p => p.id === propertyId)
-    const [isFavorite, setIsFavorite] = React.useState(property?.favorited || false)
+    const { data: property, isLoading, isError } = useProperty(propertyId)
+    const { data: relatedProperties = [] } = useRelatedProperties(propertyId)
     const [tourFullName, setTourFullName] = React.useState("")
     const [lightboxOpen, setLightboxOpen] = React.useState(false)
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0)
+    const [isFavorite, setIsFavorite] = React.useState(false)
 
     const openLightbox = (index: number) => {
         setCurrentImageIndex(index)
@@ -87,10 +88,6 @@ export default function PropertyDetailPage() {
         return () => window.removeEventListener("keydown", handleKeyDown)
     }, [lightboxOpen])
 
-    const relatedProperties = mockProperties
-        .filter(p => p.id !== propertyId && p.type === property?.type)
-        .slice(0, 3)
-
     const formatPrice = (price: number) => {
         return new Intl.NumberFormat("en-US", {
             style: "currency",
@@ -107,7 +104,17 @@ export default function PropertyDetailPage() {
         })
     }
 
-    if (!property) {
+    if (isLoading) {
+        return (
+            <div className="container mx-auto py-12 px-4">
+                <div className="text-center py-12">
+                    <p className="text-muted-foreground">Loading...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (isError || !property) {
         return (
             <div className="container mx-auto py-12 px-4">
                 <div className="text-center py-12">
@@ -124,11 +131,11 @@ export default function PropertyDetailPage() {
         )
     }
 
-    const mlsId = `MLS-${property.id.padStart(6, '0')}`
-    const rating = 4.8
-    const agentPhone = "(555) 123-4567"
-    const agentWhatsApp = "+1 555-123-4567"
-    const agentAddress = "123 Real Estate Blvd, New York, NY 10001"
+    const mlsId = property.mlsId || `MLS-${property.id.slice(0, 8)}`
+    const rating = property.rating || 0
+    const agentPhone = property.agent?.phone || "(555) 123-4567"
+    const agentWhatsApp = property.agent?.whatsapp || "+1 555-123-4567"
+    const agentAddress = property.agent?.officeAddress || "123 Real Estate Blvd, New York, NY 10001"
 
     return (
         <div className="container mx-auto py-6 px-4">
@@ -431,7 +438,7 @@ export default function PropertyDetailPage() {
                                     <AvatarFallback>IW</AvatarFallback>
                                 </Avatar>
                                 <div>
-                                    <p className="font-semibold">{property.agent}</p>
+                                    <p className="font-semibold">{property.agent?.name || "Unknown"}</p>
                                     <p className="text-xs text-muted-foreground">Listing Agent</p>
                                 </div>
                             </div>

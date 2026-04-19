@@ -75,12 +75,12 @@ export function DealCard({ deal }: DealCardProps) {
                     <div className="pt-2 border-t flex flex-col gap-1.5">
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Building className="h-3.5 w-3.5" />
-                            <span className="line-clamp-1">{deal.propertyName}</span>
+                            <span className="line-clamp-1">{deal.property?.title || "No Property"}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Calendar className="h-3.5 w-3.5" />
                             <span>
-                                {deal.expectedCloseDate.toLocaleDateString(undefined, {
+                                {new Date(deal.expectedCloseDate).toLocaleDateString(undefined, {
                                     month: "short",
                                     day: "numeric",
                                 })}

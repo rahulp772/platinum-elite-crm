@@ -69,12 +69,12 @@ function SearchContent() {
                 .filter(d =>
                     d.title.toLowerCase().includes(q) ||
                     d.customerName.toLowerCase().includes(q) ||
-                    d.propertyName.toLowerCase().includes(q)
+                    d.property?.title.toLowerCase().includes(q)
                 )
                 .map(d => ({
                     id: d.id,
                     title: d.title,
-                    subtitle: `${d.customerName} | ${d.propertyName}`,
+                    subtitle: `${d.customerName} | ${d.property?.title || "No Property"}`,
                     type: "deal" as const,
                     value: d.value
                 }))

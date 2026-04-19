@@ -69,8 +69,10 @@ Internal and client communication.
 
 ### Key Patterns
 - **App Router**: Organized under `(dashboard)` groups for layout persistence.
+- **Authentication**: JWT-based auth with a custom `AuthContext` and route protection in the `(dashboard)` layout.
+- **State Management**: Uses **TanStack Query** (React Query) for server-state management and caching.
+- **API Client**: Centralized Axios instance with request/response interceptors for automatic JWT injection and 401 handling.
 - **Server vs Client Components**: Data fetching strategy leverages Next.js server components where possible, with client-side state for interactive filters.
-- **Responsive Design**: Mobile-first approach using Tailwind's utility classes.
 
 ---
 
@@ -108,7 +110,8 @@ Each domain (Leads, Properties, etc.) is encapsulated in its own module containi
 3.  **Environment Isolation**:
     - Configuration managed via `@nestjs/config` and `.env` files.
 4.  **Error Handling**:
-    - Centralized exception handling via NestJS built-in filters.
+    - Centralized exception handling via NestJS built-in filters (Backend).
+    - Global interceptors for API error handling (Frontend).
 
 ---
 
@@ -120,5 +123,5 @@ Each domain (Leads, Properties, etc.) is encapsulated in its own module containi
 
 ### Running the Full Stack
 1. Ensure PostgreSQL is running.
-2. Backend: `pnpm run start:dev`
-3. Frontend: `npm run dev`
+2. Backend: `pnpm --filter backend-real-estate-crm run start:dev`
+3. Frontend: `pnpm --filter crm run dev`

@@ -2,17 +2,37 @@
 
 import * as React from "react"
 import { KanbanBoard } from "@/components/deals/kanban-board"
-import { mockDeals } from "@/lib/mock-data/deals"
+import { useDeals } from "@/hooks/use-deals"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Plus, LoaderCircle } from "lucide-react"
 
 export default function DealsPage() {
-    const totalPipeline = mockDeals.reduce((acc, deal) => acc + deal.value, 0)
+    const { data: deals, isLoading, isError } = useDeals()
+
+    const totalPipeline = deals?.reduce((acc, deal) => acc + Number(deal.value), 0) || 0
     const formattedPipeline = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
         maximumFractionDigits: 0,
     }).format(totalPipeline)
+
+    if (isLoading) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <LoaderCircle className="h-8 w-8 animate-spin text-realty-gold" />
+                <p className="text-muted-foreground animate-pulse">Loading deals...</p>
+            </div>
+        )
+    }
+
+    if (isError) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
+                <p className="text-destructive font-semibold">Failed to load deals.</p>
+                <Button onClick={() => window.location.reload()}>Retry</Button>
+            </div>
+        )
+    }
 
     return (
         <div className="flex flex-col h-full space-y-6">
@@ -40,7 +60,7 @@ export default function DealsPage() {
 
             {/* Kanban Board */}
             <div className="flex-1 min-h-0">
-                <KanbanBoard initialDeals={mockDeals} />
+                <KanbanBoard initialDeals={deals || []} />
             </div>
         </div>
     )

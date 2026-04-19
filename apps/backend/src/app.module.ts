@@ -11,6 +11,7 @@ import { DealsModule } from './deals/deals.module';
 import { TasksModule } from './tasks/tasks.module';
 import { ChatModule } from './chat/chat.module';
 import { AnalyticsModule } from './analytics/analytics.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { AnalyticsModule } from './analytics/analytics.module';
     TasksModule,
     ChatModule,
     AnalyticsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [AppService],

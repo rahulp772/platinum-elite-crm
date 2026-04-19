@@ -19,8 +19,16 @@ export interface Property {
     yearBuilt?: number
     images: string[]
     features: string[]
-    agent: string
+    mlsId?: string
+    rating?: number
+    agent: {
+        id: string
+        name: string
+        phone?: string
+        whatsapp?: string
+        officeAddress?: string
+    }
     listed: Date
     views: number
-    favorited: boolean
+    favorited?: boolean
 }
