@@ -20,7 +20,9 @@ export class TasksService {
     let assignedTo = currentUser;
 
     if (assignedToId) {
-      const user = await this.userRepository.findOne({ where: { id: assignedToId } });
+      const user = await this.userRepository.findOne({
+        where: { id: assignedToId },
+      });
       if (!user) {
         throw new NotFoundException(`User with ID ${assignedToId} not found`);
       }
@@ -54,7 +56,9 @@ export class TasksService {
     const { assignedToId, ...taskData } = updateTaskDto;
 
     if (assignedToId) {
-      const assignedToUser = await this.userRepository.findOne({ where: { id: assignedToId } });
+      const assignedToUser = await this.userRepository.findOne({
+        where: { id: assignedToId },
+      });
       if (!assignedToUser) {
         throw new NotFoundException(`User with ID ${assignedToId} not found`);
       }

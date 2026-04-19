@@ -21,7 +21,7 @@ export class AnalyticsService {
     const totalProperties = await this.propertyRepository.count();
     const totalLeads = await this.leadRepository.count();
     const totalDeals = await this.dealRepository.count();
-    
+
     const dealsByStage = await this.dealRepository
       .createQueryBuilder('deal')
       .select('deal.stage', 'stage')

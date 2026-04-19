@@ -1,9 +1,18 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Conversation } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { User } from '../users/entities/user.entity';
+
+export interface ConversationWithDetails {
+  id: string;
+  participants: User[];
+  lastMessage?: Message;
+  unreadCount: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 @Injectable()
 export class ChatService {
@@ -16,12 +25,38 @@ export class ChatService {
     private userRepository: Repository<User>,
   ) {}
 
-  async getConversations(user: User) {
-    return this.conversationRepository.find({
+  async getConversations(user: User): Promise<ConversationWithDetails[]> {
+    const conversations = await this.conversationRepository.find({
       where: {
-        participants: { id: user.id }
+        participants: { id: user.id },
       },
-      relations: ['participants', 'messages'],
+      relations: ['participants', 'messages', 'messages.sender'],
+      order: { updatedAt: 'DESC' },
+    });
+
+    return conversations.map((conv) => {
+      const otherMessages = conv.messages || [];
+      const lastMessage =
+        otherMessages.length > 0
+          ? otherMessages.sort(
+              (a, b) =>
+                new Date(b.timestamp).getTime() -
+                new Date(a.timestamp).getTime(),
+            )[0]
+          : undefined;
+
+      const unreadCount = otherMessages.filter(
+        (msg) => !msg.read && msg.sender?.id !== user.id,
+      ).length;
+
+      return {
+        id: conv.id,
+        participants: conv.participants,
+        lastMessage,
+        unreadCount,
+        createdAt: conv.createdAt,
+        updatedAt: conv.updatedAt,
+      };
     });
   }
 
@@ -40,7 +75,9 @@ export class ChatService {
     });
 
     if (!conversation) {
-      throw new NotFoundException(`Conversation with ID ${conversationId} not found`);
+      throw new NotFoundException(
+        `Conversation with ID ${conversationId} not found`,
+      );
     }
 
     const message = this.messageRepository.create({
@@ -58,5 +95,23 @@ export class ChatService {
       participants,
     });
     return this.conversationRepository.save(conversation);
+  }
+
+  async markMessagesAsRead(conversationId: string, userId: string) {
+    await this.messageRepository.update(
+      {
+        conversation: { id: conversationId },
+        sender: { id: Not(userId) },
+        read: false,
+      },
+      { read: true },
+    );
+  }
+
+  async getConversation(conversationId: string) {
+    return this.conversationRepository.findOne({
+      where: { id: conversationId },
+      relations: ['participants'],
+    });
   }
 }

@@ -22,13 +22,13 @@ async function bootstrap() {
   console.log('Cleaning up existing data...');
   try {
     await dealRepo.delete({});
-  } catch (e) { }
+  } catch (e) {}
   try {
     await leadRepo.delete({});
-  } catch (e) { }
+  } catch (e) {}
   try {
     await propRepo.delete({});
-  } catch (e) { }
+  } catch (e) {}
 
   console.log('Checking for users...');
   let agent = await userRepo.findOne({ where: {} });
@@ -54,7 +54,8 @@ async function bootstrap() {
   const properties = [
     {
       title: 'Modern Downtown Loft',
-      description: 'Stunning open-concept loft in the heart of the city with floor-to-ceiling windows and city views.',
+      description:
+        'Stunning open-concept loft in the heart of the city with floor-to-ceiling windows and city views.',
       price: 850000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -78,7 +79,8 @@ async function bootstrap() {
     },
     {
       title: 'Luxury Waterfront Villa',
-      description: 'Private estate with breathtaking ocean views, infinity pool, and private dock.',
+      description:
+        'Private estate with breathtaking ocean views, infinity pool, and private dock.',
       price: 4500000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.HOUSE,
@@ -104,7 +106,8 @@ async function bootstrap() {
     },
     {
       title: 'Cozy Urban Studio',
-      description: 'Perfect starter home in vibrant downtown location with modern amenities.',
+      description:
+        'Perfect starter home in vibrant downtown location with modern amenities.',
       price: 325000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -128,7 +131,8 @@ async function bootstrap() {
     },
     {
       title: 'Spacious Family Home',
-      description: 'Beautiful colonial with updated kitchen, finished basement, and large backyard.',
+      description:
+        'Beautiful colonial with updated kitchen, finished basement, and large backyard.',
       price: 875000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.HOUSE,
@@ -154,7 +158,8 @@ async function bootstrap() {
     },
     {
       title: 'Penthouse Suite',
-      description: 'Luxurious penthouse with panoramic views, private terrace, and premium finishes throughout.',
+      description:
+        'Luxurious penthouse with panoramic views, private terrace, and premium finishes throughout.',
       price: 2200000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.CONDO,
@@ -179,7 +184,8 @@ async function bootstrap() {
     },
     {
       title: 'Charming Townhouse',
-      description: 'Beautifully restored 3-story townhouse with exposed brick and private garden.',
+      description:
+        'Beautifully restored 3-story townhouse with exposed brick and private garden.',
       price: 975000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.TOWNHOUSE,
@@ -193,7 +199,12 @@ async function bootstrap() {
       lotSize: 2000,
       yearBuilt: 1920,
       agent: agent,
-      features: ['Exposed Brick', 'Private Garden', 'Original Hardwood', 'Fireplace'],
+      features: [
+        'Exposed Brick',
+        'Private Garden',
+        'Original Hardwood',
+        'Fireplace',
+      ],
       images: [
         'https://images.unsplash.com/photo-1580587771525-78b9dba3b914?auto=format&fit=crop&q=80&w=800',
         'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800',
@@ -205,7 +216,8 @@ async function bootstrap() {
     },
     {
       title: 'Modern Loft Living',
-      description: 'Industrial-chic loft with soaring ceilings and exposed ductwork in converted building.',
+      description:
+        'Industrial-chic loft with soaring ceilings and exposed ductwork in converted building.',
       price: 695000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -229,7 +241,8 @@ async function bootstrap() {
     },
     {
       title: 'Waterfront Condo',
-      description: 'Stunning waterfront living with marina access and resort-style amenities.',
+      description:
+        'Stunning waterfront living with marina access and resort-style amenities.',
       price: 1150000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.CONDO,
@@ -253,7 +266,8 @@ async function bootstrap() {
     },
     {
       title: 'Historic Brownstone',
-      description: 'Classic Brooklyn brownstone with modern updates and original details preserved.',
+      description:
+        'Classic Brooklyn brownstone with modern updates and original details preserved.',
       price: 1650000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.TOWNHOUSE,
@@ -267,7 +281,12 @@ async function bootstrap() {
       lotSize: 2500,
       yearBuilt: 1899,
       agent: agent,
-      features: ['Original Details', 'Garden', 'Chef Kitchen', 'Finished Basement'],
+      features: [
+        'Original Details',
+        'Garden',
+        'Chef Kitchen',
+        'Finished Basement',
+      ],
       images: [
         'https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&q=80&w=800',
         'https://images.unsplash.com/photo-1600585154526-990addcee7bf?auto=format&fit=crop&q=80&w=800',
@@ -279,7 +298,8 @@ async function bootstrap() {
     },
     {
       title: 'Suburban Ranch',
-      description: 'Move-in ready ranch with updated kitchen, large backyard, and quiet street.',
+      description:
+        'Move-in ready ranch with updated kitchen, large backyard, and quiet street.',
       price: 545000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.HOUSE,
@@ -304,7 +324,8 @@ async function bootstrap() {
     },
     {
       title: 'Luxury High-Rise',
-      description: 'Premium high-rise living with stunning skyline views and five-star amenities.',
+      description:
+        'Premium high-rise living with stunning skyline views and five-star amenities.',
       price: 1850000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.CONDO,
@@ -329,7 +350,8 @@ async function bootstrap() {
     },
     {
       title: 'Starter Condo',
-      description: 'Affordable entry into the city real estate market with great investment potential.',
+      description:
+        'Affordable entry into the city real estate market with great investment potential.',
       price: 385000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.CONDO,
@@ -353,7 +375,8 @@ async function bootstrap() {
     },
     {
       title: 'Victorian Estate',
-      description: 'Magnificent Victorian home with ornate details, wrap-around porch, and mature gardens.',
+      description:
+        'Magnificent Victorian home with ornate details, wrap-around porch, and mature gardens.',
       price: 1250000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.HOUSE,
@@ -367,7 +390,12 @@ async function bootstrap() {
       lotSize: 15000,
       yearBuilt: 1890,
       agent: agent,
-      features: ['Original Details', 'Wrap Porch', 'Mature Garden', 'Carriage House'],
+      features: [
+        'Original Details',
+        'Wrap Porch',
+        'Mature Garden',
+        'Carriage House',
+      ],
       images: [
         'https://images.unsplash.com/photo-1568605114967-8130f3a36994?auto=format&fit=crop&q=80&w=800',
         'https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&q=80&w=800',
@@ -379,7 +407,8 @@ async function bootstrap() {
     },
     {
       title: 'Sleek Studio',
-      description: 'Ultra-modern studio with Murphy bed system and custom built-ins.',
+      description:
+        'Ultra-modern studio with Murphy bed system and custom built-ins.',
       price: 425000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -403,7 +432,8 @@ async function bootstrap() {
     },
     {
       title: 'Garden Unit',
-      description: 'Peaceful garden-level apartment with private outdoor space in boutique building.',
+      description:
+        'Peaceful garden-level apartment with private outdoor space in boutique building.',
       price: 525000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -416,7 +446,12 @@ async function bootstrap() {
       sqft: 1100,
       yearBuilt: 1925,
       agent: agent,
-      features: ['Private Garden', 'Updated Kitchen', 'Exposed Brick', 'Laundry'],
+      features: [
+        'Private Garden',
+        'Updated Kitchen',
+        'Exposed Brick',
+        'Laundry',
+      ],
       images: [
         'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=800',
         'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&q=80&w=800',
@@ -427,7 +462,8 @@ async function bootstrap() {
     },
     {
       title: 'Executive Estate',
-      description: 'Grand executive home with pool, tennis court, and resort-style outdoor living.',
+      description:
+        'Grand executive home with pool, tennis court, and resort-style outdoor living.',
       price: 3500000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.HOUSE,
@@ -453,7 +489,8 @@ async function bootstrap() {
     },
     {
       title: 'Arts District Loft',
-      description: 'Creative loft in thriving arts district with gallery walls and industrial feel.',
+      description:
+        'Creative loft in thriving arts district with gallery walls and industrial feel.',
       price: 725000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -466,7 +503,12 @@ async function bootstrap() {
       sqft: 1700,
       yearBuilt: 2016,
       agent: agent,
-      features: ['Gallery Walls', 'High Ceilings', 'Freight Elevator', 'Live/Work'],
+      features: [
+        'Gallery Walls',
+        'High Ceilings',
+        'Freight Elevator',
+        'Live/Work',
+      ],
       images: [
         'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=800',
         'https://images.unsplash.com/photo-1618220179428-22790b461015?auto=format&fit=crop&q=80&w=800',
@@ -477,7 +519,8 @@ async function bootstrap() {
     },
     {
       title: 'Classic Two-Bedroom',
-      description: 'Well-maintained two-bedroom with original details and pre-war charm in doorman building.',
+      description:
+        'Well-maintained two-bedroom with original details and pre-war charm in doorman building.',
       price: 625000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.APARTMENT,
@@ -501,7 +544,8 @@ async function bootstrap() {
     },
     {
       title: 'Investment Property',
-      description: 'Multi-family investment property with excellent rental history and appreciation potential.',
+      description:
+        'Multi-family investment property with excellent rental history and appreciation potential.',
       price: 1100000,
       status: PropertyStatus.AVAILABLE,
       type: PropertyType.HOUSE,
@@ -523,7 +567,7 @@ async function bootstrap() {
       ],
       mlsId: 'MLS-2024-019',
       rating: 4.1,
-    }
+    },
   ];
 
   const savedProps: Property[] = [];

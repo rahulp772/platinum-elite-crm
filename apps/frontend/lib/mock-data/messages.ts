@@ -42,14 +42,14 @@ const users: User[] = [
 export const mockConversations: Conversation[] = [
     {
         id: "conv1",
-        participant: users[0],
+        participants: [currentUser, users[0]],
         unreadCount: 2,
         messages: [
             {
                 id: "m1-1",
                 content: "Hi Indica, I saw the downtown loft posting. Is it still available?",
                 senderId: "user1",
-                timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+                timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
                 read: true,
             },
             {
@@ -74,20 +74,26 @@ export const mockConversations: Conversation[] = [
                 read: false,
             },
         ],
-        get lastMessage() {
-            return this.messages[this.messages.length - 1]
+        lastMessage: {
+            id: "m1-4",
+            content: "Around 2 PM works best for me.",
+            senderId: "user1",
+            timestamp: new Date(Date.now() - 1000 * 60 * 29),
+            read: false,
         },
+        createdAt: new Date(),
+        updatedAt: new Date(),
     },
     {
         id: "conv2",
-        participant: users[1],
+        participants: [currentUser, users[1]],
         unreadCount: 0,
         messages: [
             {
                 id: "m2-1",
                 content: "I've sent over the signed documents.",
                 senderId: "user2",
-                timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+                timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
                 read: true,
             },
             {
@@ -98,42 +104,60 @@ export const mockConversations: Conversation[] = [
                 read: true,
             },
         ],
-        get lastMessage() {
-            return this.messages[this.messages.length - 1]
+        lastMessage: {
+            id: "m2-2",
+            content: "Received! passed them to the legal team.",
+            senderId: "me",
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 23),
+            read: true,
         },
+        createdAt: new Date(),
+        updatedAt: new Date(),
     },
     {
         id: "conv3",
-        participant: users[2],
+        participants: [currentUser, users[2]],
         unreadCount: 0,
         messages: [
             {
                 id: "m3-1",
                 content: "Thanks for showing us the townhouse today.",
                 senderId: "user3",
-                timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48), // 2 days ago
+                timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48),
                 read: true,
             },
         ],
-        get lastMessage() {
-            return this.messages[this.messages.length - 1]
+        lastMessage: {
+            id: "m3-1",
+            content: "Thanks for showing us the townhouse today.",
+            senderId: "user3",
+            timestamp: new Date(Date.now() - 1000 * 60 * 60 * 48),
+            read: true,
         },
+        createdAt: new Date(),
+        updatedAt: new Date(),
     },
     {
         id: "conv4",
-        participant: users[3],
+        participants: [currentUser, users[3]],
         unreadCount: 5,
         messages: [
             {
                 id: "m4-1",
                 content: "Hey, are there any new 3bd units?",
                 senderId: "user4",
-                timestamp: new Date(Date.now() - 1000 * 60 * 5), // 5 mins ago
+                timestamp: new Date(Date.now() - 1000 * 60 * 5),
                 read: false,
             },
         ],
-        get lastMessage() {
-            return this.messages[this.messages.length - 1]
+        lastMessage: {
+            id: "m4-1",
+            content: "Hey, are there any new 3bd units?",
+            senderId: "user4",
+            timestamp: new Date(Date.now() - 1000 * 60 * 5),
+            read: false,
         },
+        createdAt: new Date(),
+        updatedAt: new Date(),
     },
 ]

@@ -13,17 +13,33 @@ import { format } from "date-fns"
 interface ChatWindowProps {
     conversation: Conversation
     onSendMessage: (content: string) => void
+    currentUserId: string
 }
 
-export function ChatWindow({ conversation, onSendMessage }: ChatWindowProps) {
+function getOtherParticipant(conv: Conversation, currentUserId: string): { name: string; avatar?: string; status: "online" | "offline" | "away" } {
+    if (conv.participants.length > 2) {
+        return {
+            name: `Group (${conv.participants.length})`,
+            avatar: undefined,
+            status: "offline" as const,
+        }
+    }
+    const other = conv.participants.find(p => p.id !== currentUserId) || conv.participants[0]
+    return {
+        name: other.name,
+        avatar: other.avatar,
+        status: other.status || "offline",
+    }
+}
+
+export function ChatWindow({ conversation, onSendMessage, currentUserId }: ChatWindowProps) {
     const [message, setMessage] = React.useState("")
     const scrollRef = React.useRef<HTMLDivElement>(null)
 
-    // Auto-scroll to bottom
+    const participant = getOtherParticipant(conversation, currentUserId)
+
     React.useEffect(() => {
         if (scrollRef.current) {
-            // Find the scrollable viewport inside Next.js ScrollArea logic or use a direct div if simpler.
-            // Shadcn ScrollArea renders a viewport div.
             const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]')
             if (viewport) {
                 viewport.scrollTop = viewport.scrollHeight
@@ -46,22 +62,27 @@ export function ChatWindow({ conversation, onSendMessage }: ChatWindowProps) {
 
     return (
         <div className="flex flex-col h-full">
-            {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b bg-card">
                 <div className="flex items-center gap-3">
                     <Avatar>
-                        <AvatarImage src={conversation.participant.avatar} />
-                        <AvatarFallback>{conversation.participant.name[0]}</AvatarFallback>
+                        <AvatarImage src={participant?.avatar} />
+                        <AvatarFallback>{participant?.name?.[0] || '?'}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <h2 className="text-sm font-semibold">{conversation.participant.name}</h2>
-                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                            <span className={cn(
-                                "w-2 h-2 rounded-full",
-                                conversation.participant.status === "online" ? "bg-teal-500" : "bg-muted-foreground"
-                            )} />
-                            <span className="capitalize">{conversation.participant.status}</span>
-                        </div>
+                        <h2 className="text-sm font-semibold">{participant?.name || 'Unknown'}</h2>
+                        {conversation.participants.length > 2 ? (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <span>{conversation.participants.length} members</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                                <span className={cn(
+                                    "w-2 h-2 rounded-full",
+                                    participant?.status === "online" ? "bg-teal-500" : "bg-muted-foreground"
+                                )} />
+                                <span className="capitalize">{participant?.status || 'offline'}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div className="flex items-center gap-1">
@@ -77,18 +98,21 @@ export function ChatWindow({ conversation, onSendMessage }: ChatWindowProps) {
                 </div>
             </div>
 
-            {/* Messages */}
             <div className="flex-1 min-h-0 bg-background/50 relative">
                 <ScrollArea ref={scrollRef} className="h-full p-4">
                     <div className="flex flex-col gap-4 max-w-3xl mx-auto py-4">
-                        {conversation.messages.map((msg, i) => {
-                            const isMe = msg.senderId === "me"
+                        {conversation.messages.map((msg) => {
+                            const isMe = msg.senderId === currentUserId
+                            const sender = isMe 
+                                ? { name: 'You', avatar: undefined }
+                                : (conversation.participants.find(p => p.id === msg.senderId) || { name: 'Unknown', avatar: undefined })
+                            
                             return (
                                 <div key={msg.id} className={cn("flex gap-3 max-w-[80%]", isMe ? "ml-auto flex-row-reverse" : "")}>
                                     {!isMe && (
                                         <Avatar className="h-8 w-8 mt-1">
-                                            <AvatarImage src={conversation.participant.avatar} />
-                                            <AvatarFallback>{conversation.participant.name[0]}</AvatarFallback>
+                                            <AvatarImage src={sender.avatar} />
+                                            <AvatarFallback>{sender.name[0]}</AvatarFallback>
                                         </Avatar>
                                     )}
                                     <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
@@ -109,7 +133,6 @@ export function ChatWindow({ conversation, onSendMessage }: ChatWindowProps) {
                 </ScrollArea>
             </div>
 
-            {/* Input */}
             <div className="p-4 bg-card border-t">
                 <div className="max-w-3xl mx-auto flex gap-3 items-end">
                     <Button variant="outline" size="icon" className="shrink-0">

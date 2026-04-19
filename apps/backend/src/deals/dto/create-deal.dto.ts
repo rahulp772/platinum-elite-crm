@@ -1,5 +1,14 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsNumber, IsEmail, IsEnum, IsOptional, IsDateString, Min } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsNumber,
+  IsEmail,
+  IsEnum,
+  IsOptional,
+  IsDateString,
+  Min,
+} from 'class-validator';
 import { DealStage, DealPriority } from '../enums/deal.enum';
 
 export class CreateDealDto {

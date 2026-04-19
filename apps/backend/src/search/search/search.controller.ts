@@ -11,7 +11,9 @@ export class SearchController {
   constructor(private readonly searchService: SearchService) {}
 
   @Get()
-  @ApiOperation({ summary: 'Global search across properties, leads, and deals' })
+  @ApiOperation({
+    summary: 'Global search across properties, leads, and deals',
+  })
   globalSearch(@Query('q') query: string) {
     return this.searchService.globalSearch(query);
   }

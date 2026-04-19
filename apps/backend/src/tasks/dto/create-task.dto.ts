@@ -1,5 +1,11 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsEnum, IsOptional, IsDateString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsEnum,
+  IsOptional,
+  IsDateString,
+} from 'class-validator';
 import { TaskStatus, TaskPriority, TaskType } from '../enums/task.enum';
 
 export class CreateTaskDto {

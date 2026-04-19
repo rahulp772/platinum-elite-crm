@@ -21,7 +21,9 @@ export class DealsService {
     let property: Property | null = null;
 
     if (propertyId) {
-      const foundProperty = await this.propertyRepository.findOne({ where: { id: propertyId } });
+      const foundProperty = await this.propertyRepository.findOne({
+        where: { id: propertyId },
+      });
       if (!foundProperty) {
         throw new NotFoundException(`Property with ID ${propertyId} not found`);
       }
@@ -56,7 +58,9 @@ export class DealsService {
     const { propertyId, ...dealData } = updateDealDto;
 
     if (propertyId) {
-      const foundProperty = await this.propertyRepository.findOne({ where: { id: propertyId } });
+      const foundProperty = await this.propertyRepository.findOne({
+        where: { id: propertyId },
+      });
       if (!foundProperty) {
         throw new NotFoundException(`Property with ID ${propertyId} not found`);
       }

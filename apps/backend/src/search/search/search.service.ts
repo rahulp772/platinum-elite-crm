@@ -22,28 +22,17 @@ export class SearchService {
     const q = `%${query}%`;
 
     const properties = await this.propertyRepository.find({
-      where: [
-        { title: Like(q) },
-        { address: Like(q) },
-        { city: Like(q) },
-      ],
+      where: [{ title: Like(q) }, { address: Like(q) }, { city: Like(q) }],
       take: 3,
     });
 
     const leads = await this.leadRepository.find({
-      where: [
-        { name: Like(q) },
-        { email: Like(q) },
-        { phone: Like(q) },
-      ],
+      where: [{ name: Like(q) }, { email: Like(q) }, { phone: Like(q) }],
       take: 3,
     });
 
     const deals = await this.dealRepository.find({
-      where: [
-        { title: Like(q) },
-        { customerName: Like(q) },
-      ],
+      where: [{ title: Like(q) }, { customerName: Like(q) }],
       relations: ['property'],
       take: 3,
     });
