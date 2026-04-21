@@ -21,7 +21,11 @@ export class Message {
   @Column({ default: false })
   read: boolean;
 
+  @Column({ nullable: true })
+  senderId: string;
+
   @ManyToOne(() => User, (user) => user.messages)
+  @JoinColumn({ name: 'senderId' })
   sender: User;
 
   @ManyToOne(() => Conversation, (conversation) => conversation.messages)

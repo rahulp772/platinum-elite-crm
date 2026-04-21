@@ -12,6 +12,7 @@ import { Lead } from '../../leads/entities/lead.entity';
 import { Deal } from '../../deals/entities/deal.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Role } from '../../roles/entities/role.entity';
+import { Team } from '../../teams/entities/team.entity';
 
 @Entity('tenants')
 export class Tenant {
@@ -41,6 +42,9 @@ export class Tenant {
 
   @OneToMany(() => Role, (role) => role.tenant)
   roles: Role[];
+
+  @OneToMany(() => Team, (team) => team.tenant)
+  teams: Team[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider, themes } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { QueryProvider } from "@/components/query-provider";
 
@@ -25,7 +25,8 @@ export default function RootLayout({
                         <ThemeProvider
                             attribute="class"
                             defaultTheme="dark"
-                            enableSystem
+                            themes={themes}
+                            enableSystem={false}
                             disableTransitionOnChange
                         >
                             {children}

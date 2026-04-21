@@ -6,9 +6,9 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
-  ManyToOne,
   JoinColumn,
   Unique,
+  ManyToOne,
 } from 'typeorm';
 import { UserStatus } from '../enums/user.enum';
 import { Property } from '../../properties/entities/property.entity';
@@ -18,6 +18,7 @@ import { Task } from '../../tasks/entities/task.entity';
 import { Message } from '../../chat/entities/message.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 import { Role } from '../../roles/entities/role.entity';
+import { Team } from '../../teams/entities/team.entity';
 
 @Entity('users')
 @Unique(['email', 'tenantId'])
@@ -92,6 +93,12 @@ export class User {
 
   @ManyToMany(() => Property, (property) => property.favoritedBy)
   favoriteProperties: Property[];
+
+  @ManyToMany(() => Team, (team) => team.members)
+  teams: Team[];
+
+  @OneToMany(() => Team, (team) => team.teamLead)
+  ledTeams: Team[];
 
   @CreateDateColumn()
   createdAt: Date;

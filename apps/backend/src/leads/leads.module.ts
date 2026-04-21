@@ -3,10 +3,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { LeadsService } from './leads.service';
 import { LeadsController } from './leads.controller';
 import { Lead } from './entities/lead.entity';
+import { LeadActivity } from './entities/lead-activity.entity';
 import { User } from '../users/entities/user.entity';
+import { TeamsModule } from '../teams/teams.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Lead, User])],
+  imports: [
+    TypeOrmModule.forFeature([Lead, LeadActivity, User]),
+    TeamsModule,
+  ],
   controllers: [LeadsController],
   providers: [LeadsService],
   exports: [LeadsService],

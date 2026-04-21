@@ -8,11 +8,11 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { LeadsService } from './leads.service';
-import { CreateLeadDto } from './dto/create-lead.dto';
-import { UpdateLeadDto } from './dto/update-lead.dto';
+import { CreateLeadDto, UpdateLeadDto, LeadLookupDto } from './dto/create-lead.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @ApiTags('leads')
@@ -34,10 +34,35 @@ export class LeadsController {
     return this.leadsService.findAll(req.user);
   }
 
+  @Get('my')
+  @ApiOperation({ summary: 'Get my leads' })
+  getMyLeads(@Request() req) {
+    return this.leadsService.getMyLeads(req.user);
+  }
+
+  @Get('followups')
+  @ApiOperation({ summary: 'Get upcoming follow-ups' })
+  getUpcomingFollowUps(@Request() req) {
+    return this.leadsService.getUpcomingFollowUps(req.user);
+  }
+
+  @Get('lookup')
+  @ApiOperation({ summary: 'Lookup lead by phone number (admin only)' })
+  @ApiQuery({ name: 'phone', type: String })
+  lookup(@Query('phone') phone: string, @Request() req) {
+    return this.leadsService.lookup(phone, req.user);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a lead by ID' })
   findOne(@Param('id') id: string, @Request() req) {
     return this.leadsService.findOne(id, req.user);
+  }
+
+  @Get(':id/activities')
+  @ApiOperation({ summary: 'Get lead activities' })
+  getActivities(@Param('id') id: string, @Request() req) {
+    return this.leadsService.getActivities(id, req.user);
   }
 
   @Patch(':id')
@@ -50,5 +75,11 @@ export class LeadsController {
   @ApiOperation({ summary: 'Delete a lead' })
   remove(@Param('id') id: string, @Request() req) {
     return this.leadsService.remove(id, req.user);
+  }
+
+  @Post('bulk-assign')
+  @ApiOperation({ summary: 'Bulk assign leads to a user' })
+  bulkAssign(@Body() body: { leadIds: string[]; assignedToId: string }, @Request() req) {
+    return this.leadsService.bulkAssign(body.leadIds, body.assignedToId, req.user);
   }
 }

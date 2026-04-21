@@ -15,6 +15,8 @@ import { ChatModule } from './chat/chat.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SearchModule } from './search/search.module';
 import { SeedsModule } from './seeds/seeds.module';
+import { TeamsModule } from './teams/teams.module';
+import { PortalWebhooksModule } from './portal-webhooks/portal-webhooks.module';
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { SeedsModule } from './seeds/seeds.module';
     ChatModule,
     AnalyticsModule,
     SearchModule,
+    TeamsModule,
+    PortalWebhooksModule,
   ],
   controllers: [AppController],
   providers: [AppService],

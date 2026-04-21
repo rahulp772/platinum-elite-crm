@@ -14,6 +14,9 @@ interface ChatWindowProps {
     conversation: Conversation
     onSendMessage: (content: string) => void
     currentUserId: string
+    isLoading?: boolean
+    hasMore?: boolean
+    onLoadMore?: () => void
 }
 
 function getOtherParticipant(conv: Conversation, currentUserId: string): { name: string; avatar?: string; status: "online" | "offline" | "away" } {
@@ -32,9 +35,17 @@ function getOtherParticipant(conv: Conversation, currentUserId: string): { name:
     }
 }
 
-export function ChatWindow({ conversation, onSendMessage, currentUserId }: ChatWindowProps) {
+export function ChatWindow({ 
+    conversation, 
+    onSendMessage, 
+    currentUserId,
+    isLoading = false,
+    hasMore = false,
+    onLoadMore,
+}: ChatWindowProps) {
     const [message, setMessage] = React.useState("")
     const scrollRef = React.useRef<HTMLDivElement>(null)
+    const [isAtBottom, setIsAtBottom] = React.useState(true)
 
     const participant = getOtherParticipant(conversation, currentUserId)
 
@@ -42,10 +53,20 @@ export function ChatWindow({ conversation, onSendMessage, currentUserId }: ChatW
         if (scrollRef.current) {
             const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]')
             if (viewport) {
-                viewport.scrollTop = viewport.scrollHeight
+                if (isAtBottom) {
+                    viewport.scrollTop = viewport.scrollHeight
+                }
+                const handleScroll = () => {
+                    setIsAtBottom(viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 100)
+                    if (viewport.scrollTop < 100 && hasMore && !isLoading && onLoadMore) {
+                        onLoadMore()
+                    }
+                }
+                viewport.addEventListener('scroll', handleScroll)
+                return () => viewport.removeEventListener('scroll', handleScroll)
             }
         }
-    }, [conversation.messages])
+    }, [conversation.messages, isAtBottom, hasMore, isLoading, onLoadMore])
 
     const handleSend = () => {
         if (!message.trim()) return
@@ -101,7 +122,18 @@ export function ChatWindow({ conversation, onSendMessage, currentUserId }: ChatW
             <div className="flex-1 min-h-0 bg-background/50 relative">
                 <ScrollArea ref={scrollRef} className="h-full p-4">
                     <div className="flex flex-col gap-4 max-w-3xl mx-auto py-4">
-                        {conversation.messages.map((msg) => {
+                        {isLoading && conversation.messages.length === 0 ? (
+                            <div className="flex items-center justify-center py-8">
+                                <span className="text-sm text-muted-foreground">Loading messages...</span>
+                            </div>
+                        ) : (
+                            <>
+                                {hasMore && (
+                                    <div className="flex justify-center py-2">
+                                        <span className="text-xs text-muted-foreground">Scroll up to load more</span>
+                                    </div>
+                                )}
+                                {conversation.messages.map((msg) => {
                             const isMe = msg.senderId === currentUserId
                             const sender = isMe 
                                 ? { name: 'You', avatar: undefined }
@@ -129,6 +161,8 @@ export function ChatWindow({ conversation, onSendMessage, currentUserId }: ChatW
                                 </div>
                             )
                         })}
+                            </>
+                        )}
                     </div>
                 </ScrollArea>
             </div>

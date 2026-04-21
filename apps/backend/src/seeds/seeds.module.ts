@@ -4,10 +4,11 @@ import { SeedService } from './seed';
 import { Tenant } from '../tenants/entities/tenant.entity';
 import { Role } from '../roles/entities/role.entity';
 import { User } from '../users/entities/user.entity';
+import { Lead } from '../leads/entities/lead.entity';
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([Tenant, Role, User])],
+  imports: [TypeOrmModule.forFeature([Tenant, Role, User, Lead])],
   providers: [SeedService],
   exports: [SeedService],
 })

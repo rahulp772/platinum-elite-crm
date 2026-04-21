@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
@@ -13,15 +17,19 @@ export class RolesService {
   ) {}
 
   async findAll(user: { tenantId: string; isSuperAdmin: boolean }) {
-    const where = user.isSuperAdmin && user.tenantId 
-      ? { tenantId: user.tenantId } 
-      : user.isSuperAdmin 
-        ? {} 
-        : { tenantId: user.tenantId };
+    const where =
+      user.isSuperAdmin && user.tenantId
+        ? { tenantId: user.tenantId }
+        : user.isSuperAdmin
+          ? {}
+          : { tenantId: user.tenantId };
     return this.roleRepository.find({ where });
   }
 
-  async findOne(id: string, currentUser: { tenantId: string; isSuperAdmin: boolean }) {
+  async findOne(
+    id: string,
+    currentUser: { tenantId: string; isSuperAdmin: boolean },
+  ) {
     const where = currentUser.isSuperAdmin
       ? { id }
       : { id, tenantId: currentUser.tenantId };
@@ -32,7 +40,10 @@ export class RolesService {
     return role;
   }
 
-  async create(createRoleDto: CreateRoleDto, currentUser: { tenantId: string }) {
+  async create(
+    createRoleDto: CreateRoleDto,
+    currentUser: { tenantId: string },
+  ) {
     const { name, description, permissions } = createRoleDto;
 
     const role = this.roleRepository.create({
@@ -46,7 +57,11 @@ export class RolesService {
     return this.roleRepository.save(role);
   }
 
-  async update(id: string, updateRoleDto: UpdateRoleDto, currentUser: { tenantId: string; isSuperAdmin: boolean }) {
+  async update(
+    id: string,
+    updateRoleDto: UpdateRoleDto,
+    currentUser: { tenantId: string; isSuperAdmin: boolean },
+  ) {
     const role = await this.findOne(id, currentUser);
 
     if (role.isSystem) {
@@ -57,7 +72,10 @@ export class RolesService {
     return this.roleRepository.save(role);
   }
 
-  async remove(id: string, currentUser: { tenantId: string; isSuperAdmin: boolean }) {
+  async remove(
+    id: string,
+    currentUser: { tenantId: string; isSuperAdmin: boolean },
+  ) {
     const role = await this.findOne(id, currentUser);
 
     if (role.isSystem) {

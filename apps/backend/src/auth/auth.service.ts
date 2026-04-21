@@ -80,7 +80,15 @@ export class AuthService {
 
     const users = await this.userRepository.find({
       where: { email },
-      select: ['id', 'email', 'password', 'name', 'tenantId', 'roleId', 'isSuperAdmin'],
+      select: [
+        'id',
+        'email',
+        'password',
+        'name',
+        'tenantId',
+        'roleId',
+        'isSuperAdmin',
+      ],
     });
 
     if (!users || users.length === 0) {

@@ -41,7 +41,10 @@ export class DealsService {
 
   async findAll(user: User) {
     const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
-    return this.dealRepository.find({ where, relations: ['agent', 'property'] });
+    return this.dealRepository.find({
+      where,
+      relations: ['agent', 'property'],
+    });
   }
 
   async findOne(id: string, user: User) {

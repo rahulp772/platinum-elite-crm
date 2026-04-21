@@ -28,9 +28,7 @@ export class PropertiesService {
   }
 
   async findRelated(id: string, type: string, limit = 3, user: User) {
-    const baseCondition = user.isSuperAdmin
-      ? {}
-      : { tenantId: user.tenantId };
+    const baseCondition = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
     return this.propertyRepository.find({
       where: { ...baseCondition, id: Not(id), type: type as any },
       relations: ['agent'],

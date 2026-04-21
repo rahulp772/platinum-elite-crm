@@ -42,7 +42,11 @@ export class DealsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a deal' })
-  update(@Param('id') id: string, @Body() updateDealDto: UpdateDealDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateDealDto: UpdateDealDto,
+    @Request() req,
+  ) {
     return this.dealsService.update(id, updateDealDto, req.user);
   }
 

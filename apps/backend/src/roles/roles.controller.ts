@@ -50,7 +50,11 @@ export class RolesController {
   @RequirePermissions('roles:write')
   @UseGuards(PermissionsGuard)
   @ApiOperation({ summary: 'Update role' })
-  update(@Param('id') id: string, @Body() updateRoleDto: UpdateRoleDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateRoleDto: UpdateRoleDto,
+    @Request() req,
+  ) {
     return this.rolesService.update(id, updateRoleDto, req.user);
   }
 

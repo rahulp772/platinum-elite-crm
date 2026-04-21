@@ -78,8 +78,10 @@ export class TasksService {
       .leftJoinAndSelect('task.createdBy', 'createdBy')
       .where('task.tenantId = :tenantId', { tenantId: currentUser.tenantId })
       .andWhere(
-        '(task.assignedToId = :userId OR task.createdById = :userId OR (task.assignedToId IN (' + subQuery.getQuery() + ')))',
-        { userId: currentUser.id }
+        '(task.assignedToId = :userId OR task.createdById = :userId OR (task.assignedToId IN (' +
+          subQuery.getQuery() +
+          ')))',
+        { userId: currentUser.id },
       )
       .setParameters(subQuery.getParameters())
       .getMany();
@@ -101,7 +103,10 @@ export class TasksService {
 
     const userWithRole = await this.getUserWithRole(currentUser.id);
     if (!userWithRole || !userWithRole.role) {
-      if (task.assignedToId === currentUser.id || task.createdById === currentUser.id) {
+      if (
+        task.assignedToId === currentUser.id ||
+        task.createdById === currentUser.id
+      ) {
         return task;
       }
       throw new NotFoundException(`Task with ID ${id} not found`);
@@ -113,7 +118,8 @@ export class TasksService {
     const hasAccess =
       task.assignedToId === currentUser.id ||
       task.createdById === currentUser.id ||
-      (assignedToLevel < currentLevel && task.tenantId === currentUser.tenantId);
+      (assignedToLevel < currentLevel &&
+        task.tenantId === currentUser.tenantId);
 
     if (!hasAccess) {
       throw new NotFoundException(`Task with ID ${id} not found`);

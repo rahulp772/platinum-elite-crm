@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
@@ -20,8 +24,13 @@ export class UsersService {
     if (user.isSuperAdmin && tenantId) {
       return this.userRepository.find({ where: { tenantId } });
     }
-    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
-    return this.userRepository.find({ where });
+    if (user.isSuperAdmin) {
+      return this.userRepository.find();
+    }
+    if (!user.tenantId) {
+      return this.userRepository.find({ where: { tenantId: IsNull() } });
+    }
+    return this.userRepository.find({ where: { tenantId: user.tenantId } });
   }
 
   async findOne(id: string, currentUser: User) {
@@ -35,7 +44,11 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateUserDto: UpdateUserDto & { roleId?: string }, currentUser: User) {
+  async update(
+    id: string,
+    updateUserDto: UpdateUserDto & { roleId?: string },
+    currentUser: User,
+  ) {
     const user = await this.findOne(id, currentUser);
     const { roleId, ...rest } = updateUserDto;
     if (roleId !== undefined) {
@@ -76,7 +89,11 @@ export class UsersService {
     await this.userRepository.save(newUser);
 
     const loginLink = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/login`;
-    const emailSent = await this.sendInviteEmail(email, tempPassword, loginLink);
+    const emailSent = await this.sendInviteEmail(
+      email,
+      tempPassword,
+      loginLink,
+    );
 
     return {
       user: {
@@ -91,7 +108,11 @@ export class UsersService {
     };
   }
 
-  private sendInviteEmail(email: string, tempPassword: string, loginLink: string): boolean {
+  private sendInviteEmail(
+    email: string,
+    tempPassword: string,
+    loginLink: string,
+  ): boolean {
     const useRealEmail = this.configService.get('SEND_REAL_EMAILS') === 'true';
 
     if (useRealEmail) {

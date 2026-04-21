@@ -4,12 +4,15 @@ import {
   Post,
   Body,
   Param,
+  Query,
   UseGuards,
   Request,
+  ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SendMessageDto, CreateConversationDto, GetMessagesQueryDto } from './dto/chat.dto';
 
 @ApiTags('chat')
 @ApiBearerAuth()
@@ -26,23 +29,32 @@ export class ChatController {
 
   @Get('conversations/:id/messages')
   @ApiOperation({ summary: 'Get messages for a conversation' })
-  getMessages(@Param('id') id: string) {
-    return this.chatService.getMessages(id);
+  @ApiQuery({ name: 'page', required: false, type: Number })
+  @ApiQuery({ name: 'limit', required: false, type: Number })
+  getMessages(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query() query: GetMessagesQueryDto,
+    @Request() req,
+  ) {
+    return this.chatService.getMessages(id, req.user, query.page, query.limit);
   }
 
   @Post('conversations/:id/messages')
   @ApiOperation({ summary: 'Send a message in a conversation' })
   sendMessage(
-    @Param('id') id: string,
-    @Body('content') content: string,
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: SendMessageDto,
     @Request() req,
   ) {
-    return this.chatService.sendMessage(id, content, req.user);
+    return this.chatService.sendMessage(id, dto.content, req.user);
   }
 
   @Post('conversations')
   @ApiOperation({ summary: 'Create a new conversation' })
-  createConversation(@Body('participantIds') participantIds: string[], @Request() req) {
-    return this.chatService.createConversation(participantIds, req.user);
+  createConversation(
+    @Body() dto: CreateConversationDto,
+    @Request() req,
+  ) {
+    return this.chatService.createConversation(dto.participantIds, req.user);
   }
 }

@@ -1,6 +1,6 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { Conversation } from './entities/conversation.entity';
 import { Message } from './entities/message.entity';
 import { User } from '../users/entities/user.entity';
@@ -12,6 +12,14 @@ export interface ConversationWithDetails {
   unreadCount: number;
   createdAt: Date;
   updatedAt: Date;
+}
+
+export interface PaginatedMessages {
+  messages: Message[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
 }
 
 @Injectable()
@@ -26,10 +34,20 @@ export class ChatService {
   ) {}
 
   async getConversations(user: User): Promise<ConversationWithDetails[]> {
+    let whereCondition: any = {
+      participants: { id: user.id },
+    };
+    
+    if (user.isSuperAdmin) {
+      // Super admin sees all conversations
+    } else if (user.tenantId) {
+      whereCondition.tenantId = user.tenantId;
+    } else {
+      whereCondition.tenantId = IsNull();
+    }
+
     const conversations = await this.conversationRepository.find({
-      where: {
-        participants: { id: user.id },
-      },
+      where: whereCondition,
       relations: ['participants', 'messages', 'messages.sender'],
       order: { updatedAt: 'DESC' },
     });
@@ -60,47 +78,125 @@ export class ChatService {
     });
   }
 
-  async getMessages(conversationId: string) {
-    return this.messageRepository.find({
-      where: { conversation: { id: conversationId } },
-      relations: ['sender'],
-      order: { timestamp: 'ASC' },
-    });
-  }
-
-  async sendMessage(conversationId: string, content: string, sender: User) {
-    const where = sender.isSuperAdmin
-      ? { id: conversationId }
-      : { id: conversationId, tenantId: sender.tenantId };
+  async getMessages(conversationId: string, user: User, page: number = 1, limit: number = 50): Promise<PaginatedMessages> {
     const conversation = await this.conversationRepository.findOne({
-      where,
+      where: { id: conversationId },
       relations: ['participants'],
     });
 
     if (!conversation) {
-      throw new NotFoundException(
-        `Conversation with ID ${conversationId} not found`,
-      );
+      throw new NotFoundException('Conversation not found');
+    }
+
+    const isParticipant = conversation.participants.some(p => p.id === user.id);
+    if (!isParticipant && !user.isSuperAdmin) {
+      throw new ForbiddenException('You are not a participant in this conversation');
+    }
+
+    let whereCondition: any = { conversation: { id: conversationId } };
+    
+    if (!user.isSuperAdmin) {
+      if (user.tenantId) {
+        whereCondition.tenantId = user.tenantId;
+      } else {
+        whereCondition.tenantId = IsNull();
+      }
+    }
+
+    const [messages, total] = await this.messageRepository.findAndCount({
+      where: whereCondition,
+      relations: ['sender'],
+      order: { timestamp: 'DESC' },
+      skip: (page - 1) * limit,
+      take: limit,
+    });
+
+    return {
+      messages: messages.reverse(),
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
+  }
+
+  async sendMessage(conversationId: string, content: string, sender: User) {
+    const conversation = await this.conversationRepository.findOne({
+      where: { id: conversationId },
+      relations: ['participants'],
+    });
+
+    if (!conversation) {
+      throw new NotFoundException(`Conversation with ID ${conversationId} not found`);
+    }
+
+    const isParticipant = conversation.participants.some(p => p.id === sender.id);
+    if (!isParticipant && !sender.isSuperAdmin) {
+      throw new ForbiddenException('You are not a participant in this conversation');
     }
 
     const message = this.messageRepository.create({
       content,
       sender,
+      senderId: sender.id,
       conversation,
       tenantId: sender.tenantId,
     });
 
+    await this.conversationRepository.update(conversationId, { updatedAt: new Date() });
+    
     return this.messageRepository.save(message);
   }
 
   async createConversation(participantIds: string[], user: User) {
-    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    const tenantId = user.isSuperAdmin ? undefined : user.tenantId;
+    
+    if (tenantId) {
+      const existingConversation = await this.conversationRepository
+        .createQueryBuilder('conv')
+        .innerJoin('conv.participants', 'participant')
+        .where('conv.tenantId = :tenantId', { tenantId })
+        .andWhere('participant.id IN (:...participantIds)', {
+          participantIds: [user.id, ...participantIds],
+        })
+        .groupBy('conv.id')
+        .having('COUNT(participant.id) = :count', { count: participantIds.length + 1 })
+        .getOne();
+
+      if (existingConversation) {
+        return existingConversation;
+      }
+    } else if (!user.isSuperAdmin && !user.tenantId) {
+      const existingConversation = await this.conversationRepository
+        .createQueryBuilder('conv')
+        .innerJoin('conv.participants', 'participant')
+        .where('conv.tenantId IS NULL')
+        .andWhere('participant.id IN (:...participantIds)', {
+          participantIds: [user.id, ...participantIds],
+        })
+        .groupBy('conv.id')
+        .having('COUNT(participant.id) = :count', { count: participantIds.length + 1 })
+        .getOne();
+
+      if (existingConversation) {
+        return existingConversation;
+      }
+    }
+
+    const participantWhere: any = { id: user.id };
+    if (user.tenantId) {
+      participantWhere.tenantId = user.tenantId;
+    } else if (!user.isSuperAdmin) {
+      participantWhere.tenantId = IsNull();
+    }
+    
     const participants = await this.userRepository.find({
-      where: { ...where, id: user.id },
+      where: participantWhere,
     });
+    
     const otherParticipants = await this.userRepository.findByIds(participantIds);
     participants.push(...otherParticipants);
-    
+
     const conversation = this.conversationRepository.create({
       participants,
       tenantId: user.tenantId,
