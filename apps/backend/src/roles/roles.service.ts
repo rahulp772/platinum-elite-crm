@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, IsNull } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -17,12 +17,13 @@ export class RolesService {
   ) {}
 
   async findAll(user: { tenantId: string; isSuperAdmin: boolean }) {
-    const where =
-      user.isSuperAdmin && user.tenantId
-        ? { tenantId: user.tenantId }
-        : user.isSuperAdmin
-          ? {}
-          : { tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin
+      ? {}
+      : [
+          { tenantId: user.tenantId },
+          { tenantId: IsNull() }, // System roles
+        ];
     return this.roleRepository.find({ where });
   }
 
@@ -30,9 +31,13 @@ export class RolesService {
     id: string,
     currentUser: { tenantId: string; isSuperAdmin: boolean },
   ) {
-    const where = currentUser.isSuperAdmin
+    const isGlobalAdmin = currentUser.isSuperAdmin && !currentUser.tenantId;
+    const where = isGlobalAdmin
       ? { id }
-      : { id, tenantId: currentUser.tenantId };
+      : [
+          { id, tenantId: currentUser.tenantId },
+          { id, tenantId: IsNull() },
+        ];
     const role = await this.roleRepository.findOne({ where });
     if (!role) {
       throw new NotFoundException(`Role with ID ${id} not found`);
@@ -44,12 +49,13 @@ export class RolesService {
     createRoleDto: CreateRoleDto,
     currentUser: { tenantId: string },
   ) {
-    const { name, description, permissions } = createRoleDto;
+    const { name, description, permissions, level } = createRoleDto;
 
     const role = this.roleRepository.create({
       name,
       description,
       permissions,
+      level: level || 10,
       tenantId: currentUser.tenantId,
       isSystem: false,
     });

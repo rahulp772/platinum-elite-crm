@@ -154,6 +154,7 @@ export default function MessagesPage() {
             
             if (isCurrentConversation) {
                 setMessages(prev => {
+                    if (prev.some(m => m.id === transformed.id)) return prev
                     const filtered = prev.filter(m => !m.id.startsWith('temp_'))
                     return [...filtered, transformed]
                 })
@@ -228,7 +229,11 @@ export default function MessagesPage() {
         try {
             const response = await chatApi.getMessages(conversationId, page)
             const transformed = response.messages.map(transformMessage)
-            setMessages(prev => page === 1 ? transformed : [...prev, ...transformed])
+            setMessages(prev => {
+                const existingIds = new Set(prev.map(m => m.id))
+                const newMessages = transformed.filter(m => !existingIds.has(m.id))
+                return page === 1 ? [...newMessages, ...prev] : [...prev, ...newMessages]
+            })
             setMessagesMeta({
                 page: response.page,
                 totalPages: response.totalPages,
@@ -265,8 +270,9 @@ export default function MessagesPage() {
     const handleSendMessage = async (content: string) => {
         if (!selectedId || !socket || !user) return
 
+        const tempId = `temp_${Date.now()}`
         const optimisticMessage: Message = {
-            id: `temp_${Date.now()}`,
+            id: tempId,
             content,
             senderId: user.id,
             sender: { id: user.id, name: user.name },
@@ -274,7 +280,10 @@ export default function MessagesPage() {
             read: false,
         }
 
-        setMessages(prev => [...prev, optimisticMessage])
+        setMessages(prev => {
+            if (prev.some(m => m.id === tempId)) return prev
+            return [...prev, optimisticMessage]
+        })
 
         const selectedConv = conversations.find(c => c.id === selectedId)
         

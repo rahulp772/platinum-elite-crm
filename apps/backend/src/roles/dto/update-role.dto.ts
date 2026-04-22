@@ -16,4 +16,8 @@ export class UpdateRoleDto {
   @IsOptional()
   @IsArray()
   permissions?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  level?: number;
 }

@@ -21,20 +21,39 @@ export class UsersService {
   ) { }
 
   async findAll(user: User, tenantId?: string) {
-    if (user.isSuperAdmin && tenantId) {
-      return this.userRepository.find({ where: { tenantId } });
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+
+    if (isGlobalAdmin) {
+      const where = tenantId ? { tenantId } : {};
+      return this.userRepository.find({ where, relations: ['role'] });
     }
-    if (user.isSuperAdmin) {
-      return this.userRepository.find();
+
+    const currentLevel = user.role?.level || 0;
+    const effectiveTenantId = user.tenantId;
+
+    // Admins (level 100+) can see everyone in their tenant
+    if (currentLevel >= 100) {
+      return this.userRepository.find({
+        where: { tenantId: effectiveTenantId },
+        relations: ['role'],
+      });
     }
-    if (!user.tenantId) {
-      return this.userRepository.find({ where: { tenantId: IsNull() } });
-    }
-    return this.userRepository.find({ where: { tenantId: user.tenantId } });
+
+    // Others can see users with level < currentLevel in their tenant, plus themselves
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .where('user.tenantId = :tenantId', { tenantId: effectiveTenantId })
+      .andWhere('(role.level < :level OR user.id = :userId)', {
+        level: currentLevel,
+        userId: user.id,
+      })
+      .getMany();
   }
 
   async findOne(id: string, currentUser: User) {
-    const where = currentUser.isSuperAdmin
+    const isGlobalAdmin = currentUser.isSuperAdmin && !currentUser.tenantId;
+    const where = isGlobalAdmin
       ? { id }
       : { id, tenantId: currentUser.tenantId };
     const user = await this.userRepository.findOne({ where });

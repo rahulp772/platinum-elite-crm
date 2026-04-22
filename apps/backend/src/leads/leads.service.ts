@@ -97,10 +97,10 @@ export class LeadsService {
     let assignedToIdValue = currentUser.id;
     if (assignedToId) {
       const user = await this.userRepository.findOne({
-        where: { id: assignedToId },
+        where: { id: assignedToId, tenantId },
       });
       if (!user) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found`);
+        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
       }
       assignedToIdValue = user.id;
     }
@@ -139,7 +139,9 @@ const savedLead = await this.leadRepository.save(lead);
     const roleLevel = role?.level || 0;
     const currentUserId = user.id;
 
-    if (isSuperAdmin) {
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+
+    if (isGlobalAdmin) {
       return this.leadRepository.find({
         relations: ['assignedTo'],
         order: { createdAt: 'DESC' },
@@ -186,7 +188,8 @@ const savedLead = await this.leadRepository.save(lead);
   }
 
   async findOne(id: string, user: User) {
-    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const lead = await this.leadRepository.findOne({
       where,
       relations: ['assignedTo'],
@@ -212,10 +215,10 @@ const savedLead = await this.leadRepository.save(lead);
 
     if (assignedToId && assignedToId !== lead.assignedToId) {
       const assignedToUser = await this.userRepository.findOne({
-        where: { id: assignedToId },
+        where: { id: assignedToId, tenantId: user.tenantId },
       });
       if (!assignedToUser) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found`);
+        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
       }
       lead.assignedTo = assignedToUser;
       await this.logActivity(lead.id, user.id, LeadActivityAction.ASSIGNED, lead.assignedTo?.name, assignedToUser.name);
@@ -299,10 +302,10 @@ const savedLead = await this.leadRepository.save(lead);
     }
 
     const assignedToUser = await this.userRepository.findOne({
-      where: { id: assignedToId },
+      where: { id: assignedToId, tenantId: user.tenantId },
     });
     if (!assignedToUser) {
-      throw new NotFoundException(`User with ID ${assignedToId} not found`);
+      throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
     }
 
     const leads = await this.leadRepository.find({

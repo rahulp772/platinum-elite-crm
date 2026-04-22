@@ -28,11 +28,11 @@ export class TasksService {
 
     if (assignedToId) {
       const user = await this.userRepository.findOne({
-        where: { id: assignedToId },
+        where: { id: assignedToId, tenantId: currentUser.tenantId },
         relations: ['role'],
       });
       if (!user) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found`);
+        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
       }
       assignedTo = user;
     }
@@ -48,7 +48,9 @@ export class TasksService {
   }
 
   async findAll(currentUser: User) {
-    if (currentUser.isSuperAdmin) {
+    const isGlobalAdmin = currentUser.isSuperAdmin && !currentUser.tenantId;
+
+    if (isGlobalAdmin) {
       return this.taskRepository.find({
         relations: ['assignedTo', 'createdBy'],
       });
@@ -97,7 +99,8 @@ export class TasksService {
       throw new NotFoundException(`Task with ID ${id} not found`);
     }
 
-    if (currentUser.isSuperAdmin) {
+    const isGlobalAdmin = currentUser.isSuperAdmin && !currentUser.tenantId;
+    if (isGlobalAdmin) {
       return task;
     }
 
@@ -134,10 +137,10 @@ export class TasksService {
 
     if (assignedToId) {
       const assignedToUser = await this.userRepository.findOne({
-        where: { id: assignedToId },
+        where: { id: assignedToId, tenantId: user.tenantId },
       });
       if (!assignedToUser) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found`);
+        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
       }
       task.assignedTo = assignedToUser;
     }

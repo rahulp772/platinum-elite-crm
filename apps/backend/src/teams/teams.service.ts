@@ -24,10 +24,10 @@ export class TeamsService {
 
     if (teamLeadId) {
       const teamLead = await this.userRepository.findOne({
-        where: { id: teamLeadId },
+        where: { id: teamLeadId, tenantId: currentUser.tenantId },
       });
       if (!teamLead) {
-        throw new NotFoundException(`User with ID ${teamLeadId} not found`);
+        throw new NotFoundException(`User with ID ${teamLeadId} not found in your tenant`);
       }
       team.teamLead = teamLead;
     }
@@ -35,7 +35,10 @@ export class TeamsService {
     const savedTeam = await this.teamRepository.save(team);
 
     if (memberIds && memberIds.length > 0) {
-      const members = await this.userRepository.findBy({ id: In(memberIds) });
+      const members = await this.userRepository.findBy({ 
+        id: In(memberIds),
+        tenantId: currentUser.tenantId 
+      });
       savedTeam.members = members;
       await this.teamRepository.save(savedTeam);
     }
@@ -44,15 +47,40 @@ export class TeamsService {
   }
 
   async findAll(user: User) {
-    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
-    return this.teamRepository.find({
-      where,
-      relations: ['teamLead', 'members'],
-    });
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+
+    if (isGlobalAdmin) {
+      return this.teamRepository.find({
+        relations: ['teamLead', 'members'],
+      });
+    }
+
+    const currentLevel = user.role?.level || 0;
+    const effectiveTenantId = user.tenantId;
+
+    // Admins see all teams in their tenant
+    if (currentLevel >= 100) {
+      return this.teamRepository.find({
+        where: { tenantId: effectiveTenantId },
+        relations: ['teamLead', 'members'],
+      });
+    }
+
+    // Others see only teams they are part of or lead
+    return this.teamRepository
+      .createQueryBuilder('team')
+      .leftJoinAndSelect('team.teamLead', 'teamLead')
+      .leftJoinAndSelect('team.members', 'members')
+      .where('team.tenantId = :tenantId', { tenantId: effectiveTenantId })
+      .andWhere('(team.teamLeadId = :userId OR members.id = :userId)', {
+        userId: user.id,
+      })
+      .getMany();
   }
 
   async findOne(id: string, user: User) {
-    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const team = await this.teamRepository.findOne({
       where,
       relations: ['teamLead', 'members'],
@@ -69,16 +97,19 @@ export class TeamsService {
 
     if (teamLeadId) {
       const teamLead = await this.userRepository.findOne({
-        where: { id: teamLeadId },
+        where: { id: teamLeadId, tenantId: user.tenantId },
       });
       if (!teamLead) {
-        throw new NotFoundException(`User with ID ${teamLeadId} not found`);
+        throw new NotFoundException(`User with ID ${teamLeadId} not found in your tenant`);
       }
       team.teamLead = teamLead;
     }
 
     if (memberIds) {
-      const members = await this.userRepository.findBy({ id: In(memberIds) });
+      const members = await this.userRepository.findBy({ 
+        id: In(memberIds),
+        tenantId: user.tenantId
+      });
       team.members = members;
     }
 

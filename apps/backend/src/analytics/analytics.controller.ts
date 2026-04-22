@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { AnalyticsService } from './analytics.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -12,19 +12,19 @@ export class AnalyticsController {
 
   @Get('dashboard')
   @ApiOperation({ summary: 'Get main dashboard statistics' })
-  getDashboardStats() {
-    return this.analyticsService.getDashboardStats();
+  getDashboardStats(@Request() req) {
+    return this.analyticsService.getDashboardStats(req.user);
   }
 
   @Get('leads')
   @ApiOperation({ summary: 'Get lead distribution statistics' })
-  getLeadStats() {
-    return this.analyticsService.getLeadStats();
+  getLeadStats(@Request() req) {
+    return this.analyticsService.getLeadStats(req.user);
   }
 
   @Get('properties')
   @ApiOperation({ summary: 'Get property distribution statistics' })
-  getPropertyStats() {
-    return this.analyticsService.getPropertyStats();
+  getPropertyStats(@Request() req) {
+    return this.analyticsService.getPropertyStats(req.user);
   }
 }

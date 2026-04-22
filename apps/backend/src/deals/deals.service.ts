@@ -22,10 +22,10 @@ export class DealsService {
 
     if (propertyId) {
       const foundProperty = await this.propertyRepository.findOne({
-        where: { id: propertyId },
+        where: { id: propertyId, tenantId: user.tenantId },
       });
       if (!foundProperty) {
-        throw new NotFoundException(`Property with ID ${propertyId} not found`);
+        throw new NotFoundException(`Property with ID ${propertyId} not found in your tenant`);
       }
       property = foundProperty;
     }
@@ -40,7 +40,8 @@ export class DealsService {
   }
 
   async findAll(user: User) {
-    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? {} : { tenantId: user.tenantId };
     return this.dealRepository.find({
       where,
       relations: ['agent', 'property'],
@@ -48,7 +49,8 @@ export class DealsService {
   }
 
   async findOne(id: string, user: User) {
-    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const deal = await this.dealRepository.findOne({
       where,
       relations: ['agent', 'property'],
@@ -65,10 +67,10 @@ export class DealsService {
 
     if (propertyId) {
       const foundProperty = await this.propertyRepository.findOne({
-        where: { id: propertyId },
+        where: { id: propertyId, tenantId: user.tenantId },
       });
       if (!foundProperty) {
-        throw new NotFoundException(`Property with ID ${propertyId} not found`);
+        throw new NotFoundException(`Property with ID ${propertyId} not found in your tenant`);
       }
       deal.property = foundProperty;
     }

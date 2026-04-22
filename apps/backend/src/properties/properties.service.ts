@@ -23,12 +23,14 @@ export class PropertiesService {
   }
 
   async findAll(user: User) {
-    const where = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? {} : { tenantId: user.tenantId };
     return this.propertyRepository.find({ where, relations: ['agent'] });
   }
 
   async findRelated(id: string, type: string, limit = 3, user: User) {
-    const baseCondition = user.isSuperAdmin ? {} : { tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const baseCondition = isGlobalAdmin ? {} : { tenantId: user.tenantId };
     return this.propertyRepository.find({
       where: { ...baseCondition, id: Not(id), type: type as any },
       relations: ['agent'],
@@ -37,7 +39,8 @@ export class PropertiesService {
   }
 
   async findOne(id: string, user: User) {
-    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const property = await this.propertyRepository.findOne({
       where,
       relations: ['agent'],
@@ -61,7 +64,8 @@ export class PropertiesService {
   }
 
   async toggleFavorite(id: string, user: User) {
-    const where = user.isSuperAdmin ? { id } : { id, tenantId: user.tenantId };
+    const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
+    const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const property = await this.propertyRepository.findOne({
       where,
       relations: ['favoritedBy'],

@@ -88,6 +88,7 @@ interface Role {
   description: string | null
   permissions: string[]
   isSystem: boolean
+  level: number
   createdAt: string
 }
 
@@ -105,6 +106,7 @@ export default function SettingsPage() {
 
   const [roleName, setRoleName] = React.useState("")
   const [roleDescription, setRoleDescription] = React.useState("")
+  const [roleLevel, setRoleLevel] = React.useState(10)
   const [selectedPermissions, setSelectedPermissions] = React.useState<string[]>([])
   const [isCreatingRole, setIsCreatingRole] = React.useState(false)
   const [createRoleError, setCreateRoleError] = React.useState<string | null>(null)
@@ -144,7 +146,7 @@ export default function SettingsPage() {
   const totalTeamPages = Math.ceil((usersData?.length || 0) / ITEMS_PER_PAGE)
 
   const createRoleMutation = useMutation({
-    mutationFn: async (data: { name: string; description?: string; permissions: string[] }) => {
+    mutationFn: async (data: { name: string; description?: string; permissions: string[]; level: number }) => {
       const res = await api.post("/roles", data)
       return res.data
     },
@@ -203,12 +205,13 @@ export default function SettingsPage() {
     e.preventDefault()
     setIsCreatingRole(true)
     setCreateRoleError(null)
-    createRoleMutation.mutate({ name: roleName, description: roleDescription, permissions: selectedPermissions })
+    createRoleMutation.mutate({ name: roleName, description: roleDescription, permissions: selectedPermissions, level: roleLevel })
   }
 
   const resetRoleForm = () => {
     setRoleName("")
     setRoleDescription("")
+    setRoleLevel(10)
     setSelectedPermissions([])
     setCreateRoleError(null)
   }
@@ -444,6 +447,7 @@ export default function SettingsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Name</TableHead>
+                  <TableHead>Level</TableHead>
                   <TableHead>Permissions</TableHead>
                   <TableHead>Type</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
@@ -470,6 +474,11 @@ export default function SettingsPage() {
                           <Shield className="h-4 w-4 text-muted-foreground" />
                           {role.name}
                         </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className="font-mono text-xs font-bold bg-muted px-2 py-0.5 rounded">
+                          {role.level}
+                        </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-1">
@@ -561,6 +570,23 @@ export default function SettingsPage() {
                       onChange={(e) => setRoleDescription(e.target.value)}
                       placeholder="Optional description"
                     />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="role-level">Hierarchy Level (1-200)</Label>
+                    <Input
+                      id="role-level"
+                      type="number"
+                      value={roleLevel}
+                      onChange={(e) => setRoleLevel(parseInt(e.target.value))}
+                      placeholder="e.g., 10, 50, 100"
+                      min={1}
+                      max={200}
+                      required
+                    />
+                    <p className="text-[10px] text-muted-foreground">
+                      Higher level roles can see data from lower level roles.
+                      (Admin: 100, Manager: 80, Team Lead: 50, Agent: 10)
+                    </p>
                   </div>
                   <div className="grid gap-2">
                     <Label>Permissions</Label>

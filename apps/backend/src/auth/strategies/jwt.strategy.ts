@@ -36,6 +36,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         where: { id: user.roleId },
       });
       if (role) {
+        user.role = role;
         user.permissions = role.permissions;
       }
     }
