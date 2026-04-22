@@ -9,8 +9,11 @@ import { Lead } from '../leads/entities/lead.entity';
 import { LeadStatus, LeadSource } from '../leads/enums/lead.enum';
 
 const TENANTS = [
-  { name: 'Platinum Elite Realty', domain: 'platinum.elite' },
-  { name: 'Luxury Homes Inc', domain: 'luxury.homes' },
+  { name: 'Platinum Elite Realty', domain: 'platinum-elite.com' },
+  { name: 'Luxury Homes Global', domain: 'luxury-homes.com' },
+  { name: 'Apex Properties', domain: 'apex-props.com' },
+  { name: 'Skyline Estates', domain: 'skyline-estates.com' },
+  { name: 'Royal Heritage Realty', domain: 'royal-heritage.com' },
 ];
 
 const BASE_PERMISSIONS = [
@@ -27,73 +30,6 @@ const BASE_PERMISSIONS = [
   'users:read',
   'users:write',
   'roles:write',
-];
-
-const ROLES_PER_TENANT = [
-  {
-    name: 'Admin',
-    description: 'Full access to all features',
-    permissions: BASE_PERMISSIONS,
-    isSystem: true,
-    level: 100,
-  },
-  {
-    name: 'Manager',
-    description: 'Can manage agents and view all data',
-    permissions: [
-      'leads:read',
-      'leads:write',
-      'deals:read',
-      'deals:write',
-      'properties:read',
-      'properties:write',
-      'tasks:read',
-      'tasks:write',
-      'users:read',
-    ],
-    isSystem: false,
-    level: 80,
-  },
-  {
-    name: 'Team Lead',
-    description: 'Can manage team tasks and view agents',
-    permissions: [
-      'leads:read',
-      'leads:write',
-      'deals:read',
-      'deals:write',
-      'properties:read',
-      'properties:write',
-      'tasks:read',
-      'tasks:write',
-      'users:read',
-    ],
-    isSystem: false,
-    level: 50,
-  },
-  {
-    name: 'Agent',
-    description: 'Can view and manage own work',
-    permissions: [
-      'leads:read',
-      'leads:write',
-      'properties:read',
-      'tasks:read',
-      'tasks:write',
-    ],
-    isSystem: false,
-    level: 10,
-  },
-];
-
-const SYSTEM_ROLES = [
-  {
-    name: 'Super Admin',
-    description: 'System-wide admin access',
-    permissions: BASE_PERMISSIONS,
-    isSystem: true,
-    level: 200,
-  },
 ];
 
 @Injectable()
@@ -193,44 +129,73 @@ export class SeedService implements OnModuleInit {
       },
     ];
 
+    const hashedPassword = await bcrypt.hash('Admin@123', 10);
+
     for (const tenantData of TENANTS) {
       const tenant = this.tenantRepository.create(tenantData);
       await this.tenantRepository.save(tenant);
       console.log(`   Created tenant: ${tenant.name}`);
 
-      const roles: Role[] = [];
+      const rolesMap: Record<string, Role> = {};
       for (const roleDef of roleDefinitions) {
         const role = this.roleRepository.create({
           ...roleDef,
-          description:
-            roleDef.name === 'Admin'
-              ? 'Full access to all features'
-              : roleDef.name === 'Manager'
-                ? 'Can manage all agents and data'
-                : roleDef.name === 'Team Lead'
-                  ? 'Can manage team tasks'
-                  : 'Can view and manage own work',
+          description: `${roleDef.name} role for ${tenant.name}`,
           tenantId: tenant.id,
         });
         await this.roleRepository.save(role);
-        roles.push(role);
-        console.log(
-          `   Created role: ${roleDef.name} (Level ${roleDef.level})`,
-        );
+        rolesMap[roleDef.name] = role;
       }
 
-      const hashedPassword = await bcrypt.hash('admin123', 10);
+      // Create 1 Admin
       const adminUser = this.userRepository.create({
         email: `admin@${tenantData.domain}`,
         password: hashedPassword,
-        name: 'Admin',
+        name: `${tenantData.name} Admin`,
         tenantId: tenant.id,
-        roleId: roles[0].id,
+        roleId: rolesMap['Admin'].id,
+        isSuperAdmin: false,
       });
       await this.userRepository.save(adminUser);
-      console.log(
-        `   Created admin user: admin@${tenantData.domain} / admin123`,
-      );
+
+      // Create 1 Manager
+      const managerUser = this.userRepository.create({
+        email: `manager@${tenantData.domain}`,
+        password: hashedPassword,
+        name: `${tenantData.name} Manager`,
+        tenantId: tenant.id,
+        roleId: rolesMap['Manager'].id,
+        isSuperAdmin: false,
+      });
+      await this.userRepository.save(managerUser);
+
+      // Create 2 Team Leads
+      for (let i = 1; i <= 2; i++) {
+        const teamLead = this.userRepository.create({
+          email: `lead${i}@${tenantData.domain}`,
+          password: hashedPassword,
+          name: `Team Lead ${i}`,
+          tenantId: tenant.id,
+          roleId: rolesMap['Team Lead'].id,
+          isSuperAdmin: false,
+        });
+        await this.userRepository.save(teamLead);
+      }
+
+      // Create 4 Agents
+      for (let i = 1; i <= 4; i++) {
+        const agent = this.userRepository.create({
+          email: `agent${i}@${tenantData.domain}`,
+          password: hashedPassword,
+          name: `Agent ${i}`,
+          tenantId: tenant.id,
+          roleId: rolesMap['Agent'].id,
+          isSuperAdmin: false,
+        });
+        await this.userRepository.save(agent);
+      }
+
+      console.log(`   Created 8 users for ${tenant.name}`);
     }
 
     console.log('   Tenants, roles, and users seeded.');
