@@ -30,4 +30,5 @@ export interface Conversation {
     unreadCount: number
     createdAt: Date
     updatedAt: Date
+    isNewConversation?: boolean
 }

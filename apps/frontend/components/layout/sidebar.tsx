@@ -24,15 +24,16 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuth } from "@/lib/auth-context"
+import { useNotifications } from "@/lib/notification-context"
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Leads", href: "/leads", icon: Users, badge: "3" },
+    { name: "Leads", href: "/leads", icon: Users },
     { name: "Properties", href: "/properties", icon: Building2 },
     { name: "Deals", href: "/deals", icon: Handshake },
     { name: "Tasks", href: "/tasks", icon: CheckSquare },
     { name: "Calendar", href: "/calendar", icon: Calendar },
-    { name: "Messages", href: "/messages", icon: MessageSquare },
+    { name: "Messages", href: "/messages", icon: MessageSquare, badge: 0 },
     { name: "Analytics", href: "/analytics", icon: BarChart3 },
     { name: "Settings", href: "/settings", icon: Settings },
 ]
@@ -40,7 +41,12 @@ const navigation = [
 export function Sidebar() {
     const pathname = usePathname()
     const { user, logout } = useAuth()
+    const { unreadMessages } = useNotifications()
     const [collapsed, setCollapsed] = React.useState(false)
+    
+    const navItems = React.useMemo(() => navigation.map(item => 
+        item.name === "Messages" ? { ...item, badge: unreadMessages > 0 ? unreadMessages : undefined } : item
+    ), [unreadMessages])
 
     return (
         <TooltipProvider delayDuration={0}>
@@ -119,7 +125,7 @@ export function Sidebar() {
                         {!collapsed && (
                             <p className="px-3 mb-2 text-[10px] font-semibold text-realty-gold uppercase tracking-wider">Menu</p>
                         )}
-                        {navigation.map((item) => {
+                        {navItems.map((item) => {
                             const isActive = pathname === item.href
                             const NavItem = (
                                 <Link

@@ -7,7 +7,6 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Conversation } from './conversation.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 
 @Entity('messages')
@@ -28,8 +27,8 @@ export class Message {
   @JoinColumn({ name: 'senderId' })
   sender: User;
 
-  @ManyToOne(() => Conversation, (conversation) => conversation.messages)
-  conversation: Conversation;
+  @Column({ nullable: true })
+  conversationId: string;
 
   @Column({ nullable: true })
   tenantId: string;

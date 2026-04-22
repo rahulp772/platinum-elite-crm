@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { Search, Plus, Users, Building2, Handshake, CheckSquare, X } from "lucide-react"
+import { Search, Plus, Users, Building2, Handshake, CheckSquare, X, MessageSquare } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -25,12 +25,14 @@ import { mockLeads } from "@/lib/mock-data/leads"
 import { mockDeals } from "@/lib/mock-data/deals"
 import { SearchResult } from "@/types/search"
 import { useSearch } from "@/hooks/use-search"
+import { useNotifications } from "@/lib/notification-context"
 
 type DialogType = "lead" | "deal" | "property" | "task" | null
 
 export function Header() {
     const router = useRouter()
     const { user, logout } = useAuth()
+    const { unreadMessages } = useNotifications()
     const [activeDialog, setActiveDialog] = React.useState<DialogType>(null)
     const [searchQuery, setSearchQuery] = React.useState("")
     const [isSearchOpen, setIsSearchOpen] = React.useState(false)
@@ -256,7 +258,19 @@ export function Header() {
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => router.push("/settings")}>Profile</DropdownMenuItem>
                                 <DropdownMenuItem>Billing</DropdownMenuItem>
-                                <DropdownMenuItem>Team</DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => router.push("/messages")}>
+                                    <div className="flex items-center justify-between w-full">
+                                        <div className="flex items-center">
+                                            <MessageSquare className="mr-2 h-4 w-4" />
+                                            Team Messages
+                                        </div>
+                                        {unreadMessages > 0 && (
+                                            <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-realty-gold px-1 text-[10px] font-bold text-realty-navy">
+                                                {unreadMessages}
+                                            </span>
+                                        )}
+                                    </div>
+                                </DropdownMenuItem>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={logout}>
                                     Log out

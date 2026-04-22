@@ -26,8 +26,15 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
+  @ApiResponse({ status: 405, description: 'Method Not Allowed' })
   async login(@Body() loginDto: LoginDto) {
     return this.authService.login(loginDto);
+  }
+
+  @Get('login')
+  @ApiOperation({ summary: 'Method not allowed' })
+  methodNotAllowed() {
+    return { message: 'Method Not Allowed. Use POST for login.' };
   }
 
   @Post('register')

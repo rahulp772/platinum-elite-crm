@@ -1,4 +1,5 @@
-import { IsString, IsArray, IsNotEmpty, IsOptional, IsUUID, Min, Max } from 'class-validator';
+import { IsString, IsArray, IsNotEmpty, IsOptional, IsUUID, Min, Max, IsInt } from 'class-validator';
+import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class SendMessageDto {
@@ -19,11 +20,15 @@ export class CreateConversationDto {
 export class GetMessagesQueryDto {
   @ApiPropertyOptional({ default: 1 })
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   page?: number = 1;
 
   @ApiPropertyOptional({ default: 50 })
   @IsOptional()
+  @Type(() => Number)
+  @IsInt()
   @Min(1)
   @Max(100)
   limit?: number = 50;

@@ -18,7 +18,7 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async findAll(user: User, tenantId?: string) {
     if (user.isSuperAdmin && tenantId) {

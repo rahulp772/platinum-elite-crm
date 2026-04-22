@@ -4,6 +4,9 @@ import "./globals.css";
 import { ThemeProvider, themes } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth-context";
 import { QueryProvider } from "@/components/query-provider";
+import { Toaster } from "sonner";
+import { NotificationProvider } from "@/lib/notification-context";
+import { SocketProvider } from "@/lib/socket-context";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,15 +25,19 @@ export default function RootLayout({
             <body className={inter.className}>
                 <QueryProvider>
                     <AuthProvider>
-                        <ThemeProvider
-                            attribute="class"
-                            defaultTheme="dark"
-                            themes={themes}
-                            enableSystem={false}
-                            disableTransitionOnChange
-                        >
-                            {children}
-                        </ThemeProvider>
+                        <NotificationProvider>
+                            <SocketProvider>
+                                <ThemeProvider
+                                    attribute="class"
+                                    defaultTheme="dark"
+                                    themes={themes}
+                                    enableSystem={false}
+                                    disableTransitionOnChange
+                                >
+                                    {children}
+                                </ThemeProvider>
+                            </SocketProvider>
+                        </NotificationProvider>
                     </AuthProvider>
                 </QueryProvider>
             </body>

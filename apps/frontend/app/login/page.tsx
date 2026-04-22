@@ -85,7 +85,7 @@ export default function LoginPage() {
             Enter your credentials to access your dashboard
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form method="POST" onSubmit={handleSubmit} autoComplete="off">
           <CardContent className="space-y-4">
             {error && (
               <Alert variant="destructive" className="bg-red-950/20 border-red-900/50 text-red-400">
@@ -102,6 +102,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="name@example.com"
                 required
+                autoComplete="off"
                 className="bg-slate-900/50 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-realty-gold/50"
               />
             </div>
@@ -120,6 +121,7 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
+                autoComplete="off"
                 className="bg-slate-900/50 border-slate-800 text-white focus-visible:ring-realty-gold/50"
               />
             </div>

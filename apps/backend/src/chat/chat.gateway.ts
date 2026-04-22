@@ -31,7 +31,7 @@ interface JwtPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+    origin: '*',
     credentials: true,
   },
 })
@@ -120,9 +120,18 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         user,
       );
 
+      // Emit to the conversation room for active chat windows
       this.server
         .to(`conversation:${data.conversationId}`)
         .emit('new_message', message);
+      
+      // Also emit to each participant's individual room for global notifications
+      if (message.participants) {
+        message.participants.forEach((participant: any) => {
+          this.server.to(`user:${participant.id}`).emit('new_message', message);
+        });
+      }
+      
       return message;
     } catch (error) {
       client.emit('error', { message: error.message });

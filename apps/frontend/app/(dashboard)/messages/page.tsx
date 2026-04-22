@@ -8,18 +8,13 @@ import { ChatWindow } from "@/components/messages/chat-window"
 import { chatApi, ConversationResponse, MessageResponse, PaginatedMessagesResponse } from "@/lib/api-chat"
 import { api } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
+import { useNotifications } from "@/lib/notification-context"
+import { useSocket } from "@/lib/socket-context"
 import { Conversation, Message } from "@/types/chat"
 import { toast } from "sonner"
 
-interface TeamMember {
-    id: string
-    name: string
-    email: string
-    avatar?: string
-    status?: string
-}
-
 function transformConversation(resp: ConversationResponse, currentUserId: string): Conversation {
+    const isNewConversation = resp.id.startsWith('new_')
     const otherParticipants = resp.participants.filter(p => p.id !== currentUserId)
     const isGroup = resp.participants.length > 2
     
@@ -44,6 +39,7 @@ function transformConversation(resp: ConversationResponse, currentUserId: string
         unreadCount: resp.unreadCount,
         createdAt: new Date(resp.createdAt),
         updatedAt: new Date(resp.updatedAt),
+        isNewConversation,
     }
 }
 
@@ -60,14 +56,27 @@ function transformMessage(resp: MessageResponse): Message {
 
 export default function MessagesPage() {
     const { user } = useAuth()
+    const { incrementUnread, decrementUnread, clearUnread } = (useNotifications() || {})
+    const { socket: globalSocket } = useSocket()
     const queryClient = useQueryClient()
     const [socket, setSocket] = React.useState<Socket | null>(null)
     const [conversations, setConversations] = React.useState<Conversation[]>([])
     const [selectedId, setSelectedId] = React.useState<string | null>(null)
     const [messages, setMessages] = React.useState<Message[]>([])
-    const [showTeamMembers, setShowTeamMembers] = React.useState(true)
     const [messagesMeta, setMessagesMeta] = React.useState({ page: 1, totalPages: 1, total: 0 })
     const [loadingMessages, setLoadingMessages] = React.useState(false)
+    
+    const selectedIdRef = React.useRef(selectedId)
+    React.useEffect(() => { selectedIdRef.current = selectedId }, [selectedId])
+
+    const userIdRef = React.useRef(user?.id)
+    React.useEffect(() => { userIdRef.current = user?.id }, [user?.id])
+
+    React.useEffect(() => {
+        if (globalSocket) {
+            setSocket(globalSocket)
+        }
+    }, [globalSocket])
 
     const { data: conversationsData, isLoading: conversationsLoading, error: conversationsError } = useQuery({
         queryKey: ['conversations'],
@@ -81,17 +90,6 @@ export default function MessagesPage() {
         }
     }, [conversationsError])
 
-    const [teamMembersKey, setTeamMembersKey] = React.useState(0)
-
-    const { data: teamMembersData } = useQuery<TeamMember[]>({
-        queryKey: ['team-members', teamMembersKey],
-        queryFn: async () => {
-            const { data } = await api.get<TeamMember[]>('/users')
-            return data.filter(u => u.id !== user?.id)
-        },
-        enabled: !!user,
-    })
-
     const createConversation = useMutation({
         mutationFn: async (participantId: string) => {
             const { data } = await api.post<ConversationResponse>('/chat/conversations', {
@@ -102,8 +100,6 @@ export default function MessagesPage() {
         onSuccess: async (newConv) => {
             await queryClient.invalidateQueries({ queryKey: ['conversations'] })
             setSelectedId(newConv.id)
-            setShowTeamMembers(false)
-            setTeamMembersKey(k => k + 1)
             toast.success('Conversation created')
         },
         onError: (error: any) => {
@@ -111,16 +107,17 @@ export default function MessagesPage() {
         },
     })
 
-    const handleTeamMemberClick = async (member: TeamMember) => {
-        const existingConv = conversations.find(c => 
-            c.participants.some(p => p.id === member.id)
-        )
-        if (existingConv) {
-            setSelectedId(existingConv.id)
-            setShowTeamMembers(false)
+    const handleConversationSelect = async (conv: Conversation) => {
+        if (conv.isNewConversation) {
+            const otherParticipant = conv.participants.find(p => p.id !== user?.id)
+            if (otherParticipant) {
+                await createConversation.mutateAsync(otherParticipant.id)
+            }
         } else {
-            await createConversation.mutateAsync(member.id)
-            setTeamMembersKey(k => k + 1)
+            setSelectedId(conv.id)
+            if (conv.unreadCount > 0) {
+                clearUnread?.()
+            }
         }
     }
 
@@ -129,34 +126,37 @@ export default function MessagesPage() {
             const transformed = conversationsData.map(c => transformConversation(c, user.id))
             setConversations(transformed)
             if (!selectedId && transformed.length > 0) {
-                setSelectedId(transformed[0].id)
+                const firstWithMessages = transformed.find(c => !c.isNewConversation)
+                setSelectedId(firstWithMessages?.id || transformed[0].id)
             }
         }
     }, [conversationsData, user])
 
-    const showConversations = conversations.length > 0 && !showTeamMembers
+    React.useEffect(() => {
+        clearUnread?.()
+    }, [clearUnread])
 
     React.useEffect(() => {
-        if (!user) return
+        if (!socket) return
 
-        const newSocket = io(process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001', {
-            auth: { token: localStorage.getItem('token') },
-        })
-
-        newSocket.on('connect', () => {
+        const handleConnect = () => {
             console.log('Socket connected')
-        })
+        }
 
-        newSocket.on('connect_error', (error) => {
-            console.error('Socket connection error:', error)
+        const handleConnectError = () => {
             toast.error('Connection error. Please refresh.')
-        })
+        }
 
-        newSocket.on('new_message', (message: MessageResponse) => {
+        const handleNewMessage = (message: MessageResponse) => {
             const transformed = transformMessage(message)
+            const isCurrentConversation = message.conversationId === selectedIdRef.current
+            const isOwnMessage = message.senderId === userIdRef.current
             
-            if (message.conversationId === selectedId) {
-                setMessages(prev => [...prev, transformed])
+            if (isCurrentConversation) {
+                setMessages(prev => {
+                    const filtered = prev.filter(m => !m.id.startsWith('temp_'))
+                    return [...filtered, transformed]
+                })
             }
             
             setConversations(prev => prev.map(conv => {
@@ -164,32 +164,64 @@ export default function MessagesPage() {
                     return {
                         ...conv,
                         lastMessage: transformed,
-                        unreadCount: conv.id === selectedId ? 0 : conv.unreadCount + 1,
+                        unreadCount: isCurrentConversation ? 0 : conv.unreadCount + 1,
                     }
                 }
                 return conv
             }))
+            
+            if (!isCurrentConversation && !isOwnMessage) {
+                incrementUnread?.()
+                
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('New Message', {
+                        body: `${transformed.sender?.name || 'Someone'}: ${transformed.content.substring(0, 50)}...`,
+                        icon: '/favicon.ico',
+                    })
+                } else if ('Notification' in window && Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification('New Message', {
+                                body: `${transformed.sender?.name || 'Someone'}: ${transformed.content.substring(0, 50)}...`,
+                                icon: '/favicon.ico',
+                            })
+                        }
+                    })
+                }
+                
+                toast.info(`New message from ${transformed.sender?.name || 'Someone'}`)
+            }
         })
 
-        newSocket.on('messages_read', (data: { conversationId: string }) => {
-            if (data.conversationId === selectedId) {
+        const handleMessagesRead = (data: { conversationId: string, userId: string }) => {
+            if (data.conversationId === selectedIdRef.current && data.userId !== userIdRef.current) {
                 setMessages(prev => prev.map(m => ({ ...m, read: true })))
             }
-            setConversations(prev => prev.map(c => 
-                c.id === data.conversationId ? { ...c, unreadCount: 0 } : c
-            ))
-        })
+            if (data.conversationId === selectedIdRef.current) {
+                setConversations(prev => prev.map(c => 
+                    c.id === data.conversationId ? { ...c, unreadCount: 0 } : c
+                ))
+            }
+        }
 
-        newSocket.on('error', (data: { message: string }) => {
+        const handleError = (data: { message: string }) => {
             toast.error(data.message)
-        })
+        }
 
-        setSocket(newSocket)
+        socket.on('connect', handleConnect)
+        socket.on('connect_error', handleConnectError)
+        socket.on('new_message', handleNewMessage)
+        socket.on('messages_read', handleMessagesRead)
+        socket.on('error', handleError)
 
         return () => {
-            newSocket.disconnect()
+            socket.off('connect', handleConnect)
+            socket.off('connect_error', handleConnectError)
+            socket.off('new_message', handleNewMessage)
+            socket.off('messages_read', handleMessagesRead)
+            socket.off('error', handleError)
         }
-    }, [user])
+    }, [socket])
 
     const loadMessages = React.useCallback(async (conversationId: string, page: number = 1) => {
         setLoadingMessages(true)
@@ -212,6 +244,11 @@ export default function MessagesPage() {
     React.useEffect(() => {
         if (!selectedId || !socket) return
 
+        if (selectedId.startsWith('new_')) {
+            setMessages([])
+            return
+        }
+
         setMessages([])
         setMessagesMeta({ page: 1, totalPages: 1, total: 0 })
 
@@ -225,13 +262,43 @@ export default function MessagesPage() {
         }
     }, [selectedId, socket, loadMessages])
 
-    const handleSendMessage = (content: string) => {
-        if (!selectedId || !socket) return
+    const handleSendMessage = async (content: string) => {
+        if (!selectedId || !socket || !user) return
 
-        socket.emit('send_message', {
-            conversationId: selectedId,
+        const optimisticMessage: Message = {
+            id: `temp_${Date.now()}`,
             content,
-        })
+            senderId: user.id,
+            sender: { id: user.id, name: user.name },
+            timestamp: new Date(),
+            read: false,
+        }
+
+        setMessages(prev => [...prev, optimisticMessage])
+
+        const selectedConv = conversations.find(c => c.id === selectedId)
+        
+        if (selectedConv?.isNewConversation) {
+            const otherParticipant = selectedConv.participants.find(p => p.id !== user.id)
+            if (!otherParticipant) return
+
+            try {
+                const newConv = await createConversation.mutateAsync(otherParticipant.id)
+                setSelectedId(newConv.id)
+                socket.emit('join_conversation', { conversationId: newConv.id })
+                socket.emit('send_message', {
+                    conversationId: newConv.id,
+                    content,
+                })
+            } catch (error) {
+                setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+            }
+        } else {
+            socket.emit('send_message', {
+                conversationId: selectedId,
+                content,
+            })
+        }
     }
 
     React.useEffect(() => {
@@ -255,48 +322,23 @@ export default function MessagesPage() {
     return (
         <div className="h-[calc(100vh-2rem)] -m-8 flex flex-col md:flex-row bg-background">
             <div className="flex flex-col h-full border-r bg-muted/10 w-80 min-w-[320px]">
-                <div className="p-4 border-b flex items-center justify-between">
+                <div className="p-4 border-b">
                     <h2 className="font-semibold">Messages</h2>
-                    <button
-                        onClick={() => setShowTeamMembers(!showTeamMembers)}
-                        className="text-xs text-primary hover:underline"
-                    >
-                        {showTeamMembers ? "Chats" : "Team"}
-                    </button>
                 </div>
-                {showTeamMembers ? (
-                    <div className="flex-1 overflow-auto p-2">
-                        <p className="text-xs text-muted-foreground mb-2 px-2">Start a conversation with team members</p>
-                        {teamMembersData?.map(member => (
-                            <button
-                                key={member.id}
-                                onClick={() => handleTeamMemberClick(member)}
-                                className="flex items-center gap-3 w-full p-3 rounded-lg text-left hover:bg-muted transition-colors"
-                            >
-                                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium">
-                                    {member.name[0]}
-                                </div>
-                                <div className="flex-1 overflow-hidden">
-                                    <div className="font-medium text-sm">{member.name}</div>
-                                    <div className="text-xs text-muted-foreground truncate">{member.email}</div>
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                ) : (
-                    <ConversationList
-                        conversations={conversations}
-                        selectedId={selectedId || undefined}
-                        onSelect={(id) => {
-                            setSelectedId(id)
-                            setShowTeamMembers(false)
-                        }}
-                        currentUserId={user.id}
-                    />
-                )}
+                <ConversationList
+                    conversations={conversations}
+                    selectedId={selectedId || undefined}
+                    onSelect={(id) => {
+                        const conv = conversations.find(c => c.id === id)
+                        if (conv) {
+                            handleConversationSelect(conv)
+                        }
+                    }}
+                    currentUserId={user.id}
+                />
             </div>
             <div className="flex-1 border-l bg-background/50">
-                {!showTeamMembers && selectedConversation ? (
+                {selectedConversation ? (
                     <ChatWindow
                         conversation={{ ...selectedConversation, messages }}
                         onSendMessage={handleSendMessage}
@@ -305,11 +347,11 @@ export default function MessagesPage() {
                         hasMore={messagesMeta.page < messagesMeta.totalPages}
                         onLoadMore={() => loadMessages(selectedId!, messagesMeta.page + 1)}
                     />
-                ) : !showTeamMembers ? (
+                ) : (
                     <div className="flex items-center justify-center h-full text-muted-foreground">
                         Select a conversation to start chatting
                     </div>
-                ) : null}
+                )}
             </div>
         </div>
     )
