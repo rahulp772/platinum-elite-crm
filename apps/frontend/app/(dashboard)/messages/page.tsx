@@ -7,6 +7,7 @@ import { ConversationList } from "@/components/messages/conversation-list"
 import { ChatWindow } from "@/components/messages/chat-window"
 import { chatApi, ConversationResponse, MessageResponse, PaginatedMessagesResponse } from "@/lib/api-chat"
 import { api } from "@/lib/api"
+import { MessageSquare, Phone, Video, MoreHorizontal, Send, Paperclip } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { useNotifications } from "@/lib/notification-context"
 import { useSocket } from "@/lib/socket-context"
@@ -329,10 +330,11 @@ export default function MessagesPage() {
     const selectedConversation = conversations.find(c => c.id === selectedId)
 
     return (
-        <div className="h-[calc(100vh-2rem)] -m-8 flex flex-col md:flex-row bg-background">
-            <div className="flex flex-col h-full border-r bg-muted/10 w-80 min-w-[320px]">
-                <div className="p-4 border-b">
-                    <h2 className="font-semibold">Messages</h2>
+        <div className="h-[calc(100vh-64px)] -m-6 flex flex-col md:flex-row bg-background overflow-hidden relative">
+            <div className="flex flex-col h-full border-r border-border/50 bg-card/30 backdrop-blur-xl w-80 min-w-[320px] relative z-20">
+                <div className="p-4 border-b border-border/50 flex items-center justify-between">
+                    <h2 className="text-lg font-bold text-foreground tracking-tight">Messages</h2>
+                    <div className="h-2 w-2 rounded-full bg-realty-gold animate-pulse" />
                 </div>
                 <ConversationList
                     conversations={conversations}
@@ -346,7 +348,7 @@ export default function MessagesPage() {
                     currentUserId={user.id}
                 />
             </div>
-            <div className="flex-1 border-l bg-background/50">
+            <div className="flex-1 flex flex-col min-w-0 bg-background relative z-10">
                 {selectedConversation ? (
                     <ChatWindow
                         conversation={{ ...selectedConversation, messages }}
@@ -357,8 +359,11 @@ export default function MessagesPage() {
                         onLoadMore={() => loadMessages(selectedId!, messagesMeta.page + 1)}
                     />
                 ) : (
-                    <div className="flex items-center justify-center h-full text-muted-foreground">
-                        Select a conversation to start chatting
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-4">
+                        <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center">
+                            <MessageSquare className="h-8 w-8 text-muted-foreground/50" />
+                        </div>
+                        <p className="text-sm font-medium">Select a conversation to start chatting</p>
                     </div>
                 )}
             </div>

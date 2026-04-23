@@ -14,10 +14,19 @@ import { Lead, LeadStatus } from "@/types/lead"
 
 export default function LeadsPage() {
     const { data: leads, isLoading, isError } = useLeads()
+    const { data: users } = useUsers()
     const [filteredLeads, setFilteredLeads] = React.useState<Lead[]>([])
     const [searchQuery, setSearchQuery] = React.useState("")
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [sourceFilter, setSourceFilter] = React.useState("all")
+    const [assignedToFilter, setAssignedToFilter] = React.useState("all")
+    const [propertyTypeFilter, setPropertyTypeFilter] = React.useState("all")
+    const [budgetMinFilter, setBudgetMinFilter] = React.useState<number | undefined>()
+    const [budgetMaxFilter, setBudgetMaxFilter] = React.useState<number | undefined>()
+    const [createdFromFilter, setCreatedFromFilter] = React.useState<Date | undefined>()
+    const [createdToFilter, setCreatedToFilter] = React.useState<Date | undefined>()
+    const [followUpFromFilter, setFollowUpFromFilter] = React.useState<Date | undefined>()
+    const [followUpToFilter, setFollowUpToFilter] = React.useState<Date | undefined>()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null)
     const [selectedLeads, setSelectedLeads] = React.useState<Lead[]>([])
@@ -31,11 +40,12 @@ export default function LeadsPage() {
 
         // Search filter
         if (searchQuery) {
+            const q = searchQuery.toLowerCase()
             filtered = filtered.filter(
                 (lead) =>
-                    lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    lead.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    lead.phone.toLowerCase().includes(searchQuery.toLowerCase())
+                    lead.name.toLowerCase().includes(q) ||
+                    lead.email.toLowerCase().includes(q) ||
+                    lead.phone.toLowerCase().includes(q)
             )
         }
 
@@ -49,8 +59,59 @@ export default function LeadsPage() {
             filtered = filtered.filter((lead) => lead.source === sourceFilter)
         }
 
+        // Assigned To filter
+        if (assignedToFilter !== "all") {
+            filtered = filtered.filter((lead) => lead.assignedToId === assignedToFilter)
+        }
+
+        // Property Type filter
+        if (propertyTypeFilter !== "all") {
+            filtered = filtered.filter((lead) => lead.propertyType === propertyTypeFilter)
+        }
+
+        // Budget Range filter
+        if (budgetMinFilter !== undefined) {
+            filtered = filtered.filter((lead) => 
+                lead.budgetMin !== undefined && lead.budgetMin >= budgetMinFilter
+            )
+        }
+        if (budgetMaxFilter !== undefined) {
+            filtered = filtered.filter((lead) => 
+                lead.budgetMax !== undefined && lead.budgetMax <= budgetMaxFilter
+            )
+        }
+
+        // Created Date Range filter
+        if (createdFromFilter) {
+            filtered = filtered.filter((lead) => 
+                new Date(lead.createdAt) >= createdFromFilter
+            )
+        }
+        if (createdToFilter) {
+            filtered = filtered.filter((lead) => 
+                new Date(lead.createdAt) <= createdToFilter
+            )
+        }
+
+        // Follow-up Date Range filter
+        if (followUpFromFilter) {
+            filtered = filtered.filter((lead) => 
+                lead.followUpAt && new Date(lead.followUpAt) >= followUpFromFilter
+            )
+        }
+        if (followUpToFilter) {
+            filtered = filtered.filter((lead) => 
+                lead.followUpAt && new Date(lead.followUpAt) <= followUpToFilter
+            )
+        }
+
         setFilteredLeads(filtered)
-    }, [searchQuery, statusFilter, sourceFilter, leads])
+    }, [
+        searchQuery, statusFilter, sourceFilter, assignedToFilter, 
+        propertyTypeFilter, budgetMinFilter, budgetMaxFilter,
+        createdFromFilter, createdToFilter, followUpFromFilter, followUpToFilter,
+        leads
+    ])
 
     const handleEditLead = (lead: Lead) => {
         setSelectedLead(lead)
@@ -104,6 +165,15 @@ export default function LeadsPage() {
                     onSearchChange={setSearchQuery}
                     onStatusChange={setStatusFilter}
                     onSourceChange={setSourceFilter}
+                    onAssignedToChange={setAssignedToFilter}
+                    onPropertyTypeChange={setPropertyTypeFilter}
+                    onBudgetMinChange={setBudgetMinFilter}
+                    onBudgetMaxChange={setBudgetMaxFilter}
+                    onCreatedFromChange={setCreatedFromFilter}
+                    onCreatedToChange={setCreatedToFilter}
+                    onFollowUpFromChange={setFollowUpFromFilter}
+                    onFollowUpToChange={setFollowUpToFilter}
+                    users={users}
                 />
             </Card>
 
