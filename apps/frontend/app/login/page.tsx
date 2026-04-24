@@ -67,6 +67,19 @@ export default function LoginPage() {
     }
   }
 
+  const handleDemoLogin = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      await login({ email: 'admin@demo1.com', password: 'Admin@123' })
+    } catch (err: any) {
+      setError(err.message || "Demo login failed. Please ensure demo tenant exists.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -134,6 +147,16 @@ export default function LoginPage() {
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-realty-gold/30 text-realty-gold hover:bg-realty-gold/10 hover:text-realty-gold"
+              onClick={handleDemoLogin}
+              disabled={isLoading}
+            >
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Try Demo Account
             </Button>
             <div className="text-sm text-center text-slate-400">
               Don&apos;t have an account?{" "}

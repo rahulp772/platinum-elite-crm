@@ -37,6 +37,14 @@ export class Message {
   @JoinColumn({ name: 'tenantId' })
   tenant: Tenant;
 
-  @CreateDateColumn()
+  @Column('jsonb', { nullable: true })
+  attachments: {
+    url: string;
+    type: 'image' | 'pdf' | 'other';
+    name: string;
+    size: number;
+  }[];
+
+  @CreateDateColumn({ type: 'timestamptz' })
   timestamp: Date;
 }

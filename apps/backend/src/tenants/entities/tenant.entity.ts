@@ -25,6 +25,9 @@ export class Tenant {
   @Column({ nullable: true })
   domain: string;
 
+  @Column({ default: false })
+  isDemo: boolean;
+
   @OneToMany(() => User, (user) => user.tenant)
   users: User[];
 

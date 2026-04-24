@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { Users, Shield, Plus, MoreHorizontal, Loader2, Trash2, UserCog } from "lucide-react"
+import { formatDateOnly, getUserTimezone } from "@/lib/date-utils"
 import {
   Table,
   TableBody,
@@ -95,6 +96,7 @@ interface Role {
 export default function SettingsPage() {
   const queryClient = useQueryClient()
   const { user: currentUser } = useAuth()
+  const timezone = getUserTimezone(currentUser)
 
   const [teamPage, setTeamPage] = React.useState(1)
   const [addMemberOpen, setAddMemberOpen] = React.useState(false)
@@ -295,7 +297,7 @@ export default function SettingsPage() {
                         </span>
                       </TableCell>
                       <TableCell>
-                        {new Date(user.createdAt).toLocaleDateString()}
+                        {formatDateOnly(user.createdAt, timezone)}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>

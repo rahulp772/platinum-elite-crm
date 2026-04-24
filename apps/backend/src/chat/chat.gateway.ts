@@ -108,7 +108,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_message')
   async handleSendMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { conversationId: string; content: string },
+    @MessageBody() data: { conversationId: string; content?: string; attachments?: any[] },
   ) {
     const user = client.data.user as User;
     if (!user) return;
@@ -118,6 +118,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         data.conversationId,
         data.content,
         user,
+        data.attachments,
       );
 
       // Emit to the conversation room for active chat windows

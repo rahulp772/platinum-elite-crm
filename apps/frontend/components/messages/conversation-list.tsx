@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { cn } from "@/lib/utils"
 import { Search } from "lucide-react"
-import { formatDistanceToNow } from "date-fns"
+import { formatRelativeTime, getUserTimezone } from "@/lib/date-utils"
+import { useAuth } from "@/lib/auth-context"
 
 interface ConversationListProps {
     conversations: Conversation[]
@@ -42,6 +43,8 @@ function getDisplayParticipant(conv: Conversation, currentUserId: string) {
 
 export function ConversationList({ conversations, selectedId, onSelect, currentUserId }: ConversationListProps) {
     const [search, setSearch] = React.useState("")
+    const { user } = useAuth()
+    const timezone = getUserTimezone(user)
 
     const filtered = conversations.filter(c => {
         const participant = getDisplayParticipant(c, currentUserId)
@@ -114,7 +117,7 @@ export function ConversationList({ conversations, selectedId, onSelect, currentU
                                             </span>
                                             {lastMsg && (
                                                 <span className="text-[10px] font-medium text-muted-foreground/70 uppercase">
-                                                    {formatDistanceToNow(lastMsg.timestamp, { addSuffix: false })}
+                                                    {formatRelativeTime(lastMsg.timestamp, timezone)}
                                                 </span>
                                             )}
                                         </div>
@@ -128,7 +131,7 @@ export function ConversationList({ conversations, selectedId, onSelect, currentU
                                                 {lastMsg.senderId === currentUserId && (
                                                     <span className="text-[10px] font-bold text-muted-foreground/50 mr-1 uppercase">You:</span>
                                                 )}
-                                                {lastMsg.content}
+                                                {lastMsg.content || (lastMsg.attachments?.length ? "Sent an attachment" : "Message")}
                                             </p>
                                         ) : (
                                             <p className="text-xs text-muted-foreground/50 italic">New conversation</p>

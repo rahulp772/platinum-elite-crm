@@ -58,6 +58,7 @@ export class AuthService {
       tenantId: user.tenantId,
       roleId: user.roleId,
       isSuperAdmin: user.isSuperAdmin,
+      timezone: user.timezone,
     };
 
     if (user.roleId) {
@@ -88,6 +89,7 @@ export class AuthService {
         'tenantId',
         'roleId',
         'isSuperAdmin',
+        'timezone',
       ],
     });
 
@@ -141,6 +143,7 @@ export class AuthService {
       tenantId: user.tenantId,
       roleId: user.roleId,
       isSuperAdmin: user.isSuperAdmin,
+      timezone: user.timezone,
     };
 
     if (user.roleId) {

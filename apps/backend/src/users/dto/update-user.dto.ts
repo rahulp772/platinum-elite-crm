@@ -27,4 +27,24 @@ export class UpdateUserDto {
   @IsOptional()
   @IsUUID()
   roleId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  timezone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  whatsapp?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  officeAddress?: string;
 }

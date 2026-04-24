@@ -22,6 +22,12 @@ export class AnalyticsController {
     return this.analyticsService.getLeadStats(req.user);
   }
 
+  @Get('leads/funnel')
+  @ApiOperation({ summary: 'Get lead funnel statistics' })
+  getLeadFunnelStats(@Request() req) {
+    return this.analyticsService.getLeadFunnelStats(req.user);
+  }
+
   @Get('properties')
   @ApiOperation({ summary: 'Get property distribution statistics' })
   getPropertyStats(@Request() req) {

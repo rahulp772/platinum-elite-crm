@@ -28,9 +28,9 @@ export class Conversation {
   @JoinColumn({ name: 'tenantId' })
   tenant: Tenant;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

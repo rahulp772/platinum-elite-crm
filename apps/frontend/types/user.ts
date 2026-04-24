@@ -10,11 +10,13 @@ export interface User {
   id: string;
   email: string;
   name: string;
+  avatar?: string;
   tenantId?: string;
   roleId?: string;
   role?: UserRoleType;
   isSuperAdmin?: boolean;
   permissions?: string[];
+  timezone?: string;
 }
 
 export interface AuthResponse {

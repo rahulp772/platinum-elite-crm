@@ -108,5 +108,34 @@ export class AnalyticsService {
       .groupBy('property.status')
       .getRawMany();
   }
+
+  async getLeadFunnelStats(user: User) {
+    const roleLevel = this.getRoleLevel(user);
+    const query = this.leadRepository.createQueryBuilder('lead');
+    this.applyHierarchyFilters(query, user, roleLevel, 'assignedToId');
+
+    const stats = await query
+      .select('lead.status', 'status')
+      .addSelect('COUNT(lead.id)', 'count')
+      .groupBy('lead.status')
+      .getRawMany();
+
+    const grouping = {
+      Discovery: ['new'],
+      Engagement: ['contacted', 'rnr'],
+      Qualification: ['qualified', 'interested'],
+      Negotiation: ['site_visit_scheduled', 'site_visit_done', 'negotiation'],
+      Conversion: ['booked'],
+    };
+
+    const funnel = Object.entries(grouping).map(([stage, statuses]) => {
+      const count = stats
+        .filter((s) => statuses.includes(s.status))
+        .reduce((sum, s) => sum + parseInt(s.count), 0);
+      return { stage, count };
+    });
+
+    return funnel;
+  }
 }
 

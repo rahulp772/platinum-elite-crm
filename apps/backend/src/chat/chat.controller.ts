@@ -8,8 +8,13 @@ import {
   UseGuards,
   Request,
   ParseUUIDPipe,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { SendMessageDto, CreateConversationDto, GetMessagesQueryDto } from './dto/chat.dto';
@@ -46,7 +51,54 @@ export class ChatController {
     @Body() dto: SendMessageDto,
     @Request() req,
   ) {
-    return this.chatService.sendMessage(id, dto.content, req.user);
+    return this.chatService.sendMessage(id, dto.content, req.user, dto.attachments);
+  }
+
+  @Post('upload')
+  @ApiOperation({ summary: 'Upload a file for a message' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: diskStorage({
+        destination: './public/uploads',
+        filename: (req, file, cb) => {
+          const randomName = Array(32)
+            .fill(null)
+            .map(() => Math.round(Math.random() * 16).toString(16))
+            .join('');
+          cb(null, `${randomName}${extname(file.originalname)}`);
+        },
+      }),
+      fileFilter: (req, file, cb) => {
+        if (file.mimetype.match(/\/(jpg|jpeg|png|gif|pdf)$/)) {
+          cb(null, true);
+        } else {
+          cb(new Error('Only images and PDF files are allowed'), false);
+        }
+      },
+      limits: {
+        fileSize: 5 * 1024 * 1024, // 5MB
+      },
+    }),
+  )
+  uploadFile(@UploadedFile() file: Express.Multer.File) {
+    return {
+      url: `/uploads/${file.filename}`,
+      name: file.originalname,
+      size: file.size,
+      type: file.mimetype.includes('pdf') ? 'pdf' : 'image',
+    };
   }
 
   @Post('conversations')

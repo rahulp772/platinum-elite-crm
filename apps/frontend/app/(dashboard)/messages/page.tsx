@@ -36,6 +36,7 @@ function transformConversation(resp: ConversationResponse, currentUserId: string
             senderId: resp.lastMessage.senderId,
             timestamp: new Date(resp.lastMessage.timestamp),
             read: resp.lastMessage.read,
+            attachments: (resp.lastMessage as any).attachments,
         } : undefined,
         unreadCount: resp.unreadCount,
         createdAt: new Date(resp.createdAt),
@@ -52,6 +53,7 @@ function transformMessage(resp: MessageResponse): Message {
         sender: resp.sender,
         timestamp: new Date(resp.timestamp),
         read: resp.read,
+        attachments: resp.attachments,
     }
 }
 
@@ -138,21 +140,23 @@ export default function MessagesPage() {
     }, [clearUnread])
 
     React.useEffect(() => {
-        if (!socket) return
+        if (!socket) {
+            return
+        }
 
-        const handleConnect = () => {
+        function handleConnect() {
             console.log('Socket connected')
         }
 
-        const handleConnectError = () => {
+        function handleConnectError() {
             toast.error('Connection error. Please refresh.')
         }
 
-        const handleNewMessage = (message: MessageResponse) => {
+        function handleNewMessageFn(message: MessageResponse) {
             const transformed = transformMessage(message)
             const isCurrentConversation = message.conversationId === selectedIdRef.current
             const isOwnMessage = message.senderId === userIdRef.current
-            
+
             if (isCurrentConversation) {
                 setMessages(prev => {
                     if (prev.some(m => m.id === transformed.id)) return prev
@@ -160,7 +164,7 @@ export default function MessagesPage() {
                     return [...filtered, transformed]
                 })
             }
-            
+
             setConversations(prev => prev.map(conv => {
                 if (conv.id === message.conversationId) {
                     return {
@@ -171,10 +175,10 @@ export default function MessagesPage() {
                 }
                 return conv
             }))
-            
+
             if (!isCurrentConversation && !isOwnMessage) {
                 incrementUnread?.()
-                
+
                 if ('Notification' in window && Notification.permission === 'granted') {
                     new Notification('New Message', {
                         body: `${transformed.sender?.name || 'Someone'}: ${transformed.content.substring(0, 50)}...`,
@@ -190,38 +194,40 @@ export default function MessagesPage() {
                         }
                     })
                 }
-                
+
                 toast.info(`New message from ${transformed.sender?.name || 'Someone'}`)
             }
-        })
+        }
 
-        const handleMessagesRead = (data: { conversationId: string, userId: string }) => {
+        function handleMessagesReadFn(data: { conversationId: string, userId: string }) {
             if (data.conversationId === selectedIdRef.current && data.userId !== userIdRef.current) {
                 setMessages(prev => prev.map(m => ({ ...m, read: true })))
             }
             if (data.conversationId === selectedIdRef.current) {
-                setConversations(prev => prev.map(c => 
-                    c.id === data.conversationId ? { ...c, unreadCount: 0 } : c
-                ))
+                setConversations(prev =>
+                    prev.map(c =>
+                        c.id === data.conversationId ? { ...c, unreadCount: 0 } : c
+                    )
+                )
             }
         }
 
-        const handleError = (data: { message: string }) => {
+        function handleErrorFn(data: { message: string }) {
             toast.error(data.message)
         }
 
         socket.on('connect', handleConnect)
         socket.on('connect_error', handleConnectError)
-        socket.on('new_message', handleNewMessage)
-        socket.on('messages_read', handleMessagesRead)
-        socket.on('error', handleError)
+        socket.on('new_message', handleNewMessageFn)
+        socket.on('messages_read', handleMessagesReadFn)
+        socket.on('error', handleErrorFn)
 
         return () => {
             socket.off('connect', handleConnect)
             socket.off('connect_error', handleConnectError)
-            socket.off('new_message', handleNewMessage)
-            socket.off('messages_read', handleMessagesRead)
-            socket.off('error', handleError)
+            socket.off('new_message', handleNewMessageFn)
+            socket.off('messages_read', handleMessagesReadFn)
+            socket.off('error', handleErrorFn)
         }
     }, [socket])
 
@@ -229,11 +235,11 @@ export default function MessagesPage() {
         setLoadingMessages(true)
         try {
             const response = await chatApi.getMessages(conversationId, page)
-            const transformed = response.messages.map(transformMessage)
             setMessages(prev => {
+                const transformed = response.messages.map(transformMessage).reverse()
                 const existingIds = new Set(prev.map(m => m.id))
                 const newMessages = transformed.filter(m => !existingIds.has(m.id))
-                return page === 1 ? [...newMessages, ...prev] : [...prev, ...newMessages]
+                return page === 1 ? transformed : [...newMessages, ...prev]
             })
             setMessagesMeta({
                 page: response.page,
@@ -268,7 +274,7 @@ export default function MessagesPage() {
         }
     }, [selectedId, socket, loadMessages])
 
-    const handleSendMessage = async (content: string) => {
+    const handleSendMessage = async (content: string, attachments?: any[]) => {
         if (!selectedId || !socket || !user) return
 
         const tempId = `temp_${Date.now()}`
@@ -279,6 +285,7 @@ export default function MessagesPage() {
             sender: { id: user.id, name: user.name },
             timestamp: new Date(),
             read: false,
+            attachments,
         }
 
         setMessages(prev => {
@@ -299,6 +306,7 @@ export default function MessagesPage() {
                 socket.emit('send_message', {
                     conversationId: newConv.id,
                     content,
+                    attachments,
                 })
             } catch (error) {
                 setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
@@ -307,6 +315,7 @@ export default function MessagesPage() {
             socket.emit('send_message', {
                 conversationId: selectedId,
                 content,
+                attachments,
             })
         }
     }

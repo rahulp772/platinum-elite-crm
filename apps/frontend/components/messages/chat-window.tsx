@@ -6,23 +6,28 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Phone, Video, MoreHorizontal, Send, Paperclip, Search } from "lucide-react"
+import { Phone, Video, MoreHorizontal, Send, Paperclip, Search, X, FileIcon, Download, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { format } from "date-fns"
+import { formatTimeOnly, getUserTimezone, getDateLabel, formatDateOnly } from "@/lib/date-utils"
+import { chatApi } from "@/lib/api-chat"
+import { useAuth } from "@/lib/auth-context"
+import { toast } from "sonner"
+import { ChatGallery } from "./chat-gallery"
 
 interface ChatWindowProps {
     conversation: Conversation
-    onSendMessage: (content: string) => void
+    onSendMessage: (content: string, attachments?: any[]) => void
     currentUserId: string
     isLoading?: boolean
     hasMore?: boolean
     onLoadMore?: () => void
 }
 
-function getOtherParticipant(conv: Conversation, currentUserId: string): { name: string; avatar?: string; status: "online" | "offline" | "away" } {
+function getOtherParticipant(conv: Conversation, currentUserId: string): { name: string; email?: string; avatar?: string; status: "online" | "offline" | "away" } {
     if (conv.participants.length > 2) {
         return {
             name: `Group (${conv.participants.length})`,
+            email: undefined,
             avatar: undefined,
             status: "offline" as const,
         }
@@ -30,6 +35,7 @@ function getOtherParticipant(conv: Conversation, currentUserId: string): { name:
     const other = conv.participants.find(p => p.id !== currentUserId) || conv.participants[0]
     return {
         name: other.name,
+        email: other.email,
         avatar: other.avatar,
         status: other.status || "offline",
     }
@@ -44,12 +50,73 @@ export function ChatWindow({
     onLoadMore,
 }: ChatWindowProps) {
     const [message, setMessage] = React.useState("")
-    const [showDetails, setShowDetails] = React.useState(false)
+    const [showDetails, setShowDetails] = React.useState(true)
+    const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
+    const [isUploading, setIsUploading] = React.useState(false)
+    const fileInputRef = React.useRef<HTMLInputElement>(null)
+    const textareaRef = React.useRef<HTMLTextAreaElement>(null)
     const scrollRef = React.useRef<HTMLDivElement>(null)
     const [isAtBottom, setIsAtBottom] = React.useState(true)
 
+    const { user } = useAuth()
+    const timezone = getUserTimezone(user)
+    const [galleryOpen, setGalleryOpen] = React.useState(false)
+    const [galleryInitialIndex, setGalleryInitialIndex] = React.useState(0)
+
+    // Collect all images from the current conversation
+    const allImages = React.useMemo(() => {
+        const images: { url: string; name: string; messageId: string }[] = []
+        conversation.messages.forEach(msg => {
+            if (msg.attachments) {
+                msg.attachments.forEach(att => {
+                    if (att.type === 'image') {
+                        images.push({ 
+                            url: att.url, 
+                            name: att.name,
+                            messageId: msg.id
+                        })
+                    }
+                })
+            }
+        })
+        // Since messages are oldest-to-newest, images are already in order
+        return images
+    }, [conversation.messages])
+
+    const openImageInGallery = (url: string) => {
+        const index = allImages.findIndex(img => img.url === url)
+        if (index !== -1) {
+            setGalleryInitialIndex(index)
+            setGalleryOpen(true)
+        }
+    }
+
     const participant = getOtherParticipant(conversation, currentUserId)
 
+    // Auto-focus on chat open
+    React.useEffect(() => {
+        if (textareaRef.current) {
+            textareaRef.current.focus()
+        }
+    }, [conversation.id])
+
+    const scrollToBottom = React.useCallback((behavior: ScrollBehavior = 'auto') => {
+        if (scrollRef.current) {
+            const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]')
+            if (viewport) {
+                viewport.scrollTo({ top: viewport.scrollHeight, behavior })
+            }
+        }
+    }, [])
+
+    // Force scroll to bottom on conversation change
+    React.useEffect(() => {
+        setIsAtBottom(true)
+        const timer = setTimeout(() => scrollToBottom('auto'), 50)
+        return () => clearTimeout(timer)
+    }, [conversation.id, scrollToBottom])
+
+    // Handle incoming messages and scroll area height changes
     React.useEffect(() => {
         if (scrollRef.current) {
             const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]')
@@ -58,7 +125,9 @@ export function ChatWindow({
                     viewport.scrollTop = viewport.scrollHeight
                 }
                 const handleScroll = () => {
-                    setIsAtBottom(viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 100)
+                    const isBottom = viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 100
+                    setIsAtBottom(isBottom)
+                    
                     if (viewport.scrollTop < 100 && hasMore && !isLoading && onLoadMore) {
                         onLoadMore()
                     }
@@ -69,10 +138,38 @@ export function ChatWindow({
         }
     }, [conversation.messages, isAtBottom, hasMore, isLoading, onLoadMore])
 
-    const handleSend = () => {
-        if (!message.trim()) return
-        onSendMessage(message)
+    const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const files = Array.from(e.target.files)
+            setSelectedFiles(prev => [...prev, ...files])
+        }
+    }
+
+    const removeFile = (index: number) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index))
+    }
+
+    const handleSend = async () => {
+        if (!message.trim() && selectedFiles.length === 0) return
+        
+        let attachments: any[] = []
+        
+        if (selectedFiles.length > 0) {
+            setIsUploading(true)
+            try {
+                const uploadPromises = selectedFiles.map(file => chatApi.uploadFile(file))
+                attachments = await Promise.all(uploadPromises)
+            } catch (error) {
+                toast.error("Failed to upload files")
+                setIsUploading(false)
+                return
+            }
+            setIsUploading(false)
+        }
+
+        onSendMessage(message, attachments)
         setMessage("")
+        setSelectedFiles([])
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -163,7 +260,10 @@ export function ChatWindow({
                                         const prevMsg = conversation.messages[index - 1]
                                         const nextMsg = conversation.messages[index + 1]
                                         
-                                        const isFirstInGroup = !prevMsg || prevMsg.senderId !== msg.senderId || (msg.timestamp.getTime() - prevMsg.timestamp.getTime() > 300000)
+                                        const showDateSeparator = !prevMsg || 
+                                            formatDateOnly(prevMsg.timestamp, timezone) !== formatDateOnly(msg.timestamp, timezone)
+
+                                        const isFirstInGroup = !prevMsg || prevMsg.senderId !== msg.senderId || (msg.timestamp.getTime() - prevMsg.timestamp.getTime() > 300000) || showDateSeparator
                                         const isLastInGroup = !nextMsg || nextMsg.senderId !== msg.senderId || (nextMsg.timestamp.getTime() - msg.timestamp.getTime() > 300000)
                                         
                                         const sender = isMe 
@@ -171,11 +271,21 @@ export function ChatWindow({
                                             : (conversation.participants.find(p => p.id === msg.senderId) || { name: 'Unknown', avatar: undefined })
                                         
                                         return (
-                                            <div key={msg.id} className={cn(
-                                                "flex flex-col gap-1 w-full",
-                                                isMe ? "items-end" : "items-start",
-                                                isFirstInGroup && "mt-4"
-                                            )}>
+                                            <React.Fragment key={msg.id}>
+                                                {showDateSeparator && (
+                                                    <div className="flex items-center justify-center my-6">
+                                                        <div className="flex-1 h-px bg-border/50" />
+                                                        <span className="mx-4 px-3 py-1 rounded-full bg-muted/50 text-[10px] font-bold text-muted-foreground uppercase tracking-widest ring-1 ring-border/50 backdrop-blur-sm">
+                                                            {getDateLabel(msg.timestamp, timezone)}
+                                                        </span>
+                                                        <div className="flex-1 h-px bg-border/50" />
+                                                    </div>
+                                                )}
+                                                <div className={cn(
+                                                    "flex flex-col gap-1 w-full",
+                                                    isMe ? "items-end" : "items-start",
+                                                    isFirstInGroup && "mt-1"
+                                                )}>
                                                 {isFirstInGroup && !isMe && (
                                                     <span className="text-[10px] font-bold text-muted-foreground px-2 mb-1 uppercase tracking-tight">
                                                         {sender.name}
@@ -197,21 +307,80 @@ export function ChatWindow({
                                                     )}
                                                     <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
                                                         <div className={cn(
-                                                            "px-4 py-2.5 text-sm shadow-sm transition-all duration-200",
-                                                            isMe 
-                                                                ? "bg-gradient-to-br from-realty-gold to-[#B8860B] text-white rounded-2xl rounded-tr-sm group-hover:shadow-md group-hover:shadow-realty-gold/10" 
-                                                                : "bg-card border border-border/50 text-foreground rounded-2xl rounded-tl-sm group-hover:border-realty-gold/30"
+                                                            "transition-all duration-300",
+                                                            msg.content 
+                                                                ? (isMe 
+                                                                    ? "px-4 py-2.5 text-sm bg-gradient-to-br from-realty-gold to-[#B8860B] text-white rounded-2xl rounded-tr-sm shadow-sm hover:shadow-md hover:shadow-realty-gold/20" 
+                                                                    : "px-4 py-2.5 text-sm bg-card border border-border/50 text-foreground rounded-2xl rounded-tl-sm shadow-sm hover:border-realty-gold/30")
+                                                                : "rounded-2xl overflow-hidden"
                                                         )}>
-                                                            {msg.content}
+                                                             {msg.content}
+                                                             
+                                                             {msg.attachments && msg.attachments.length > 0 && (
+                                                                 <div className={cn(
+                                                                     msg.content ? "mt-3 border-t border-white/10 pt-3" : "",
+                                                                     "flex flex-col gap-2",
+                                                                     msg.attachments.filter(a => a.type === 'image').length > 1 ? "grid grid-cols-2" : "flex"
+                                                                 )}>
+                                                                     {msg.attachments.map((att, i) => (
+                                                                         <div key={i} className={cn(
+                                                                             "group/att relative rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-xl ring-1 ring-white/5",
+                                                                             att.type === 'image' ? "aspect-auto" : "w-full"
+                                                                         )}>
+                                                                             {att.type === 'image' ? (
+                                                                                 <div className="relative group/img overflow-hidden cursor-pointer" onClick={() => openImageInGallery(att.url)}>
+                                                                                     <img 
+                                                                                         src={att.url.startsWith('http') ? att.url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${att.url}`} 
+                                                                                         alt={att.name}
+                                                                                         className="w-full h-full object-cover rounded-xl transition-all duration-700 group-hover/img:scale-110"
+                                                                                     />
+                                                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-end justify-between p-3">
+                                                                                         <div className="flex flex-col gap-0.5">
+                                                                                             <span className="text-[10px] text-white/90 font-bold truncate max-w-[120px]">{att.name}</span>
+                                                                                             <span className="text-[8px] text-white/60 font-medium uppercase">{(att.size / 1024).toFixed(1)} KB</span>
+                                                                                         </div>
+                                                                                         <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/40 transition-colors">
+                                                                                             <Download className="h-3.5 w-3.5 text-white" />
+                                                                                         </div>
+                                                                                     </div>
+                                                                                 </div>
+                                                                             ) : (
+                                                                                 <a 
+                                                                                     href={att.url.startsWith('http') ? att.url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${att.url}`}
+                                                                                     target="_blank"
+                                                                                     rel="noopener noreferrer"
+                                                                                     className={cn(
+                                                                                         "flex items-center gap-3 p-3 rounded-xl transition-colors",
+                                                                                         isMe ? "bg-white/10 hover:bg-white/20" : "bg-muted/50 hover:bg-muted"
+                                                                                     )}
+                                                                                 >
+                                                                                     <div className={cn(
+                                                                                         "h-10 w-10 rounded-lg flex items-center justify-center",
+                                                                                         isMe ? "bg-white/20" : "bg-realty-gold/10"
+                                                                                     )}>
+                                                                                         <FileIcon className={cn("h-5 w-5", isMe ? "text-white" : "text-realty-gold")} />
+                                                                                     </div>
+                                                                                     <div className="flex-1 min-w-0">
+                                                                                         <p className={cn("text-xs font-bold truncate", isMe ? "text-white" : "text-foreground")}>{att.name}</p>
+                                                                                         <p className={cn("text-[10px]", isMe ? "text-white/60" : "text-muted-foreground")}>{(att.size / 1024).toFixed(1)} KB • PDF Document</p>
+                                                                                     </div>
+                                                                                     <Download className={cn("h-4 w-4 shrink-0", isMe ? "text-white/40" : "text-muted-foreground/40")} />
+                                                                                 </a>
+                                                                             )}
+                                                                         </div>
+                                                                     ))}
+                                                                 </div>
+                                                             )}
                                                         </div>
                                                         {isLastInGroup && (
                                                             <span className="text-[9px] font-medium text-muted-foreground/60 px-1 uppercase">
-                                                                {format(msg.timestamp, "h:mm a")}
+                                                                {formatTimeOnly(msg.timestamp, timezone)}
                                                             </span>
                                                         )}
                                                     </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </React.Fragment>
                                         )
                                     })}
                                 </>
@@ -222,36 +391,93 @@ export function ChatWindow({
 
                 {/* Message Input */}
                 <div className="p-4 bg-card/30 backdrop-blur-xl border-t border-border/50">
-                    <div className="max-w-4xl mx-auto flex gap-3 items-end">
-                        <div className="flex gap-1 shrink-0 pb-1">
-                            <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-realty-gold hover:bg-realty-gold/10">
-                                <Paperclip className="h-4 w-4" />
+                    <div className="max-w-4xl mx-auto flex flex-col gap-3">
+                        {/* Selected Files Preview */}
+                        {selectedFiles.length > 0 && (
+                            <div className="flex flex-wrap gap-3 mb-4 p-3 rounded-2xl bg-realty-navy/5 border border-realty-gold/10 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4">
+                                {selectedFiles.map((file, i) => (
+                                    <div key={i} className="relative group bg-card border border-border/50 rounded-2xl p-2.5 pr-10 flex items-center gap-3 shadow-xl hover:border-realty-gold/30 transition-all duration-300 max-w-[240px]">
+                                        <div className="h-10 w-10 rounded-xl bg-realty-gold/10 flex items-center justify-center shrink-0 overflow-hidden ring-1 ring-realty-gold/20">
+                                            {file.type.includes('image') ? (
+                                                <img src={URL.createObjectURL(file)} className="h-full w-full object-cover" />
+                                            ) : (
+                                                <FileIcon className="h-5 w-5 text-realty-gold" />
+                                            )}
+                                        </div>
+                                        <div className="min-w-0">
+                                            <p className="text-[11px] font-bold truncate text-foreground leading-tight">{file.name}</p>
+                                            <p className="text-[9px] font-medium text-realty-gold/60 uppercase tracking-wider">{(file.size / 1024).toFixed(1)} KB</p>
+                                        </div>
+                                        <button 
+                                            onClick={() => removeFile(i)}
+                                            className="absolute top-2 right-2 h-6 w-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white"
+                                        >
+                                            <X className="h-3.5 w-3.5" />
+                                        </button>
+                                    </div>
+                                ))}
+                                <div className="flex items-center justify-center h-12 w-12 rounded-2xl border-2 border-dashed border-realty-gold/20 text-realty-gold/40 hover:border-realty-gold/40 hover:text-realty-gold/60 transition-all cursor-pointer" onClick={() => fileInputRef.current?.click()}>
+                                    <Paperclip className="h-5 w-5" />
+                                </div>
+                            </div>
+                        )}
+
+                        <div className="flex gap-3 items-end">
+                            <div className="flex gap-1 shrink-0 pb-1">
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    onChange={handleFileSelect}
+                                    className="hidden"
+                                    multiple
+                                    accept="image/*,.pdf"
+                                />
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={() => fileInputRef.current?.click()}
+                                    className="h-9 w-9 text-muted-foreground hover:text-realty-gold hover:bg-realty-gold/10"
+                                >
+                                    <Paperclip className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            <div className="flex-1 relative">
+                                <Textarea
+                                    ref={textareaRef}
+                                    value={message}
+                                    onChange={(e) => setMessage(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    placeholder="Type your message..."
+                                    className="min-h-[48px] max-h-[160px] py-3.5 px-5 resize-none bg-background/80 border-realty-gold/10 focus:border-realty-gold/50 focus:ring-realty-gold/20 rounded-[24px] shadow-inner transition-all text-sm scrollbar-none leading-relaxed"
+                                />
+                            </div>
+                            <Button 
+                                onClick={handleSend} 
+                                size="icon" 
+                                disabled={(!message.trim() && selectedFiles.length === 0) || isUploading}
+                                className={cn(
+                                    "shrink-0 h-11 w-11 rounded-2xl shadow-lg transition-all active:scale-95",
+                                    (message.trim() || selectedFiles.length > 0) && !isUploading
+                                        ? "bg-realty-gold text-realty-navy hover:bg-realty-gold-light shadow-realty-gold/20" 
+                                        : "bg-muted text-muted-foreground"
+                                )}
+                            >
+                                {isUploading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Send className="h-4 w-4" />
+                                )}
                             </Button>
                         </div>
-                        <div className="flex-1 relative">
-                            <Textarea
-                                value={message}
-                                onChange={(e) => setMessage(e.target.value)}
-                                onKeyDown={handleKeyDown}
-                                placeholder="Type your message..."
-                                className="min-h-[44px] max-h-[120px] py-3 px-4 resize-none bg-background/50 border-border/50 focus:border-realty-gold/50 focus:ring-realty-gold/20 rounded-2xl transition-all text-sm scrollbar-none"
-                            />
-                        </div>
-                        <Button 
-                            onClick={handleSend} 
-                            size="icon" 
-                            disabled={!message.trim()}
-                            className={cn(
-                                "shrink-0 h-11 w-11 rounded-2xl shadow-lg transition-all active:scale-95",
-                                message.trim() 
-                                    ? "bg-realty-gold text-realty-navy hover:bg-realty-gold-light shadow-realty-gold/20" 
-                                    : "bg-muted text-muted-foreground"
-                            )}
-                        >
-                            <Send className="h-4 w-4" />
-                        </Button>
                     </div>
                 </div>
+
+                <ChatGallery 
+                    open={galleryOpen}
+                    onOpenChange={setGalleryOpen}
+                    images={allImages}
+                    initialIndex={galleryInitialIndex}
+                />
             </div>
 
             {/* Details Sidebar */}

@@ -2,11 +2,35 @@ import { IsString, IsArray, IsNotEmpty, IsOptional, IsUUID, Min, Max, IsInt } fr
 import { Type, Transform } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
+export class AttachmentDto {
+  @ApiProperty()
+  @IsString()
+  url: string;
+
+  @ApiProperty()
+  @IsString()
+  type: 'image' | 'pdf' | 'other';
+
+  @ApiProperty()
+  @IsString()
+  name: string;
+
+  @ApiProperty()
+  @IsInt()
+  size: number;
+}
+
 export class SendMessageDto {
   @ApiProperty({ example: 'Hello world' })
   @IsString()
-  @IsNotEmpty()
-  content: string;
+  @IsOptional()
+  content?: string;
+
+  @ApiPropertyOptional({ type: [AttachmentDto] })
+  @IsArray()
+  @IsOptional()
+  @Type(() => AttachmentDto)
+  attachments?: AttachmentDto[];
 }
 
 export class CreateConversationDto {

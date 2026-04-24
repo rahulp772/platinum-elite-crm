@@ -43,7 +43,7 @@ export class Task {
   })
   type: TaskType;
 
-  @Column()
+  @Column({ type: 'timestamptz', nullable: true })
   dueDate: Date;
 
   @Column({ nullable: true })
@@ -77,9 +77,9 @@ export class Task {
   @JoinColumn({ name: 'tenantId' })
   tenant: Tenant;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

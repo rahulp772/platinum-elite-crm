@@ -32,6 +32,12 @@ export interface MessageResponse {
   conversationId?: string;
   timestamp: Date;
   read: boolean;
+  attachments?: {
+    url: string;
+    type: 'image' | 'pdf' | 'other';
+    name: string;
+    size: number;
+  }[];
 }
 
 export interface PaginatedMessagesResponse {
@@ -82,6 +88,22 @@ export const chatApi = {
     } catch (error: any) {
       console.error('Failed to create conversation:', error);
       throw new Error(error.response?.data?.message || 'Failed to create conversation');
+    }
+  },
+
+  uploadFile: async (file: File): Promise<{ url: string, name: string, size: number, type: 'image' | 'pdf' | 'other' }> => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await api.post('/chat/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error: any) {
+      console.error('Failed to upload file:', error);
+      throw new Error(error.response?.data?.message || 'Failed to upload file');
     }
   },
 };

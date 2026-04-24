@@ -16,6 +16,7 @@ interface AuthContextType {
   login: (data: any) => Promise<{ tenants?: TenantInfo[] } | void>
   register: (data: any) => Promise<void>
   logout: () => void
+  setUser: (user: User | null) => void
   isAuthenticated: boolean
   hasPermission: (permission: string) => boolean
 }
@@ -91,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         login,
         register,
         logout,
+        setUser,
         isAuthenticated: !!user,
         hasPermission,
       }}

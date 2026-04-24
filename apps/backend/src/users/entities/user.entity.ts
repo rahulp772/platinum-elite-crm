@@ -100,9 +100,12 @@ export class User {
   @OneToMany(() => Team, (team) => team.teamLead)
   ledTeams: Team[];
 
-  @CreateDateColumn()
+  @Column({ nullable: true })
+  timezone: string;
+
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

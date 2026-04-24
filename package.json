@@ -6,9 +6,15 @@
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "demo:create": "node scripts/demo-manager.js create",
+    "demo:refresh": "node scripts/demo-manager.js refresh",
+    "demo:delete": "node scripts/demo-manager.js delete",
+    "demo:status": "node scripts/demo-manager.js status"
   },
   "devDependencies": {
+    "bcryptjs": "^2.4.3",
+    "pg": "^8.20.0",
     "prettier": "^3.4.2",
     "turbo": "latest"
   },

@@ -79,6 +79,7 @@ export class ChatService {
           senderId: messages[0].senderId,
           timestamp: messages[0].timestamp,
           read: messages[0].read,
+          attachments: messages[0].attachments,
         } : undefined;
 
         const unreadCount = await this.messageRepository.count({
@@ -152,7 +153,7 @@ export class ChatService {
     const total = await query.getCount();
 
     const messages = await query
-      .orderBy('message.timestamp', 'ASC')
+      .orderBy('message.timestamp', 'DESC')
       .skip((page - 1) * limit)
       .take(limit)
       .getMany();
@@ -170,6 +171,7 @@ export class ChatService {
         conversationId: conversationId,
         timestamp: msg.timestamp,
         read: msg.read,
+        attachments: msg.attachments,
       })),
       total,
       page,
@@ -178,7 +180,7 @@ export class ChatService {
     };
   }
 
-  async sendMessage(conversationId: string, content: string, sender: User) {
+  async sendMessage(conversationId: string, content: string | undefined, sender: User, attachments?: any[]) {
     const conversation = await this.conversationRepository.findOne({
       where: { id: conversationId },
       relations: ['participants'],
@@ -194,11 +196,12 @@ export class ChatService {
     }
 
     const message = this.messageRepository.create({
-      content,
+      content: content || '',
       senderId: sender.id,
       sender: sender,
       conversationId: conversationId,
       tenantId: sender.tenantId,
+      attachments: attachments,
     });
 
     await this.conversationRepository.update(conversationId, { updatedAt: new Date() });
@@ -217,6 +220,7 @@ export class ChatService {
       conversationId: conversationId,
       timestamp: savedMessage.timestamp,
       read: savedMessage.read,
+      attachments: savedMessage.attachments,
       participants: conversation.participants.map(p => ({
         id: p.id,
         name: p.name,
@@ -296,6 +300,7 @@ export class ChatService {
       senderId: messages[0].senderId,
       timestamp: messages[0].timestamp,
       read: messages[0].read,
+      attachments: messages[0].attachments,
     } : undefined;
 
     return {

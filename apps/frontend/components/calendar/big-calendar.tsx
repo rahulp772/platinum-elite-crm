@@ -6,6 +6,8 @@ import { Task } from "@/types/task"
 import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { formatDateInTimezone, formatTimeOnly, getUserTimezone } from "@/lib/date-utils"
+import { useAuth } from "@/lib/auth-context"
 
 interface BigCalendarProps {
     tasks: Task[]
@@ -14,6 +16,8 @@ interface BigCalendarProps {
 
 export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
     const [currentDate, setCurrentDate] = React.useState(new Date())
+    const { user } = useAuth()
+    const timezone = getUserTimezone(user)
 
     const nextMonth = () => {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
@@ -109,7 +113,7 @@ export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
                                             task.status === "done" && "opacity-50 line-through"
                                         )}
                                     >
-                                        {format(new Date(task.dueDate), "h:mm a")} {task.title}
+                                        {formatTimeOnly(task.dueDate, timezone)} {task.title}
                                     </div>
                                 ))}
                             </div>

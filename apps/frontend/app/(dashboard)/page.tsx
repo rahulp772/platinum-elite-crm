@@ -46,6 +46,7 @@ export default function DashboardPage() {
             {/* Stats Cards */}
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <StatsCard
+                    index={0}
                     title="Total Leads"
                     value={overview.totalLeads.toString()}
                     change="+12% from last month"
@@ -54,6 +55,7 @@ export default function DashboardPage() {
                     iconColor="text-realty-gold"
                 />
                 <StatsCard
+                    index={1}
                     title="Active Properties"
                     value={overview.totalProperties.toString()}
                     change="+3 new this week"
@@ -62,6 +64,7 @@ export default function DashboardPage() {
                     iconColor="text-primary"
                 />
                 <StatsCard
+                    index={2}
                     title="Deals in Pipeline"
                     value={overview.totalDeals.toString()}
                     change="8 closing this month"
@@ -70,6 +73,7 @@ export default function DashboardPage() {
                     iconColor="text-indigo-600 dark:text-indigo-400"
                 />
                 <StatsCard
+                    index={3}
                     title="Revenue (Closed)"
                     value={`$${(overview.totalRevenue / 1000000).toFixed(1)}M`}
                     change="+18% from last month"
