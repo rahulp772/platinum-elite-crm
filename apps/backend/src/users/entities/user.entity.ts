@@ -9,6 +9,7 @@ import {
   JoinColumn,
   Unique,
   ManyToOne,
+  OneToOne,
 } from 'typeorm';
 import { UserStatus } from '../enums/user.enum';
 import { Property } from '../../properties/entities/property.entity';
@@ -19,6 +20,7 @@ import { Message } from '../../chat/entities/message.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { Team } from '../../teams/entities/team.entity';
+import { AgentProfile } from './agent-profile.entity';
 
 @Entity('users')
 @Unique(['email', 'tenantId'])
@@ -99,6 +101,9 @@ export class User {
 
   @OneToMany(() => Team, (team) => team.teamLead)
   ledTeams: Team[];
+
+  @OneToOne(() => AgentProfile, (profile) => profile.user)
+  agentProfile: AgentProfile;
 
   @Column({ nullable: true })
   timezone: string;

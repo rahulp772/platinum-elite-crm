@@ -12,6 +12,12 @@ export enum LeadStatus {
   LOST = 'lost',
 }
 
+export enum LeadTier {
+  HIGH = 'high',
+  MEDIUM = 'medium',
+  LOW = 'low',
+}
+
 export enum LeadSource {
   WEBSITE = 'website',
   REFERRAL = 'referral',

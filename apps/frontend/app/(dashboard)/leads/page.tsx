@@ -6,11 +6,14 @@ import { LeadFilters } from "@/components/leads/lead-filters"
 import { AddLeadDialog } from "@/components/leads/add-lead-dialog"
 import { EditLeadDialog } from "@/components/leads/edit-lead-dialog"
 import { BulkActionsDialog } from "@/components/leads/bulk-actions-dialog"
+import { LeadActionZone } from "@/components/leads/lead-action-zone"
 import { useLeads, useUpdateLead, useUsers } from "@/hooks/use-leads"
 import { Card } from "@/components/ui/card"
 import { LoaderCircle, Users, Trash2, MessageSquare, UserPlus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Lead, LeadStatus } from "@/types/lead"
+
+type ActionFilter = "all" | "overdue" | "today" | "new"
 
 export default function LeadsPage() {
     const { data: leads, isLoading, isError } = useLeads()
@@ -31,12 +34,31 @@ export default function LeadsPage() {
     const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null)
     const [selectedLeads, setSelectedLeads] = React.useState<Lead[]>([])
     const [bulkDialogOpen, setBulkDialogOpen] = React.useState(false)
+    const [actionFilter, setActionFilter] = React.useState<ActionFilter>("all")
 
     // Apply filters
     React.useEffect(() => {
         if (!leads) return
 
         let filtered = [...leads]
+
+        // Action filter (overdue/today/new)
+        if (actionFilter === "overdue") {
+            const now = new Date()
+            now.setHours(0, 0, 0, 0)
+            filtered = filtered.filter((lead) => lead.followUpAt && new Date(lead.followUpAt) < now)
+        } else if (actionFilter === "today") {
+            const now = new Date()
+            const end = new Date(now)
+            end.setHours(23, 59, 59, 999)
+            filtered = filtered.filter(
+                (lead) => lead.followUpAt && new Date(lead.followUpAt) >= now && new Date(lead.followUpAt) <= end
+            )
+        } else if (actionFilter === "new") {
+            filtered = filtered.filter((lead) => lead.status === "new")
+        } else if (statusFilter !== "all") {
+            filtered = filtered.filter((lead) => lead.status === statusFilter)
+        }
 
         // Search filter
         if (searchQuery) {
@@ -47,11 +69,6 @@ export default function LeadsPage() {
                     lead.email.toLowerCase().includes(q) ||
                     lead.phone.toLowerCase().includes(q)
             )
-        }
-
-        // Status filter
-        if (statusFilter !== "all") {
-            filtered = filtered.filter((lead) => lead.status === statusFilter)
         }
 
         // Source filter
@@ -158,6 +175,12 @@ export default function LeadsPage() {
                 </div>
                 <AddLeadDialog />
             </div>
+
+            {/* Action Zone */}
+            <LeadActionZone
+                onFilterChange={(filter) => setActionFilter(filter as ActionFilter)}
+                activeFilter={actionFilter}
+            />
 
             {/* Filters */}
             <Card className="p-6">

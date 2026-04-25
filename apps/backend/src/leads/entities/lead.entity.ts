@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
-import { LeadStatus, LeadSource, LostReason } from '../enums/lead.enum';
+import { LeadStatus, LeadSource, LostReason, LeadTier } from '../enums/lead.enum';
 import { LeadActivity } from './lead-activity.entity';
 
 @Entity('leads')
@@ -101,6 +101,22 @@ export class Lead {
 
   @Column({ nullable: true })
   whatsappNumber: string;
+
+  @Column('int', { default: 0 })
+  score: number;
+
+  @Column({
+    type: 'enum',
+    enum: LeadTier,
+    nullable: true,
+  })
+  tier: LeadTier;
+
+  @Column({ type: 'timestamp', nullable: true })
+  slaBreachedAt: Date;
+
+  @Column({ type: 'timestamp', nullable: true })
+  lastActivityAt: Date;
 
   @OneToMany(() => LeadActivity, (activity) => activity.lead)
   activities: LeadActivity[];

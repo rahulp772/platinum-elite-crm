@@ -18,6 +18,7 @@ import {
     LogOut,
     ChevronLeft,
     Zap,
+    Kanban,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -29,6 +30,7 @@ import { useNotifications } from "@/lib/notification-context"
 const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Leads", href: "/leads", icon: Users },
+    { name: "Pipeline", href: "/pipeline", icon: Kanban },
     { name: "Properties", href: "/properties", icon: Building2 },
     { name: "Deals", href: "/deals", icon: Handshake },
     { name: "Tasks", href: "/tasks", icon: CheckSquare },

@@ -1,12 +1,15 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, LessThan } from 'typeorm';
+import { Repository, In, LessThan, MoreThan, LessThanOrEqual, Not, IsNull } from 'typeorm';
 import { Lead } from './entities/lead.entity';
 import { CreateLeadDto, UpdateLeadDto, LeadLookupDto } from './dto/create-lead.dto';
 import { User } from '../users/entities/user.entity';
+import { AgentProfile } from '../users/entities/agent-profile.entity';
 import { LeadActivity, LeadActivityAction } from './entities/lead-activity.entity';
 import { LeadStatus, LeadSource } from './enums/lead.enum';
 import { TeamsService } from '../teams/teams.service';
+import { LeadScoringService } from './services/lead-scoring.service';
+import { LeadAssignmentService } from './services/lead-assignment.service';
 
 const ACTIVE_STATUSES = [
   LeadStatus.NEW,
@@ -30,7 +33,11 @@ export class LeadsService {
     private userRepository: Repository<User>,
     @InjectRepository(LeadActivity)
     private activityRepository: Repository<LeadActivity>,
+    @InjectRepository(AgentProfile)
+    private agentProfileRepository: Repository<AgentProfile>,
     private teamsService: TeamsService,
+    private leadScoringService: LeadScoringService,
+    private leadAssignmentService: LeadAssignmentService,
   ) {}
 
   private async logActivity(
@@ -50,6 +57,28 @@ export class LeadsService {
       description,
     });
     await this.activityRepository.save(activity);
+  }
+
+  private async recalculateAgentClosingRate(agentId: string) {
+    const agentProfile = await this.agentProfileRepository.findOne({ where: { userId: agentId } });
+    if (!agentProfile) return;
+
+    const [total, won] = await Promise.all([
+      this.leadRepository.count({ where: { assignedToId: agentId } }),
+      this.leadRepository.count({ where: { assignedToId: agentId, status: LeadStatus.BOOKED } }),
+    ]);
+
+    agentProfile.closingRate = total > 0 ? (won / total) * 100 : 0;
+    await this.agentProfileRepository.save(agentProfile);
+
+    const activeCount = await this.leadRepository.count({
+      where: {
+        assignedToId: agentId,
+        status: In(ACTIVE_STATUSES),
+      },
+    });
+    agentProfile.activeLeadCount = activeCount;
+    await this.agentProfileRepository.save(agentProfile);
   }
 
   private async checkDuplicate(phone: string, tenantId: string): Promise<{ isDuplicate: boolean; existingLead?: Lead; isReInquiry?: boolean }> {
@@ -113,7 +142,21 @@ export class LeadsService {
       followUpAt: followUpAt ? new Date(followUpAt) : null,
       siteVisitScheduledAt: siteVisitScheduledAt ? new Date(siteVisitScheduledAt) : null,
       siteVisitDoneAt: siteVisitDoneAt ? new Date(siteVisitDoneAt) : null,
+      lastActivityAt: new Date(),
     });
+
+    // Score the lead
+    const { score, tier } = this.leadScoringService.evaluateLead(lead);
+    lead.score = score;
+    lead.tier = tier;
+
+    // Smart assignment if no assignedToId was provided
+    if (!assignedToId) {
+      const newAssignedId = await this.leadAssignmentService.assignAgent(lead);
+      if (newAssignedId) {
+        lead.assignedToId = newAssignedId;
+      }
+    }
 
 const savedLead = await this.leadRepository.save(lead);
 
@@ -243,6 +286,13 @@ const savedLead = await this.leadRepository.save(lead);
       if (leadData.status === LeadStatus.LOST) {
         lead.lostAt = new Date();
       }
+
+      if (
+        leadData.status === LeadStatus.BOOKED ||
+        leadData.status === LeadStatus.LOST
+      ) {
+        await this.recalculateAgentClosingRate(lead.assignedToId);
+      }
     }
 
     const savedLead = await this.leadRepository.save(lead);
@@ -331,13 +381,43 @@ const savedLead = await this.leadRepository.save(lead);
   }
 
   async getUpcomingFollowUps(user: User) {
+    const now = new Date();
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+
     return this.leadRepository.find({
       where: {
         assignedToId: user.id,
-        followUpAt: undefined,
+        followUpAt: LessThanOrEqual(endOfDay),
       },
       relations: ['assignedTo'],
       order: { followUpAt: 'ASC' },
+    });
+  }
+
+  async getOverdueFollowUps(user: User) {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    return this.leadRepository.find({
+      where: {
+        assignedToId: user.id,
+        followUpAt: LessThan(now),
+        status: In(ACTIVE_STATUSES),
+      },
+      relations: ['assignedTo'],
+      order: { followUpAt: 'ASC' },
+    });
+  }
+
+  async getNewLeads(user: User) {
+    return this.leadRepository.find({
+      where: {
+        assignedToId: user.id,
+        status: LeadStatus.NEW,
+      },
+      relations: ['assignedTo'],
+      order: { createdAt: 'ASC' },
     });
   }
 }

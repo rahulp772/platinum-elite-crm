@@ -36,6 +36,7 @@ import { ExpiringPropertiesWidget } from "./widgets/expiring-properties-widget"
 import { TodayScheduleWidget } from "./widgets/today-schedule-widget"
 import { WeekScheduleWidget } from "./widgets/week-schedule-widget"
 import { RevenueTrendWidget } from "./widgets/revenue-trend-widget"
+import { FollowUpActionWidget } from "./widgets/follow-up-action-widget"
 
 type PeriodType = 'today' | 'week' | 'month' | 'quarter' | 'year'
 
@@ -58,6 +59,7 @@ const WIDGET_COMPONENTS: Record<string, React.FC<{ period: PeriodType }>> = {
   'leads-funnel': LeadFunnelWidget,
   'leads-hot': HotLeadsWidget,
   'leads-sources': LeadSourcesWidget,
+  'leads-action': FollowUpActionWidget,
   'tasks-today': TodayTasksWidget,
   'tasks-upcoming': UpcomingTasksWidget,
   'team-performance': TeamPerformanceWidget,

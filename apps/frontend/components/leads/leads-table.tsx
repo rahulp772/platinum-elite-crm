@@ -12,7 +12,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { MoreHorizontal, Mail, Phone, Calendar } from "lucide-react"
+import { MoreHorizontal, Mail, Phone, Calendar, MessageCircle, FileText, CheckCircle } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -192,15 +192,37 @@ export function createColumns(onEdit?: (lead: Lead) => void): ColumnDef<Lead>[] 
         header: () => <div className="text-right">Actions</div>,
         cell: ({ row }) => {
             const lead = row.original
+            const handleCall = (e: React.MouseEvent) => {
+                e.stopPropagation()
+                window.open(`tel:${lead.phone}`)
+            }
+            const handleWhatsApp = (e: React.MouseEvent) => {
+                e.stopPropagation()
+                const waNumber = lead.whatsappNumber || lead.phone
+                window.open(`https://wa.me/${waNumber.replace(/\D/g, "")}`)
+            }
+            const handleNote = (e: React.MouseEvent) => {
+                e.stopPropagation()
+                onEdit?.(lead)
+            }
             const handleEdit = (e: React.MouseEvent) => {
                 e.stopPropagation()
                 onEdit?.(lead)
             }
             return (
-                <div className="flex justify-end">
+                <div className="flex items-center justify-end gap-1">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700" title="Call" onClick={handleCall}>
+                        <Phone className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:bg-green-50 hover:text-green-700" title="WhatsApp" onClick={handleWhatsApp}>
+                        <MessageCircle className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:bg-blue-50 hover:text-blue-700" title="Add Note" onClick={handleNote}>
+                        <FileText className="h-4 w-4" />
+                    </Button>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted">
+                            <Button variant="ghost" className="h-8 w-8 p-0 hover:bg-muted" onClick={(e) => e.stopPropagation()}>
                                 <MoreHorizontal className="h-4 w-4" />
                             </Button>
                         </DropdownMenuTrigger>
@@ -210,12 +232,12 @@ export function createColumns(onEdit?: (lead: Lead) => void): ColumnDef<Lead>[] 
                             <DropdownMenuItem onClick={() => navigator.clipboard.writeText(lead.email)}>
                                 Copy Email Address
                             </DropdownMenuItem>
-                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onClick={handleEdit}>
+                                View Details
+                            </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleEdit}>
                                 Edit Lead
                             </DropdownMenuItem>
-                            <DropdownMenuItem>View Journey</DropdownMenuItem>
-                            <DropdownMenuItem>Edit Properties</DropdownMenuItem>
                             <DropdownMenuItem className="text-rose-600 focus:text-rose-600">Archive Lead</DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>

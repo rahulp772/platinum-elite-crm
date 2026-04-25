@@ -41,9 +41,21 @@ export class LeadsController {
   }
 
   @Get('followups')
-  @ApiOperation({ summary: 'Get upcoming follow-ups' })
+  @ApiOperation({ summary: 'Get upcoming follow-ups (today)' })
   getUpcomingFollowUps(@Request() req) {
     return this.leadsService.getUpcomingFollowUps(req.user);
+  }
+
+  @Get('followups/overdue')
+  @ApiOperation({ summary: 'Get overdue follow-ups' })
+  getOverdueFollowUps(@Request() req) {
+    return this.leadsService.getOverdueFollowUps(req.user);
+  }
+
+  @Get('new')
+  @ApiOperation({ summary: 'Get new leads' })
+  getNewLeads(@Request() req) {
+    return this.leadsService.getNewLeads(req.user);
   }
 
   @Get('lookup')

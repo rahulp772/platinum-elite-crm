@@ -11,15 +11,28 @@ import { Users, Building2, DollarSign, TrendingUp, Loader2, Sparkles } from "luc
 import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { useAuth } from "@/lib/auth-context"
+import { AgentDashboardView } from "@/components/dashboard/agent-dashboard-view"
 
 export default function DashboardPage() {
+    const { user } = useAuth()
+
     const { data: stats, isLoading } = useQuery({
         queryKey: ["dashboard-stats"],
         queryFn: async () => {
             const res = await api.get("/analytics/dashboard")
             return res.data
-        }
+        },
+        enabled: user?.role?.level ? user.role.level > 50 : true,
     })
+
+    if (!user) return null
+
+    const userRoleLevel = user.role?.level ?? 100
+
+    if (userRoleLevel <= 50) {
+        return <AgentDashboardView />
+    }
 
     if (isLoading) {
         return (

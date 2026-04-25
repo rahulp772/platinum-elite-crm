@@ -40,6 +40,7 @@ export const WIDGET_REGISTRY: WidgetDefinition[] = [
   { id: 'leads-funnel', title: 'Lead Funnel', category: 'leads', defaultEnabled: true, size: 'medium', order: 7 },
   { id: 'leads-hot', title: 'Hot Leads', category: 'leads', defaultEnabled: true, size: 'medium', order: 8 },
   { id: 'leads-sources', title: 'Lead Sources', category: 'leads', defaultEnabled: false, size: 'small', order: 9 },
+  { id: 'leads-action', title: 'Action Required', category: 'leads', defaultEnabled: true, size: 'medium', order: 9.5 },
   
   // Tasks
   { id: 'tasks-today', title: "Today's Tasks", category: 'tasks', defaultEnabled: true, size: 'medium', order: 10 },
