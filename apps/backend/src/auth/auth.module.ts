@@ -9,6 +9,7 @@ import { User } from '../users/entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Tenant } from '../tenants/entities/tenant.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { AuditModule } from '../audit/audit.module';
 
 @Module({
   imports: [
@@ -16,14 +17,19 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET', 'super-secret-key'),
-        signOptions: {
-          expiresIn: configService.get<string>('JWT_EXPIRATION', '1d') as any,
-        },
-      }),
+      useFactory: async (configService: ConfigService) => {
+        const expiresIn = configService.get<string>('JWT_EXPIRES_IN');
+        const expiresInSeconds = expiresIn ? parseInt(expiresIn, 10) : 86400;
+        return {
+          secret: configService.get<string>('JWT_SECRET', 'super-secret-key'),
+          signOptions: {
+            expiresIn: expiresInSeconds,
+          },
+        };
+      },
       inject: [ConfigService],
     }),
+    AuditModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],

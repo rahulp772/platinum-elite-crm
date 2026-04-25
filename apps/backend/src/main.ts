@@ -6,7 +6,6 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global Validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -15,13 +14,16 @@ async function bootstrap() {
     }),
   );
 
-  // CORS
+  const corsOrigins = process.env.CORS_ORIGINS || 'http://localhost:3000';
+  const allowedOrigins = corsOrigins.split(',').map((origin) => origin.trim());
+
   app.enableCors({
-    origin: true,
+    origin: allowedOrigins,
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Forwarded-For'],
   });
 
-  // Swagger setup
   const config = new DocumentBuilder()
     .setTitle('Real Estate CRM API')
     .setDescription('The Real Estate CRM backend API description')

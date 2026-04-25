@@ -4,13 +4,14 @@ import * as React from "react"
 import { BigCalendar } from "@/components/calendar/big-calendar"
 import { AddTaskDialog } from "@/components/tasks/add-task-dialog"
 import { TaskDetailDialog } from "@/components/tasks/task-detail-dialog"
-import { useTasks } from "@/hooks/use-tasks"
+import { useTasksInfinite } from "@/hooks/use-tasks"
 import { Button } from "@/components/ui/button"
 import { CalendarIcon, Plus } from "lucide-react"
 import { Task } from "@/types/task"
 
 export default function CalendarPage() {
-    const { data: tasks = [] } = useTasks()
+    const { data, isLoading } = useTasksInfinite()
+    const flatTasks: Task[] = data?.pages.flatMap((p) => p.data) ?? []
     const [addTaskOpen, setAddTaskOpen] = React.useState(false)
     const [selectedTask, setSelectedTask] = React.useState<Task | null>(null)
 
@@ -40,7 +41,7 @@ export default function CalendarPage() {
             </div>
 
             <div className="flex-1 min-h-0">
-                <BigCalendar tasks={tasks} onTaskClick={handleTaskClick} />
+                <BigCalendar tasks={flatTasks} onTaskClick={handleTaskClick} />
             </div>
 
             <AddTaskDialog open={addTaskOpen} onOpenChange={setAddTaskOpen} />

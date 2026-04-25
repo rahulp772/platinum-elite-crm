@@ -108,6 +108,21 @@ export class User {
   @Column({ nullable: true })
   timezone: string;
 
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lockedUntil: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lastLoginAt: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  passwordChangedAt: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  passwordExpiresAt: Date;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

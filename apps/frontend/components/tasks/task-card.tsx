@@ -31,7 +31,9 @@ export function TaskCard({ task, onStatusChange }: TaskCardProps) {
     const Icon = typeIcons[task.type] || FileText
     
     const dueDate = new Date(task.dueDate)
-    const isOverdue = dueDate > new Date() && task.status !== "done"
+    const now = new Date()
+    now.setHours(0, 0, 0, 0)
+    const isOverdue = dueDate < now && task.status !== "done"
     const isDone = task.status === "done"
 
     return (

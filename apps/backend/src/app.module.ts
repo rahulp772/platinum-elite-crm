@@ -20,6 +20,7 @@ import { SearchModule } from './search/search.module';
 import { SeedsModule } from './seeds/seeds.module';
 import { TeamsModule } from './teams/teams.module';
 import { PortalWebhooksModule } from './portal-webhooks/portal-webhooks.module';
+import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { PortalWebhooksModule } from './portal-webhooks/portal-webhooks.module';
       }),
       inject: [ConfigService],
     }),
+    AuditModule,
     SeedsModule,
     AuthModule,
     UsersModule,

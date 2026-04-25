@@ -5,12 +5,14 @@ import * as bcrypt from 'bcryptjs';
 import { Tenant } from '../tenants/entities/tenant.entity';
 import { Role } from '../roles/entities/role.entity';
 import { User } from '../users/entities/user.entity';
+import { AgentProfile } from '../users/entities/agent-profile.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { LeadStatus, LeadSource } from '../leads/enums/lead.enum';
 import { Property } from '../properties/entities/property.entity';
 import { Deal } from '../deals/entities/deal.entity';
 import { DealStage, DealPriority } from '../deals/enums/deal.enum';
 import { Task } from '../tasks/entities/task.entity';
+import { TaskStatus, TaskPriority, TaskType } from '../tasks/enums/task.enum';
 
 const BASE_PERMISSIONS = [
   'leads:read',
@@ -37,6 +39,8 @@ export class SeedService {
     private roleRepository: Repository<Role>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
+    @InjectRepository(AgentProfile)
+    private agentProfileRepository: Repository<AgentProfile>,
     @InjectRepository(Lead)
     private leadRepository: Repository<Lead>,
     @InjectRepository(Property)
@@ -53,6 +57,7 @@ export class SeedService {
     await this.seedTenantsAndRoles();
     await this.seedSuperAdmin();
     await this.seedLeads();
+    await this.seedTasks();
     console.log('✅ Seed completed successfully!');
   }
 
@@ -65,6 +70,7 @@ export class SeedService {
     await this.dataSource.query('DELETE FROM deals');
     await this.dataSource.query('DELETE FROM leads');
     await this.dataSource.query('DELETE FROM properties');
+    await this.dataSource.query('DELETE FROM agent_profiles');
     await this.dataSource.query('DELETE FROM users');
     await this.dataSource.query('DELETE FROM roles');
     await this.dataSource.query('DELETE FROM tenants');
@@ -167,6 +173,7 @@ export class SeedService {
       });
       await this.userRepository.save(managerUser);
 
+      const teamLeadUsers: User[] = [];
       for (let i = 1; i <= 2; i++) {
         const teamLead = this.userRepository.create({
           email: `lead${i}@${tenantData.domain}`,
@@ -177,21 +184,37 @@ export class SeedService {
           isSuperAdmin: false,
         });
         await this.userRepository.save(teamLead);
+        teamLeadUsers.push(teamLead);
       }
 
+      const agentUsers: User[] = [];
       for (let i = 1; i <= 4; i++) {
+        const name = i === 1 ? 'Anjali Sharma' : `Agent ${i}`;
+        const email = i === 1 ? `anjali@${tenantData.domain}` : `agent${i}@${tenantData.domain}`;
         const agent = this.userRepository.create({
-          email: `agent${i}@${tenantData.domain}`,
+          email,
           password: hashedPassword,
-          name: `Agent ${i}`,
+          name,
           tenantId: tenant.id,
           roleId: rolesMap['Agent'].id,
           isSuperAdmin: false,
         });
-        await this.userRepository.save(agent);
+        const savedAgent = await this.userRepository.save(agent);
+
+        const profile = this.agentProfileRepository.create({
+          userId: savedAgent.id,
+          experienceLevel: i === 1 ? 'senior' : i === 2 ? 'mid' : 'junior',
+          closingRate: i === 1 ? 65 : i === 2 ? 45 : Math.floor(Math.random() * 30 + 10),
+          activeLeadCount: 0,
+          locationSpecializations: i === 1 ? ['Manhattan, NY', 'Brooklyn, NY'] : [],
+          budgetSpecializations: i === 1 ? ['5000000-15000000'] : [],
+        });
+        await this.agentProfileRepository.save(profile);
+
+        agentUsers.push(savedAgent);
       }
 
-      console.log(`   Created 8 users for ${tenant.name}`);
+      console.log(`   Created 8 users for ${tenant.name} (includes Anjali)`);
     }
 
     console.log('   Tenants, roles, and users seeded.');
@@ -279,5 +302,173 @@ export class SeedService {
     }
 
     console.log(`   Created 60 leads`);
+  }
+
+  private async seedTasks() {
+    console.log('📋 Seeding tasks...');
+
+    const users = await this.userRepository.find({ where: { tenantId: Not(IsNull()) } });
+    const anjali = users.find((u) => u.name === 'Anjali Sharma') || users[0];
+
+    const taskTemplates = [
+      {
+        title: 'Follow up with James Smith - Manhattan apartment interest',
+        description: 'James called yesterday about the 2 BHK in Manhattan. Needs pricing details.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Schedule site visit for Jennifer Lopez',
+        description: 'Pre-approved buyer. Interested in Brooklyn properties between 80L-1.2Cr.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.MEETING,
+      },
+      {
+        title: 'Send property options to Robert',
+        description: 'Robert asked for 3 BHK options in Queens under 1Cr. Send listings.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.EMAIL,
+      },
+      {
+        title: 'Prepare offer documents for 45 Park Ave unit',
+        description: 'Client ready to make an offer. Need docs ready by EOD.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.DEADLINE,
+      },
+      {
+        title: 'Call Michael re: property viewing confirmation',
+        description: 'Michael requested a viewing but hasn\'t confirmed. Follow up.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Send brochure to Sarah - Bandra project',
+        description: 'Sarah is interested in the new Bandra launch. Send digital brochure.',
+        priority: TaskPriority.LOW,
+        type: TaskType.EMAIL,
+      },
+      {
+        title: 'Follow up with David - closed leads',
+        description: 'David has 3 hot leads from last week. Check status.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Update CRM notes for recent visits',
+        description: 'Log visit feedback for all properties shown this week.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.TODO,
+      },
+      {
+        title: 'Team meeting preparation',
+        description: 'Prepare presentation for Friday team meeting. Include pipeline update.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.MEETING,
+      },
+      {
+        title: 'Send WhatsApp details to Linda',
+        description: 'Linda asked for the WhatsApp group link for property updates.',
+        priority: TaskPriority.LOW,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Review contracts for unit 1201 and 1202',
+        description: 'Check contracts before sending to clients for signature.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.DEADLINE,
+      },
+      {
+        title: 'Call Thomas about rental inquiry',
+        description: 'Thomas submitted an inquiry for a 3-month rental. Call back.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Update lead status for Barbara Johnson',
+        description: 'Barbara went silent after second visit. Mark status and follow up.',
+        priority: TaskPriority.LOW,
+        type: TaskType.TODO,
+      },
+      {
+        title: 'Prepare comparative market analysis',
+        description: 'CMA for Park Avenue property. Need for client meeting.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.TODO,
+      },
+      {
+        title: 'Confirm appointment with Richard Fox',
+        description: 'Richard is 10 min late. Call to confirm ETA.',
+        priority: TaskPriority.LOW,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Email new listings to Susan',
+        description: 'Susan wants all listings above 2Cr in South Mumbai. Filter and send.',
+        priority: TaskPriority.LOW,
+        type: TaskType.EMAIL,
+      },
+      {
+        title: 'Site visit with Joseph - Andheri project',
+        description: 'Scheduled at 3 PM. Confirm with Joseph and prep keys.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.MEETING,
+      },
+      {
+        title: 'Submit token for unit 502',
+        description: 'Client agreed. Submit token before 6 PM cutoff.',
+        priority: TaskPriority.HIGH,
+        type: TaskType.DEADLINE,
+      },
+      {
+        title: 'Welcome call to new lead - Jessica',
+        description: 'New lead from website. Introduce yourself and set expectations.',
+        priority: TaskPriority.MEDIUM,
+        type: TaskType.CALL,
+      },
+      {
+        title: 'Log all week 1 activities',
+        description: 'Update lead statuses from this week before reports are due.',
+        priority: TaskPriority.LOW,
+        type: TaskType.TODO,
+      },
+    ];
+
+    const now = new Date();
+    const dayMs = 24 * 60 * 60 * 1000;
+
+    for (const template of taskTemplates) {
+      const daysOffset = Math.floor(Math.random() * 14) - 5;
+      const hour = Math.floor(Math.random() * 10) + 9;
+      const dueDate = new Date(now.getTime() + daysOffset * dayMs);
+      dueDate.setHours(hour, Math.floor(Math.random() * 60), 0, 0);
+
+      const assignedUser =
+        Math.random() > 0.4
+          ? anjali
+          : users[Math.floor(Math.random() * users.length)];
+
+      const status =
+        dueDate < now
+          ? TaskStatus.TODO
+          : Math.random() > 0.7
+            ? TaskStatus.DONE
+            : TaskStatus.TODO;
+
+      const task = this.taskRepository.create({
+        title: template.title,
+        description: template.description,
+        status,
+        priority: template.priority,
+        type: template.type,
+        dueDate,
+        assignedToId: assignedUser.id,
+        createdById: assignedUser.id,
+        tenantId: anjali.tenantId,
+      });
+
+      await this.taskRepository.save(task);
+    }
+
+    console.log(`   Created ${taskTemplates.length} tasks assigned to Anjali Sharma`);
   }
 }
