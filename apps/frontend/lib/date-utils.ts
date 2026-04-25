@@ -17,6 +17,33 @@ export function getUserTimezone(user: User | null): string {
   return "UTC";
 }
 
+export function toISOString(dateTimeLocal: string, timezone?: string): string | null {
+  if (!dateTimeLocal) return null;
+  
+  const tz = timezone || getUserTimezone(null);
+  const date = new Date(dateTimeLocal);
+  
+  if (isNaN(date.getTime())) return null;
+  
+  return date.toISOString();
+}
+
+export function toISOStringFromLocal(dateTimeLocal: string): string | null {
+  if (!dateTimeLocal) return null;
+  
+  const date = new Date(dateTimeLocal);
+  if (isNaN(date.getTime())) return null;
+  
+  return date.toISOString();
+}
+
+export function toLocalDateTimeInput(isoDate: Date | string | null | undefined): string {
+  const parsed = parseDate(isoDate);
+  if (!parsed) return "";
+  
+  return parsed.toISOString().slice(0, 16);
+}
+
 function parseDate(date: Date | string | null | undefined): Date | null {
   if (!date) return null;
   

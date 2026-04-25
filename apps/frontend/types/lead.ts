@@ -6,8 +6,10 @@ export type LeadStatus =
   | "site_visit_scheduled"
   | "site_visit_done"
   | "negotiation"
-  | "booked"
+  | "won"
   | "lost"
+
+export type LeadTier = "HIGH" | "MEDIUM" | "LOW"
 
 export type LeadSource = 
   | "website"
@@ -47,12 +49,18 @@ export type LeadActivityAction =
   | "created"
   | "status_changed"
   | "assigned"
+  | "reassigned"
   | "note_added"
   | "budget_updated"
   | "source_updated"
   | "followup_scheduled"
   | "site_visit_scheduled"
   | "site_visit_done"
+  | "call_made"
+  | "call_connected"
+  | "call_not_connected"
+  | "whatsapp_sent"
+  | "email_sent"
   | "re_inquiry"
   | "viewed"
 
@@ -63,6 +71,8 @@ export interface Lead {
   phone: string
   status: LeadStatus
   source: LeadSource
+  tier?: LeadTier
+  score?: number
   budgetMin?: number
   budgetMax?: number
   preferredLocation?: string
@@ -72,6 +82,11 @@ export interface Lead {
   assignedTo?: {
     id: string
     name: string
+    phone?: string
+    role?: {
+      level: number
+      name?: string
+    }
   }
   assignedToId?: string
   createdAt: Date
@@ -83,6 +98,8 @@ export interface Lead {
   lostReason?: LostReason
   lostAt?: string | Date
   whatsappNumber?: string
+  slaBreachedAt?: string | Date
+  lastActivityAt?: string | Date
 }
 
 export interface LeadActivity {

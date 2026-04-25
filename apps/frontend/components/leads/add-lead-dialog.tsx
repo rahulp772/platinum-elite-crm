@@ -59,7 +59,7 @@ const LEAD_STATUSES: { value: LeadStatus; label: string }[] = [
     { value: "site_visit_scheduled", label: "Site Visit Scheduled" },
     { value: "site_visit_done", label: "Site Visit Done" },
     { value: "negotiation", label: "Negotiation" },
-    { value: "booked", label: "Booked" },
+    { value: "won", label: "Won / Booked" },
     { value: "lost", label: "Lost" },
 ]
 

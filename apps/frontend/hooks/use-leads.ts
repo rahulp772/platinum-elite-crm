@@ -76,6 +76,8 @@ export function useUpdateLead() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["leads"] })
+            queryClient.invalidateQueries({ queryKey: ["lead"] })
+            queryClient.invalidateQueries({ queryKey: ["lead-activities"] })
         },
     })
 }
@@ -111,6 +113,42 @@ export function useUsers() {
         queryKey: ["users"],
         queryFn: async () => {
             const { data } = await api.get<{ id: string; name: string }[]>("/users")
+            return data
+        },
+    })
+}
+
+export function useReassignLead() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async ({ leadId, assignedToId }: { leadId: string; assignedToId: string }) => {
+            const { data } = await api.post(`/leads/${leadId}/reassign`, { assignedToId })
+            return data
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["leads"] })
+        },
+    })
+}
+
+export function useLogLeadActivity() {
+    const queryClient = useQueryClient()
+    return useMutation({
+        mutationFn: async ({ leadId, action, description }: { leadId: string; action: string; description?: string }) => {
+            const { data } = await api.post(`/leads/${leadId}/log-activity`, { action, description })
+            return data
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["lead-activities"] })
+        },
+    })
+}
+
+export function useLeadProperties() {
+    return useQuery({
+        queryKey: ["lead-properties"],
+        queryFn: async () => {
+            const { data } = await api.get<{ id: string; title: string }[]>("/properties?status=available")
             return data
         },
     })

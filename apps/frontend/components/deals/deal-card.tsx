@@ -80,10 +80,10 @@ export function DealCard({ deal }: DealCardProps) {
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <Calendar className="h-3.5 w-3.5" />
                             <span>
-                                {new Date(deal.expectedCloseDate).toLocaleDateString(undefined, {
+                                {deal.expectedCloseDate ? new Date(deal.expectedCloseDate).toLocaleDateString(undefined, {
                                     month: "short",
                                     day: "numeric",
-                                })}
+                                }) : "Not set"}
                             </span>
                         </div>
                     </div>

@@ -5,12 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  OneToMany,
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Property } from '../../properties/entities/property.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 import { DealStage, DealPriority } from '../enums/deal.enum';
+import { DealActivity } from './deal-activity.entity';
 
 @Entity('deals')
 export class Deal {
@@ -58,6 +60,9 @@ export class Deal {
   @ManyToOne(() => Tenant, (tenant) => tenant.deals, { nullable: true })
   @JoinColumn({ name: 'tenantId' })
   tenant: Tenant;
+
+  @OneToMany(() => DealActivity, (activity) => activity.deal)
+  activities: DealActivity[];
 
   @CreateDateColumn()
   createdAt: Date;

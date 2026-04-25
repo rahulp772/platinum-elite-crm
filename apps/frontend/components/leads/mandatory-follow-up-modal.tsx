@@ -16,6 +16,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useUpdateLead } from "@/hooks/use-leads"
 import { LeadStatus } from "@/types/lead"
 import { toast } from "sonner"
+import { toISOStringFromLocal } from "@/lib/date-utils"
 
 interface MandatoryFollowUpModalProps {
     open: boolean
@@ -34,16 +35,11 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
 
-        if (!followUpAt) {
-            toast.error("You must set a next follow-up date.")
-            return
-        }
-
         try {
             await updateLead.mutateAsync({
                 id: leadId,
                 status,
-                followUpAt: new Date(followUpAt).toISOString(),
+                followUpAt: toISOStringFromLocal(followUpAt) || undefined,
                 notes: notes ? `Action Outcome: ${notes}` : undefined,
             })
             
@@ -57,13 +53,11 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            {/* We remove the standard close button for "mandatory" effect by not allowing easy escape, 
-                but for UX, clicking outside might still close it unless configured otherwise */}
-            <DialogContent className="max-w-md sm:max-w-lg" onInteractOutside={(e) => e.preventDefault()}>
+            <DialogContent className="max-w-md sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="text-xl text-realty-navy font-bold">Log Outcome & Set Next Action</DialogTitle>
                     <DialogDescription>
-                        You must log the outcome of this interaction and schedule the next follow-up before continuing.
+                        Log the outcome of this interaction and schedule the next follow-up.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -74,7 +68,6 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                             value={notes}
                             onChange={(e) => setNotes(e.target.value)}
                             placeholder="e.g., Customer is interested but needs a week to discuss with family..."
-                            required
                         />
                     </div>
 
@@ -87,23 +80,26 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                             <SelectContent>
                                 <SelectItem value="new">New</SelectItem>
                                 <SelectItem value="contacted">Contacted</SelectItem>
+                                <SelectItem value="rnr">Ringing No Response</SelectItem>
                                 <SelectItem value="qualified">Qualified</SelectItem>
                                 <SelectItem value="site_visit_scheduled">Visit Scheduled</SelectItem>
+                                <SelectItem value="site_visit_done">Visit Done</SelectItem>
                                 <SelectItem value="negotiation">Negotiation</SelectItem>
+                                <SelectItem value="won">Won / Booked</SelectItem>
+                                <SelectItem value="lost">Lost</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <div className="space-y-2">
-                        <Label className="flex gap-2 items-center text-rose-600 font-semibold">
-                            Next Follow-Up (Required) *
+                        <Label className="flex gap-2 items-center text-muted-foreground">
+                            Next Follow-Up (Optional)
                         </Label>
                         <Input 
                             type="datetime-local" 
                             value={followUpAt}
                             onChange={(e) => setFollowUpAt(e.target.value)}
-                            className="bg-rose-50 border-rose-200"
-                            required
+                            className="bg-muted/30"
                         />
                     </div>
 
@@ -111,7 +107,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                         <Button type="button" variant="ghost" onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={!followUpAt} className="bg-realty-navy hover:bg-realty-navy-light text-white">
+                        <Button type="submit" className="bg-realty-navy hover:bg-realty-navy-light text-white">
                             Log & Schedule
                         </Button>
                     </DialogFooter>

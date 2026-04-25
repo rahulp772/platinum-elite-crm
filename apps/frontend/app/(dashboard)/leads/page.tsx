@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useRouter } from "next/navigation"
 import { LeadsTable } from "@/components/leads/leads-table"
 import { LeadFilters } from "@/components/leads/lead-filters"
 import { AddLeadDialog } from "@/components/leads/add-lead-dialog"
@@ -16,6 +17,7 @@ import { Lead, LeadStatus } from "@/types/lead"
 type ActionFilter = "all" | "overdue" | "today" | "new"
 
 export default function LeadsPage() {
+    const router = useRouter()
     const { data: leads, isLoading, isError } = useLeads()
     const { data: users } = useUsers()
     const [filteredLeads, setFilteredLeads] = React.useState<Lead[]>([])
@@ -131,8 +133,7 @@ export default function LeadsPage() {
     ])
 
     const handleEditLead = (lead: Lead) => {
-        setSelectedLead(lead)
-        setEditDialogOpen(true)
+        router.push(`/leads/${lead.id}`)
     }
 
     const handleSelectionChange = (selected: Lead[]) => {

@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import Link from "next/link"
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -12,7 +13,7 @@ import {
     getSortedRowModel,
     useReactTable,
 } from "@tanstack/react-table"
-import { MoreHorizontal, Mail, Phone, Calendar, MessageCircle, FileText, CheckCircle } from "lucide-react"
+import { MoreHorizontal, Mail, Phone, Calendar, MessageCircle, FileText, CheckCircle, Eye } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -205,6 +206,10 @@ export function createColumns(onEdit?: (lead: Lead) => void): ColumnDef<Lead>[] 
                 e.stopPropagation()
                 onEdit?.(lead)
             }
+            const handleViewDetails = (e: React.MouseEvent) => {
+                e.stopPropagation()
+                // Navigate to lead detail page handled by onClick on row
+            }
             const handleEdit = (e: React.MouseEvent) => {
                 e.stopPropagation()
                 onEdit?.(lead)
@@ -229,14 +234,17 @@ export function createColumns(onEdit?: (lead: Lead) => void): ColumnDef<Lead>[] 
                         <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuLabel>Lead Actions</DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(lead.email)}>
-                                Copy Email Address
-                            </DropdownMenuItem>
-                            <DropdownMenuItem onClick={handleEdit}>
-                                View Details
+                            <DropdownMenuItem asChild>
+                                <Link href={`/leads/${lead.id}`} className="cursor-pointer flex items-center gap-2">
+                                    <Eye className="h-4 w-4" />
+                                    View Details
+                                </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={handleEdit}>
                                 Edit Lead
+                            </DropdownMenuItem>
+                            <DropdownMenuItem onClick={() => navigator.clipboard.writeText(lead.email)}>
+                                Copy Email Address
                             </DropdownMenuItem>
                             <DropdownMenuItem className="text-rose-600 focus:text-rose-600">Archive Lead</DropdownMenuItem>
                         </DropdownMenuContent>
@@ -251,6 +259,7 @@ interface LeadsTableProps {
     data: Lead[]
     onEdit?: (lead: Lead) => void
     onSelectionChange?: (selectedLeads: Lead[]) => void
+    onRowClick?: (lead: Lead) => void
 }
 
 function getCellClass(index: number, total: number): string {

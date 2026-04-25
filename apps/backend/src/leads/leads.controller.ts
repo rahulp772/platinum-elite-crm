@@ -94,4 +94,16 @@ export class LeadsController {
   bulkAssign(@Body() body: { leadIds: string[]; assignedToId: string }, @Request() req) {
     return this.leadsService.bulkAssign(body.leadIds, body.assignedToId, req.user);
   }
+
+  @Post(':id/reassign')
+  @ApiOperation({ summary: 'Reassign lead to another user' })
+  reassign(@Param('id') id: string, @Body() body: { assignedToId: string }, @Request() req) {
+    return this.leadsService.reassign(id, body.assignedToId, req.user);
+  }
+
+  @Post(':id/log-activity')
+  @ApiOperation({ summary: 'Log activity for lead' })
+  logActivity(@Param('id') id: string, @Body() body: { action: string; description?: string }, @Request() req) {
+    return this.leadsService.logLeadActivity(id, body.action, body.description, req.user);
+  }
 }

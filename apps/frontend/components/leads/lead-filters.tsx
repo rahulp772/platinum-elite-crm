@@ -34,7 +34,7 @@ interface LeadFiltersProps {
 
 const statusOptions: LeadStatus[] = [
     "new", "contacted", "rnr", "qualified", "site_visit_scheduled",
-    "site_visit_done", "negotiation", "booked", "lost"
+    "site_visit_done", "negotiation", "won", "lost"
 ]
 
 const sourceOptions: LeadSource[] = [

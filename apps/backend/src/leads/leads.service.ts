@@ -194,7 +194,7 @@ const savedLead = await this.leadRepository.save(lead);
     if (roleLevel >= 100) {
       return this.leadRepository.find({
         where: { tenantId },
-        relations: ['assignedTo'],
+        relations: ['assignedTo', 'assignedTo.role'],
         order: { createdAt: 'DESC' },
       });
     }
@@ -206,7 +206,7 @@ const savedLead = await this.leadRepository.save(lead);
           { tenantId, assignedToId: currentUserId },
           { tenantId, assignedToId: In(teamMemberIds) },
         ],
-        relations: ['assignedTo'],
+        relations: ['assignedTo', 'assignedTo.role'],
         order: { createdAt: 'DESC' },
       });
     }
@@ -218,14 +218,14 @@ const savedLead = await this.leadRepository.save(lead);
           { tenantId, assignedToId: currentUserId },
           { tenantId, assignedToId: In(teamMemberIds) },
         ],
-        relations: ['assignedTo'],
+        relations: ['assignedTo', 'assignedTo.role'],
         order: { createdAt: 'DESC' },
       });
     }
 
     return this.leadRepository.find({
       where: { tenantId, assignedToId: currentUserId },
-      relations: ['assignedTo'],
+      relations: ['assignedTo', 'assignedTo.role'],
       order: { createdAt: 'DESC' },
     });
   }
@@ -235,7 +235,7 @@ const savedLead = await this.leadRepository.save(lead);
     const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const lead = await this.leadRepository.findOne({
       where,
-      relations: ['assignedTo'],
+      relations: ['assignedTo', 'assignedTo.role'],
     });
     if (!lead) {
       throw new NotFoundException(`Lead with ID ${id} not found`);
@@ -419,5 +419,51 @@ const savedLead = await this.leadRepository.save(lead);
       relations: ['assignedTo'],
       order: { createdAt: 'ASC' },
     });
+  }
+
+  async reassign(leadId: string, assignedToId: string, user: User) {
+    if (!user.role || user.role.level < 80) {
+      throw new ForbiddenException('Only managers and admins can reassign leads');
+    }
+
+    const lead = await this.findOne(leadId, user);
+    const oldAssignedToId = lead.assignedToId;
+
+    const newAssignedUser = await this.userRepository.findOne({
+      where: { id: assignedToId, tenantId: user.tenantId },
+    });
+    if (!newAssignedUser) {
+      throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+    }
+
+    lead.assignedTo = newAssignedUser;
+    await this.leadRepository.save(lead);
+    await this.logActivity(
+      lead.id,
+      user.id,
+      LeadActivityAction.REASSIGNED,
+      oldAssignedToId,
+      assignedToId,
+      `Reassigned from ${lead.assignedTo?.name || oldAssignedToId} to ${newAssignedUser.name}`,
+    );
+
+    return { message: 'Lead reassigned successfully' };
+  }
+
+  async logLeadActivity(leadId: string, action: string, description: string | undefined, user: User) {
+    const lead = await this.findOne(leadId, user);
+    
+    const activity = this.activityRepository.create({
+      leadId: lead.id,
+      userId: user.id,
+      action: action as LeadActivityAction,
+      description,
+    });
+    await this.activityRepository.save(activity);
+
+    lead.lastActivityAt = new Date();
+    await this.leadRepository.save(lead);
+
+    return { message: 'Activity logged successfully' };
   }
 }

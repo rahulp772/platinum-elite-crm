@@ -7,34 +7,34 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Lead } from './lead.entity';
+import { Deal } from './deal.entity';
 
-export enum LeadActivityAction {
+export enum DealActivityAction {
   CREATED = 'created',
   STATUS_CHANGED = 'status_changed',
+  STAGE_CHANGED = 'stage_changed',
+  NOTE_ADDED = 'note_added',
+  VALUE_UPDATED = 'value_updated',
+  PROPERTY_LINKED = 'property_linked',
+  PROPERTY_UNLINKED = 'property_unlinked',
   ASSIGNED = 'assigned',
   REASSIGNED = 'reassigned',
-  NOTE_ADDED = 'note_added',
-  BUDGET_UPDATED = 'budget_updated',
-  SOURCE_UPDATED = 'source_updated',
-  FOLLOWUP_SCHEDULED = 'followup_scheduled',
-  SITE_VISIT_SCHEDULED = 'site_visit_scheduled',
-  SITE_VISIT_DONE = 'site_visit_done',
-  RE_INQUIRY = 're_inquiry',
+  PRIORITY_CHANGED = 'priority_changed',
+  EXPECTED_CLOSE_UPDATED = 'expected_close_updated',
   VIEWED = 'viewed',
 }
 
-@Entity('lead_activities')
-export class LeadActivity {
+@Entity('deal_activities')
+export class DealActivity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column()
-  leadId: string;
+  dealId: string;
 
-  @ManyToOne(() => Lead, (lead) => lead.activities, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'leadId' })
-  lead: Lead;
+  @ManyToOne(() => Deal, (deal) => deal.activities, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'dealId' })
+  deal: Deal;
 
   @Column()
   userId: string;
@@ -45,9 +45,9 @@ export class LeadActivity {
 
   @Column({
     type: 'enum',
-    enum: LeadActivityAction,
+    enum: DealActivityAction,
   })
-  action: LeadActivityAction;
+  action: DealActivityAction;
 
   @Column({ nullable: true })
   oldValue: string;

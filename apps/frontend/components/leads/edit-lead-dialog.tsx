@@ -21,6 +21,7 @@ import {
 } from "@/components/ui/select"
 import { useUpdateLead, useUsers } from "@/hooks/use-leads"
 import { Lead, LeadStatus } from "@/types/lead"
+import { toISOStringFromLocal, toLocalDateTimeInput } from "@/lib/date-utils"
 
 interface EditLeadDialogProps {
     open: boolean
@@ -49,7 +50,7 @@ export function EditLeadDialog({ open, onOpenChange, lead }: EditLeadDialogProps
             setFormData({
                 status: (lead.status as LeadStatus) || "new",
                 assignedToId: lead.assignedTo?.id || "",
-                followUpAt: lead.followUpAt ? new Date(lead.followUpAt).toISOString().slice(0, 16) : "",
+                followUpAt: toLocalDateTimeInput(lead.followUpAt),
                 notes: lead.notes || "",
             })
         }
@@ -65,7 +66,7 @@ export function EditLeadDialog({ open, onOpenChange, lead }: EditLeadDialogProps
             id: lead.id,
             status: data.get('status') as Lead["status"],
             assignedToId: data.get('assignedToId') as string || undefined,
-            followUpAt: data.get('followUpAt') ? new Date(data.get('followUpAt') as string).toISOString() : undefined,
+            followUpAt: toISOStringFromLocal(data.get('followUpAt') as string) || undefined,
             notes: data.get('notes') as string,
         }
 
