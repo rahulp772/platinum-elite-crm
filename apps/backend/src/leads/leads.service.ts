@@ -269,8 +269,16 @@ const savedLead = await this.leadRepository.save(lead);
 
     Object.assign(lead, leadData);
 
+    const oldFollowUpAt = lead.followUpAt;
     if (followUpAt) {
       lead.followUpAt = new Date(followUpAt);
+      if (!oldFollowUpAt || oldFollowUpAt.getTime() !== new Date(followUpAt).getTime()) {
+        await this.logActivity(lead.id, user.id, LeadActivityAction.FOLLOWUP_SCHEDULED, 
+          oldFollowUpAt ? oldFollowUpAt.toISOString() : undefined, followUpAt);
+      }
+    } else if (oldFollowUpAt && !followUpAt) {
+      await this.logActivity(lead.id, user.id, LeadActivityAction.FOLLOWUP_SCHEDULED, 
+        oldFollowUpAt.toISOString(), undefined);
     }
     if (siteVisitScheduledAt) {
       lead.siteVisitScheduledAt = new Date(siteVisitScheduledAt);

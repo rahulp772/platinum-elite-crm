@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { useUpdateLead, useLogLeadActivity, useReassignLead, useUsers, useLeadSuggestion } from "@/hooks/use-leads"
 import { useAuth } from "@/lib/auth-context"
@@ -17,8 +17,9 @@ import { MandatoryFollowUpModal } from "./mandatory-follow-up-modal"
 import { CallOutcomeModal } from "./call-outcome-modal"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { formatDateTimeInTimezone, getUserTimezone, toISOStringFromLocal, toLocalDateTimeInput } from "@/lib/date-utils"
+import { formatDateTimeInTimezone, getUserTimezone, toISOStringFromLocal } from "@/lib/date-utils"
 import { LeadStatus } from "@/types/lead"
+import { DateTimePicker } from "./date-time-picker"
 
 type QuickAction = { label: string; nextStatus?: LeadStatus; action?: string; description: string }
 
@@ -171,6 +172,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const [dateFrom, setDateFrom] = React.useState<string>("")
     const [dateTo, setDateTo] = React.useState<string>("")
     const [showFilters, setShowFilters] = React.useState(false)
+    const [pendingFollowUp, setPendingFollowUp] = React.useState<Date | undefined>(undefined)
     
     const { data: lead, isLoading } = useQuery({
         queryKey: ["lead", leadId],
@@ -191,6 +193,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
 
     const { data: users } = useUsers()
     const { data: suggestion, isLoading: isLoadingSuggestion } = useLeadSuggestion(leadId)
+    const queryClient = useQueryClient()
 
     const timezone = getUserTimezone(user)
 
@@ -262,6 +265,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const handleModalComplete = () => {
         setShowFollowUpModal(false)
         setPendingStatus(null)
+        queryClient.invalidateQueries({ queryKey: ["lead-suggestion", leadId] })
     }
 
     const handleModalSkip = () => {
@@ -297,12 +301,34 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
         toast.success("WhatsApp opened")
     }
 
-    const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
-        const isoDate = toISOStringFromLocal(e.target.value);
-        if (!isoDate) return;
-        updateLead.mutate({ id: lead.id, followUpAt: isoDate }, {
-            onSuccess: () => toast.success("Follow-up scheduled")
+    const handleDateChange = (date: Date | undefined) => {
+        setPendingFollowUp(date)
+    }
+
+    const handleSaveFollowUp = () => {
+        if (pendingFollowUp === undefined) {
+            updateLead.mutate({ id: lead.id, followUpAt: undefined }, {
+                onSuccess: () => {
+                    toast.success("Follow-up cleared")
+                    logLeadActivity.mutate({ 
+                        leadId: lead.id, 
+                        action: "followup_scheduled", 
+                        description: "Follow-up cleared" 
+                    })
+                }
+            })
+            return
+        }
+        updateLead.mutate({ id: lead.id, followUpAt: pendingFollowUp.toISOString() }, {
+            onSuccess: () => {
+                toast.success("Follow-up scheduled")
+                logLeadActivity.mutate({ 
+                    leadId: lead.id, 
+                    action: "followup_scheduled", 
+                    description: `Follow-up scheduled for ${pendingFollowUp.toLocaleDateString()}` 
+                })
+                setPendingFollowUp(undefined)
+            }
         })
     }
 
@@ -335,22 +361,22 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
 
     return (
         <>
-        <div className="flex flex-col h-[calc(100vh-8rem)]">
+        <div className="flex flex-col h-[calc(100vh-8rem)] overflow-hidden w-full min-w-0">
             <div className="flex items-center gap-4 mb-4">
                 <Button variant="ghost" size="icon" asChild>
                     <Link href="/leads"><ArrowLeft className="h-5 w-5" /></Link>
                 </Button>
-                <div className="flex-1">
-                    <h1 className="text-2xl font-bold flex items-center gap-3">
+                <div className="flex-1 min-w-0">
+                    <h1 className="text-2xl font-bold flex items-center gap-3 truncate">
                         {lead.name}
-                        <Badge variant="outline" className="bg-primary/5 capitalize">{lead.status.replace(/_/g, " ")}</Badge>
+                        <Badge variant="outline" className="bg-primary/5 capitalize shrink-0">{lead.status.replace(/_/g, " ")}</Badge>
                     </h1>
-                    <p className="text-muted-foreground text-sm">{lead.phone} • {lead.email}</p>
-</div>
-                    </div>
+                    <p className="text-muted-foreground text-sm truncate">{lead.phone} • {lead.email}</p>
+                </div>
+            </div>
 
-                    <div className="flex gap-6 flex-1 min-h-0">
-                    <Card className="flex-1 flex flex-col border-border/50 overflow-hidden">
+            <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_350px] gap-6 min-h-0 overflow-hidden">
+                <Card className="flex-1 flex flex-col border-border/50 overflow-hidden min-w-0">
                     {/* Filter Bar */}
                     <div className="border-b border-border/50 bg-muted/20 p-3">
                         <div className="flex items-center gap-2 mb-2">
@@ -439,12 +465,12 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                     </div>
 
                     <ScrollArea className="flex-1 p-4">
-                        <div className="space-y-6">
+                        <div className="space-y-6 min-w-0">
                             {/* Notes displayed as timeline events for MVP */}
                             {lead.notes?.split('\n').filter(Boolean).map((n: string, i: number) => (
-                                <div key={`note-${i}`} className="flex gap-4 justify-end">
-                                    <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-2xl rounded-tr-sm max-w-[80%] border border-emerald-200/50 dark:border-emerald-800/50">
-                                        <p className="text-sm text-emerald-900 dark:text-emerald-100">{n}</p>
+                                <div key={`note-${i}`} className="flex gap-4 justify-end w-full">
+                                    <div className="bg-emerald-100 dark:bg-emerald-900/30 p-3 rounded-2xl rounded-tr-sm max-w-[85%] border border-emerald-200/50 dark:border-emerald-800/50 min-w-0 shadow-sm">
+                                        <p className="text-sm text-emerald-900 dark:text-emerald-100 break-words leading-relaxed">{n}</p>
                                     </div>
                                 </div>
                             ))}
@@ -462,20 +488,20 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                                                  activity.action.includes('status') || activity.action === "assigned" || activity.action === "reassigned" ? <ArrowRightLeft className="h-3 w-3 text-slate-500" /> :
                                                  <div className="w-2 h-2 rounded-full bg-slate-400" />}
                                             </div>
-                                            <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-border/50">
-                                                <div className="flex items-center justify-between gap-2 mb-1">
-                                                    <span className="font-medium text-sm">{content.title}</span>
-                                                    <span className="text-xs text-muted-foreground">{formatDateTimeInTimezone(activity.timestamp, timezone)}</span>
+                                            <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[85%] border border-border/50 min-w-0 shadow-sm">
+                                                <div className="flex items-center justify-between gap-4 mb-1">
+                                                    <span className="font-medium text-sm truncate">{content.title}</span>
+                                                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{formatDateTimeInTimezone(activity.timestamp, timezone)}</span>
                                                 </div>
-                                                <p className="text-sm text-realty-navy dark:text-realty-gold font-medium mb-1">{content.details}</p>
+                                                <p className="text-sm text-realty-navy dark:text-realty-gold font-semibold mb-1 break-words">{content.details}</p>
                                                 {activity.user && (
-                                                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                                                    <p className="text-[11px] text-muted-foreground flex items-center gap-1.5 mt-1">
                                                         <User className="h-3 w-3" />
-                                                        By {activity.user.name}
+                                                        <span>By {activity.user.name}</span>
                                                     </p>
                                                 )}
                                                 {activity.description && activity.action !== "outcome_logged" && (
-                                                    <p className="text-sm text-muted-foreground mt-1 italic">{activity.description}</p>
+                                                    <p className="text-xs text-muted-foreground mt-2 italic break-words border-t border-border/30 pt-1">{activity.description}</p>
                                                 )}
                                             </div>
                                         </div>
@@ -489,7 +515,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                                             <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0 mt-1">
                                                 <Eye className="h-3 w-3 text-blue-500" />
                                             </div>
-                                            <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-border/50">
+                                            <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-border/50 min-w-0">
                                                 <div className="flex items-center justify-between gap-2 mb-1">
                                                     <span className="font-medium text-sm">Viewed</span>
                                                     <span className="text-xs text-muted-foreground">{formatDateTimeInTimezone(activity.timestamp, timezone)}</span>
@@ -527,8 +553,8 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                 </Card>
 
                 {/* Right Side: Action Center (30%) */}
-                <ScrollArea className="w-[350px] h-full">
-                <div className="flex flex-col gap-4 pr-4">
+                <ScrollArea className="h-full w-[350px] shrink-0">
+                 <div className="flex flex-col gap-4 pr-4 pb-4 w-full min-w-0">
                     {/* AI Suggestion - at TOP */}
                     <Card className={`p-4 border-realty-gold/30 bg-realty-gold/5 dark:bg-realty-gold/10 ${suggestion?.priority === 'urgent' ? 'ring-2 ring-red-500/50' : ''}`}>
                         <div className="flex items-center justify-between mb-2">
@@ -561,7 +587,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                                 </p>
                                 <Button 
                                     size="sm" 
-                                    className="w-full bg-realty-navy hover:bg-realty-navy-light dark:bg-realty-navy dark:hover:bg-realty-navy-light text-white"
+                                    className="w-full bg-realty-navy hover:bg-realty-navy-light dark:bg-realty-navy dark:hover:bg-realty-navy-light text-white shadow-none"
                                     onClick={() => {
                                         if (suggestion.action === 'call') {
                                             handleCallClick()
@@ -635,21 +661,32 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                             Next Follow Up
                         </h3>
                         <div className="space-y-3">
-                            <div className="relative">
-                                <Input 
-                                    type="datetime-local" 
-                                    value={toLocalDateTimeInput(lead.followUpAt)}
-                                    onChange={handleDateChange}
-                                    className="h-12 bg-muted/30 pr-10 cursor-pointer"
-                                />
-                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
-                                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                                </div>
-                            </div>
+                            <DateTimePicker 
+                                value={pendingFollowUp !== undefined ? pendingFollowUp : (lead.followUpAt ? new Date(lead.followUpAt) : undefined)}
+                                onChange={handleDateChange}
+                            />
                             <div className="grid grid-cols-3 gap-2">
                                 <Button variant="outline" size="sm" onClick={() => handleQuickDate(1)}>Tomorrow</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickDate(2)}>2 Days</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickDate(7)}>Next Week</Button>
+                            </div>
+                            <div className="flex gap-2">
+                                <Button 
+                                    size="sm" 
+                                    className="flex-1"
+                                    onClick={handleSaveFollowUp}
+                                >
+                                    Save
+                                </Button>
+                                <Button 
+                                    size="sm" 
+                                    variant="outline"
+                                    onClick={() => {
+                                        setPendingFollowUp(undefined)
+                                    }}
+                                >
+                                    Clear
+                                </Button>
                             </div>
                         </div>
                     </Card>
@@ -712,7 +749,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                     </Card>
 
                     {/* Visited Properties Card */}
-                    <Card className="p-4 shadow-sm border-border/50">
+                    <Card className="p-4 shadow-sm border-border/50 shrink-0">
                         <h3 className="font-bold text-sm text-muted-foreground mb-3 flex items-center gap-2">
                             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -720,20 +757,24 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                             Visited Properties
                         </h3>
                         {activities?.filter((a: any) => a.action === 'site_visit_done' || a.action === 'site_visit_scheduled').length ? (
-                            <div className="space-y-2">
+                            <div className="space-y-2 max-h-[200px] overflow-y-auto">
                                 {activities
                                     ?.filter((a: any) => a.action === 'site_visit_done' || a.action === 'site_visit_scheduled')
                                     .slice(0, 5)
                                     .map((activity: any) => (
-                                        <div key={activity.id} className="p-2 bg-muted/30 rounded-lg text-sm">
+                                        <div key={activity.id} className="p-2 bg-muted/30 rounded-lg text-sm border border-border/50">
                                             <div className="flex justify-between items-center">
-                                                <span className="font-medium capitalize">{activity.action === 'site_visit_done' ? 'Completed' : 'Scheduled'}</span>
-                                                <span className="text-xs text-muted-foreground">
+                                                <span className="font-medium capitalize text-realty-navy dark:text-realty-gold">
+                                                    {activity.action === 'site_visit_done' ? 'Completed' : 'Scheduled'}
+                                                </span>
+                                                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                                                     {activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : '-'}
                                                 </span>
                                             </div>
                                             {activity.description && (
-                                                <p className="text-xs text-muted-foreground mt-1 truncate">{activity.description}</p>
+                                                <p className="text-xs text-muted-foreground mt-1 truncate" title={activity.description}>
+                                                    {activity.description}
+                                                </p>
                                             )}
                                         </div>
                                     ))}

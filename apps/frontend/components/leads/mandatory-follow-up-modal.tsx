@@ -19,7 +19,8 @@ import { useUpdateLead, useLogLeadActivity, useLeadProperties, useLeadActivities
 import { useAuth } from "@/lib/auth-context"
 import { LeadStatus } from "@/types/lead"
 import { toast } from "sonner"
-import { toISOStringFromLocal, formatDateTimeInTimezone, getUserTimezone } from "@/lib/date-utils"
+import { formatDateTimeInTimezone, getUserTimezone } from "@/lib/date-utils"
+import { DateTimePicker } from "./date-time-picker"
 
 interface MandatoryFollowUpModalProps {
     open: boolean
@@ -37,7 +38,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
     const { data: activities } = useLeadActivities(leadId)
     
     const [status, setStatus] = React.useState<LeadStatus>(currentStatus as LeadStatus)
-    const [followUpAt, setFollowUpAt] = React.useState("")
+    const [followUpAt, setFollowUpAt] = React.useState<Date | undefined>(undefined)
     const [notes, setNotes] = React.useState("")
     const [selectedProperties, setSelectedProperties] = React.useState<string[]>([])
     const [selectedVisitId, setSelectedVisitId] = React.useState<string>("")
@@ -83,16 +84,15 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
             }
 
             if (status === "site_visit_scheduled") {
-                const visitDateISO = toISOStringFromLocal(followUpAt)
-                if (!visitDateISO) {
-                    toast.error("Invalid date format")
+                if (!followUpAt) {
+                    toast.error("Please select a visit date and time")
                     return
                 }
 
                 await updateLead.mutateAsync({
                     id: leadId,
                     status,
-                    siteVisitScheduledAt: visitDateISO,
+                    siteVisitScheduledAt: followUpAt.toISOString(),
                 })
 
                 const propertyDetails = selectedProperties.length > 0 
@@ -102,7 +102,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                 await logLeadActivity.mutateAsync({
                     leadId,
                     action: "site_visit_scheduled",
-                    description: `Visit scheduled for ${new Date(visitDateISO).toLocaleDateString()}${propertyDetails ? ` - ${propertyDetails}` : ''}`,
+                    description: `Visit scheduled for ${followUpAt.toLocaleDateString()}${propertyDetails ? ` - ${propertyDetails}` : ''}`,
                 })
 
                 toast.success("Visit scheduled successfully")
@@ -127,7 +127,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                 await updateLead.mutateAsync({
                     id: leadId,
                     status,
-                    followUpAt: toISOStringFromLocal(followUpAt) || undefined,
+                    followUpAt: followUpAt?.toISOString(),
                 })
 
                 if (notes.trim()) {
@@ -142,7 +142,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
             }
             
             setNotes("")
-            setFollowUpAt("")
+            setFollowUpAt(undefined)
             setSelectedProperties([])
             setSelectedVisitId("")
             setVisitFeedback("")
@@ -313,18 +313,13 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
 
                             {showFollowUp && (
                                 <div className="space-y-2">
-                                    <Label className="flex gap-2 items-center text-muted-foreground">
-                                        <Calendar className="h-4 w-4" />
+                                    <Label className="text-muted-foreground">
                                         Next Follow-Up (Optional)
                                     </Label>
-                                    <div className="relative">
-                                        <Input 
-                                            type="datetime-local" 
-                                            value={followUpAt}
-                                            onChange={(e) => setFollowUpAt(e.target.value)}
-                                            className="bg-muted/30 dark:bg-muted/50 pl-10"
-                                        />
-                                    </div>
+                                    <DateTimePicker 
+                                        value={followUpAt}
+                                        onChange={setFollowUpAt}
+                                    />
                                 </div>
                             )}
                             {!showFollowUp && (
@@ -337,19 +332,13 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
 
                     {showPropertyPicker && (
                         <div className="space-y-2">
-                            <Label className="flex gap-2 items-center text-muted-foreground">
-                                <Calendar className="h-4 w-4" />
+                            <Label className="text-muted-foreground">
                                 Visit Date & Time
                             </Label>
-                            <div className="relative">
-                                <Input 
-                                    type="datetime-local" 
-                                    value={followUpAt}
-                                    onChange={(e) => setFollowUpAt(e.target.value)}
-                                    className="bg-muted/30 dark:bg-muted/50 pl-10"
-                                    required
-                                />
-                            </div>
+                            <DateTimePicker 
+                                value={followUpAt}
+                                onChange={setFollowUpAt}
+                            />
                         </div>
                     )}
 
