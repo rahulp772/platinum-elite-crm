@@ -12,8 +12,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Calendar } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useUpdateLead } from "@/hooks/use-leads"
+import { useUpdateLead, useLogLeadActivity } from "@/hooks/use-leads"
 import { LeadStatus } from "@/types/lead"
 import { toast } from "sonner"
 import { toISOStringFromLocal } from "@/lib/date-utils"
@@ -28,9 +29,16 @@ interface MandatoryFollowUpModalProps {
 
 export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStatus, onComplete }: MandatoryFollowUpModalProps) {
     const updateLead = useUpdateLead()
+    const logLeadActivity = useLogLeadActivity()
     const [status, setStatus] = React.useState<LeadStatus>(currentStatus as LeadStatus)
     const [followUpAt, setFollowUpAt] = React.useState("")
     const [notes, setNotes] = React.useState("")
+
+    React.useEffect(() => {
+        if (open && currentStatus) {
+            setStatus(currentStatus as LeadStatus)
+        }
+    }, [open, currentStatus])
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -40,10 +48,19 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                 id: leadId,
                 status,
                 followUpAt: toISOStringFromLocal(followUpAt) || undefined,
-                notes: notes ? `Action Outcome: ${notes}` : undefined,
             })
             
+            if (notes.trim()) {
+                await logLeadActivity.mutateAsync({
+                    leadId,
+                    action: "outcome_logged",
+                    description: notes,
+                })
+            }
+            
             toast.success("Outcome logged and follow-up scheduled.")
+            setNotes("")
+            setFollowUpAt("")
             onOpenChange(false)
             onComplete?.()
         } catch (error) {
@@ -95,12 +112,15 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                         <Label className="flex gap-2 items-center text-muted-foreground">
                             Next Follow-Up (Optional)
                         </Label>
-                        <Input 
-                            type="datetime-local" 
-                            value={followUpAt}
-                            onChange={(e) => setFollowUpAt(e.target.value)}
-                            className="bg-muted/30"
-                        />
+                        <div className="relative">
+                            <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                            <Input 
+                                type="datetime-local" 
+                                value={followUpAt}
+                                onChange={(e) => setFollowUpAt(e.target.value)}
+                                className="bg-muted/30 pl-10"
+                            />
+                        </div>
                     </div>
 
                     <DialogFooter>

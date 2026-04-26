@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { useUpdateLead, useLogLeadActivity, useReassignLead, useUsers } from "@/hooks/use-leads"
 import { useAuth } from "@/lib/auth-context"
-import { Loader2, Phone, MessageCircle, Calendar, ArrowLeft, Send, Sparkles as SparkleIcon, User, ArrowRightLeft, Mic, MapPin } from "lucide-react"
+import { Loader2, Phone, MessageCircle, Calendar, ArrowLeft, Send, Sparkles as SparkleIcon, User, ArrowRightLeft, Mic, MapPin, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +17,7 @@ import { MandatoryFollowUpModal } from "./mandatory-follow-up-modal"
 import { CallOutcomeModal } from "./call-outcome-modal"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { format } from "date-fns"
+import { formatDateTimeInTimezone, getUserTimezone, toISOStringFromLocal, toLocalDateTimeInput } from "@/lib/date-utils"
 import { LeadStatus } from "@/types/lead"
 
 const quickActionsMap: Record<LeadStatus, { label: string; nextStatus: LeadStatus; description: string }[]> = {
@@ -53,7 +53,6 @@ const quickActionsMap: Record<LeadStatus, { label: string; nextStatus: LeadStatu
     lost: [],
 }
 import { toast } from "sonner"
-import { toISOStringFromLocal, toLocalDateTimeInput } from "@/lib/date-utils"
 
 export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const { user } = useAuth()
@@ -66,6 +65,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const [showReassignModal, setShowReassignModal] = React.useState(false)
     const [newAssigneeId, setNewAssigneeId] = React.useState("")
     const [showCallOutcomeModal, setShowCallOutcomeModal] = React.useState(false)
+    const [activeTab, setActiveTab] = React.useState<"activity" | "logs">("activity")
     
     const { data: lead, isLoading } = useQuery({
         queryKey: ["lead", leadId],
@@ -85,6 +85,8 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     })
 
     const { data: users } = useUsers()
+
+    const timezone = getUserTimezone(user)
 
     const canReassign = React.useMemo(() => {
         if (!user?.role?.level) return false
@@ -181,7 +183,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
         
         // Use existing update logic to append note for MVP
         // In real app, we might want a separate notes table
-        const newNotes = lead.notes ? `${lead.notes}\n${format(new Date(), 'dd/MM yyyy HH:mm')}: ${note}` : `${format(new Date(), 'dd/MM yyyy HH:mm')}: ${note}`;
+        const newNotes = lead.notes ? `${lead.notes}\n${formatDateTimeInTimezone(new Date(), timezone)}: ${note}` : `${formatDateTimeInTimezone(new Date(), timezone)}: ${note}`;
         
         updateLead.mutate({ id: lead.id, notes: newNotes }, {
             onSuccess: () => {
@@ -200,7 +202,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                 <div className="flex-1">
                     <h1 className="text-2xl font-bold flex items-center gap-3">
                         {lead.name}
-                        <Badge variant="outline" className="bg-primary/5 uppercase">{lead.status.replace(/_/g, " ")}</Badge>
+                        <Badge variant="outline" className="bg-primary/5 capitalize">{lead.status.replace(/_/g, " ")}</Badge>
                     </h1>
                     <p className="text-muted-foreground text-sm">{lead.phone} • {lead.email}</p>
                 </div>
@@ -243,6 +245,30 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                         <div><span className="text-muted-foreground">Source:</span> <span className="font-medium capitalize">{lead.source?.replace(/_/g, " ") || "Unknown"}</span></div>
                         <div><span className="text-muted-foreground">Score:</span> <span className="font-medium">{lead.score || 0}</span></div>
                     </div>
+
+                    {/* Tabs */}
+                    <div className="flex border-b border-border/50">
+                        <button
+                            onClick={() => setActiveTab("activity")}
+                            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "activity"
+                                    ? "border-realty-gold text-realty-navy"
+                                    : "border-transparent text-muted-foreground hover:text-foreground"
+                            }`}
+                        >
+                            Activity
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("logs")}
+                            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+                                activeTab === "logs"
+                                    ? "border-realty-gold text-realty-navy"
+                                    : "border-transparent text-muted-foreground hover:text-foreground"
+                            }`}
+                        >
+                            Logs
+                        </button>
+                    </div>
                     
                     <ScrollArea className="flex-1 p-4">
                         <div className="space-y-6">
@@ -256,23 +282,43 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                             ))}
 
                             {/* Actual activities */}
-                            {activities?.map((activity: any) => (
-                                <div key={activity.id} className="flex gap-4">
-                                    <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-1">
-                                        {activity.action.includes('call') ? <Phone className="h-3 w-3 text-slate-500" /> : 
-                                         activity.action.includes('whatsapp') ? <MessageCircle className="h-3 w-3 text-slate-500" /> :
-                                         activity.action.includes('status') ? <ArrowRightLeft className="h-3 w-3 text-slate-500" /> :
-                                         <div className="w-2 h-2 rounded-full bg-slate-400" />}
-                                    </div>
-                                    <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-border/50">
-                                        <div className="flex items-center gap-2 mb-1">
-                                            <span className="font-medium text-sm capitalize">{activity.action.replace(/_/g, " ")}</span>
-                                            <span className="text-xs text-muted-foreground">{format(new Date(activity.timestamp), "MMM d, h:mm a")}</span>
+                            {activeTab === "activity" ? (
+                                activities
+                                    ?.filter((activity: any) => activity.action !== "viewed")
+                                    .map((activity: any) => (
+                                        <div key={activity.id} className="flex gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-1">
+                                                {activity.action.includes('call') || activity.action === "outcome_logged" ? <Phone className="h-3 w-3 text-slate-500" /> : 
+                                                 activity.action.includes('whatsapp') ? <MessageCircle className="h-3 w-3 text-slate-500" /> :
+                                                 activity.action.includes('status') ? <ArrowRightLeft className="h-3 w-3 text-slate-500" /> :
+                                                 <div className="w-2 h-2 rounded-full bg-slate-400" />}
+                                            </div>
+                                            <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-border/50">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-medium text-sm capitalize">{activity.action.replace(/_/g, " ")}</span>
+                                                    <span className="text-xs text-muted-foreground">{formatDateTimeInTimezone(activity.timestamp, timezone)}</span>
+                                                </div>
+                                                {activity.description && <p className="text-sm text-muted-foreground">{activity.description}</p>}
+                                            </div>
                                         </div>
-                                        {activity.description && <p className="text-sm text-muted-foreground">{activity.description}</p>}
-                                    </div>
-                                </div>
-                            ))}
+                                    ))
+                            ) : (
+                                activities
+                                    ?.filter((activity: any) => activity.action === "viewed")
+                                    .map((activity: any) => (
+                                        <div key={activity.id} className="flex gap-4">
+                                            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0 mt-1">
+                                                <Eye className="h-3 w-3 text-blue-500" />
+                                            </div>
+                                            <div className="bg-muted/30 p-3 rounded-2xl rounded-tl-sm max-w-[80%] border border-border/50">
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    <span className="font-medium text-sm">Viewed</span>
+                                                    <span className="text-xs text-muted-foreground">{formatDateTimeInTimezone(activity.timestamp, timezone)}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))
+                            )}
                         </div>
                     </ScrollArea>
 
@@ -307,7 +353,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                     </Card>
 
                     <Card className="p-4 border-realty-gold/30 bg-gradient-to-b from-realty-gold/5 to-transparent shadow-sm">
-                        <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3">Primary Actions</h3>
+                        <h3 className="font-bold text-sm text-muted-foreground mb-3">Primary Actions</h3>
                         <div className="grid grid-cols-2 gap-2 mb-2">
                             <Button className="w-full bg-emerald-600 hover:bg-emerald-700 h-12 gap-2" onClick={handleCallClick}>
                                 <Phone className="h-5 w-5" /> Call
@@ -322,7 +368,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                     </Card>
 
                     <Card className="p-4 shadow-sm border-border/50">
-                        <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3">Status Update</h3>
+                        <h3 className="font-bold text-sm text-muted-foreground mb-3">Status Update</h3>
                         <Select value={lead.status} onValueChange={(v) => handleStatusChange(v as LeadStatus)}>
                             <SelectTrigger className="w-full h-12 font-medium">
                                 <SelectValue />
@@ -341,16 +387,19 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                     </Card>
 
                     <Card className="p-4 shadow-sm border-border/50">
-                        <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <h3 className="font-bold text-sm text-muted-foreground mb-3 flex items-center gap-2">
                             <Calendar className="h-4 w-4" /> Next Follow Up
                         </h3>
                         <div className="space-y-3">
-                            <Input 
-                                type="datetime-local" 
-                                value={toLocalDateTimeInput(lead.followUpAt)}
-                                onChange={handleDateChange}
-                                className="h-12 bg-muted/30"
-                            />
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                                <Input 
+                                    type="datetime-local" 
+                                    value={toLocalDateTimeInput(lead.followUpAt)}
+                                    onChange={handleDateChange}
+                                    className="h-12 bg-muted/30 pl-10"
+                                />
+                            </div>
                             <div className="grid grid-cols-3 gap-2">
                                 <Button variant="outline" size="sm" onClick={() => handleQuickDate(1)}>Tomorrow</Button>
                                 <Button variant="outline" size="sm" onClick={() => handleQuickDate(2)}>2 Days</Button>
@@ -360,7 +409,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                     </Card>
 
                     <Card className="p-4 shadow-sm border-border/50">
-                        <h3 className="font-bold text-sm text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <h3 className="font-bold text-sm text-muted-foreground mb-3 flex items-center gap-2">
                             <User className="h-4 w-4" /> Assignment Info
                         </h3>
                         <div className="flex flex-col gap-3">

@@ -7,10 +7,13 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Loader2, Phone, AlertTriangle, Calendar, ArrowRight } from "lucide-react"
-import { format } from "date-fns"
 import Link from "next/link"
+import { useAuth } from "@/lib/auth-context"
+import { formatDateTimeInTimezone, getUserTimezone } from "@/lib/date-utils"
 
 export function FollowUpActionWidget() {
+  const { user } = useAuth()
+  const timezone = getUserTimezone(user)
   const { data: overdue, isLoading: loadingOverdue } = useQuery({
     queryKey: ["dashboard", "followups", "overdue"],
     queryFn: async () => {
@@ -83,7 +86,7 @@ export function FollowUpActionWidget() {
             </div>
             <div className="space-y-1.5">
               {overdueLeads.slice(0, 3).map((lead: any) => (
-                <LeadRow key={lead.id} lead={lead} variant="overdue" />
+                <LeadRow key={lead.id} lead={lead} variant="overdue" timezone={timezone} />
               ))}
             </div>
           </div>
@@ -97,7 +100,7 @@ export function FollowUpActionWidget() {
             </div>
             <div className="space-y-1.5">
               {todayLeads.slice(0, 3).map((lead: any) => (
-                <LeadRow key={lead.id} lead={lead} variant="today" />
+                <LeadRow key={lead.id} lead={lead} variant="today" timezone={timezone} />
               ))}
             </div>
           </div>
@@ -111,7 +114,7 @@ export function FollowUpActionWidget() {
             </div>
             <div className="space-y-1.5">
               {newLeadsList.slice(0, 3).map((lead: any) => (
-                <LeadRow key={lead.id} lead={lead} variant="new" />
+                <LeadRow key={lead.id} lead={lead} variant="new" timezone={timezone} />
               ))}
             </div>
           </div>
@@ -124,9 +127,10 @@ export function FollowUpActionWidget() {
 interface LeadRowProps {
   lead: any
   variant: "overdue" | "today" | "new"
+  timezone: string
 }
 
-function LeadRow({ lead, variant }: LeadRowProps) {
+function LeadRow({ lead, variant, timezone }: LeadRowProps) {
   return (
     <div className={`flex items-center justify-between p-2 rounded-md text-xs ${
       variant === "overdue" ? "bg-rose-50 dark:bg-rose-950/20" :
@@ -137,7 +141,7 @@ function LeadRow({ lead, variant }: LeadRowProps) {
         <span className="font-medium truncate">{lead.name}</span>
         {lead.followUpAt && (
           <span className={`${variant === "overdue" ? "text-rose-600" : "text-muted-foreground"}`}>
-            {format(new Date(lead.followUpAt), "MMM d, h:mm a")}
+            {formatDateTimeInTimezone(lead.followUpAt, timezone)}
           </span>
         )}
       </div>

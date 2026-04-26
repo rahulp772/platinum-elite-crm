@@ -22,6 +22,7 @@ export enum LeadActivityAction {
   SITE_VISIT_DONE = 'site_visit_done',
   RE_INQUIRY = 're_inquiry',
   VIEWED = 'viewed',
+  OUTCOME_LOGGED = 'outcome_logged',
 }
 
 @Entity('lead_activities')

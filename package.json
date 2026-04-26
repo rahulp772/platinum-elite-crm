@@ -2,7 +2,7 @@
   "name": "platinum-elite-crm",
   "private": true,
   "scripts": {
-    "start": "turbo run start --parallel",
+    "start": "turbo run start",
     "build": "turbo build",
     "dev": "turbo dev",
     "lint": "turbo lint",
@@ -14,6 +14,7 @@
   },
   "devDependencies": {
     "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.0",
     "pg": "^8.20.0",
     "prettier": "^3.4.2",
     "turbo": "latest"

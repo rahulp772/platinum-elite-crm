@@ -45,6 +45,7 @@ export class AuthService {
       email,
       password: hashedPassword,
       name,
+      timezone: 'Asia/Kolkata',
     });
 
     await this.userRepository.save(user);

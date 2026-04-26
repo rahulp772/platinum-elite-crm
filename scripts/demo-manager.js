@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+require('dotenv').config({ path: require('path').join(__dirname, '..', 'apps', 'backend', '.env') });
+
 const bcrypt = require('bcryptjs');
 const pg = require('pg');
 
@@ -51,7 +53,7 @@ async function main() {
       case 'create':
         const count = Math.min(Math.max(parseInt(args[1]) || 1, 1), 5);
         console.log(`║  Creating ${count} demo tenant(s)...                                ║`);
-        console.log('╚══════════════════════════════════════���════════════════════════╝');
+        console.log('╚══════════════════════════════════════════════════════════════════╝');
         await createDemoTenants(db, count);
         break;
 
@@ -153,25 +155,25 @@ async function createDemoTenants(db, count) {
     }
 
     const adminResult = await db.query(
-      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin") VALUES ($1, $2, $3, $4, $5, false) RETURNING id',
-      [`admin@${demoDomain}`, hashedPassword, 'Admin User', tenantId, rolesMap['Admin']]
+      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6) RETURNING id',
+      [`admin@${demoDomain}`, hashedPassword, 'Admin User', tenantId, rolesMap['Admin'], 'Asia/Kolkata']
     );
     await db.query(
-      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin") VALUES ($1, $2, $3, $4, $5, false) RETURNING id',
-      [`manager@${demoDomain}`, hashedPassword, 'Manager User', tenantId, rolesMap['Manager']]
+      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6) RETURNING id',
+      [`manager@${demoDomain}`, hashedPassword, 'Manager User', tenantId, rolesMap['Manager'], 'Asia/Kolkata']
     );
 
     for (let j = 1; j <= 2; j++) {
       await db.query(
-        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin") VALUES ($1, $2, $3, $4, $5, false)',
-        [`lead${j}@${demoDomain}`, hashedPassword, `Team Lead ${j}`, tenantId, rolesMap['Team Lead']]
+        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6)',
+        [`lead${j}@${demoDomain}`, hashedPassword, `Team Lead ${j}`, tenantId, rolesMap['Team Lead'], 'Asia/Kolkata']
       );
     }
 
     for (let j = 1; j <= 4; j++) {
       await db.query(
-        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin") VALUES ($1, $2, $3, $4, $5, false)',
-        [`agent${j}@${demoDomain}`, hashedPassword, `Agent ${j}`, tenantId, rolesMap['Agent']]
+        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6)',
+        [`agent${j}@${demoDomain}`, hashedPassword, `Agent ${j}`, tenantId, rolesMap['Agent'], 'Asia/Kolkata']
       );
     }
 
@@ -222,7 +224,7 @@ async function seedDemoData(db, tenantId) {
   for (const data of propertyData) {
     const agentId = agentIds[Math.floor(Math.random() * agentIds.length)];
     const result = await db.query(
-      `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, yearbuilt, images, features, "agentId", "tenantId") 
+      `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, "yearBuilt", images, features, "agentId", "tenantId") 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id`,
       [
         data.title,
@@ -272,7 +274,7 @@ async function seedDemoData(db, tenantId) {
         budgetMin,
         budgetMax,
         locations[Math.floor(Math.random() * locations.length)],
-        ['Apartment', 'House', 'Condo', 'Townhouse'][Math.floor(Math.random() * 4)],
+        ['1 BHK', '2 BHK', '3 BHK', 'Penthouse', 'Villa'][Math.floor(Math.random() * 5)],
         `Interested in real estate. Budget: $${budgetMin.toLocaleString()}-$${budgetMax.toLocaleString()}`,
         userId,
         tenantId,
@@ -374,12 +376,14 @@ async function deleteDemoTenants(db) {
 
   for (const tenant of tenants.rows) {
     console.log(`   Deleting ${tenant.name}...`);
-    await db.query('DELETE FROM users WHERE "tenantId" = $1', [tenant.id]);
-    await db.query('DELETE FROM roles WHERE "tenantId" = $1', [tenant.id]);
+    await db.query('DELETE FROM messages WHERE "tenantId" = $1', [tenant.id]);
+    await db.query('DELETE FROM conversations WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM tasks WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM deals WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM leads WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM properties WHERE "tenantId" = $1', [tenant.id]);
+    await db.query('DELETE FROM users WHERE "tenantId" = $1', [tenant.id]);
+    await db.query('DELETE FROM roles WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM tenants WHERE id = $1', [tenant.id]);
   }
 

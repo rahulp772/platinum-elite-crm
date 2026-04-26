@@ -7,9 +7,12 @@ import { Loader2, PhoneCall, CalendarDays, UserPlus } from "lucide-react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { format } from "date-fns"
+import { useAuth } from "@/lib/auth-context"
+import { formatTimeOnly, getUserTimezone } from "@/lib/date-utils"
 
 export function AgentDashboardView() {
+    const { user } = useAuth()
+    const timezone = getUserTimezone(user)
     const { data: leads, isLoading } = useQuery({
         queryKey: ["my-leads"],
         queryFn: async () => {
@@ -59,7 +62,7 @@ export function AgentDashboardView() {
                                 <Link key={lead.id} href={`/leads/${lead.id}`}>
                                     <div className="flex justify-between items-center bg-background p-2 rounded border border-destructive/20 hover:bg-destructive/10 transition-colors">
                                         <span className="font-semibold text-sm truncate">{lead.name}</span>
-                                        <span className="text-xs text-destructive">{format(new Date(lead.followUpAt), 'h:mm a')}</span>
+                                        <span className="text-xs text-destructive">{formatTimeOnly(lead.followUpAt, timezone)}</span>
                                     </div>
                                 </Link>
                             ))}
@@ -84,7 +87,7 @@ export function AgentDashboardView() {
                                 <Link key={lead.id} href={`/leads/${lead.id}`}>
                                     <div className="flex justify-between items-center bg-background p-2 rounded border border-amber-500/20 hover:bg-amber-500/10 transition-colors">
                                         <span className="font-semibold text-sm truncate">{lead.name}</span>
-                                        <span className="text-xs text-amber-600 dark:text-amber-500">{format(new Date(lead.followUpAt), 'h:mm a')}</span>
+                                        <span className="text-xs text-amber-600 dark:text-amber-500">{formatTimeOnly(lead.followUpAt, timezone)}</span>
                                     </div>
                                 </Link>
                             ))}
@@ -106,7 +109,7 @@ export function AgentDashboardView() {
                                 <Link key={lead.id} href={`/leads/${lead.id}`}>
                                     <div className="flex justify-between items-center bg-background p-2 rounded border border-emerald-500/20 hover:bg-emerald-500/10 transition-colors">
                                         <span className="font-semibold text-sm truncate">{lead.name}</span>
-                                        <span className="text-xs text-emerald-600 dark:text-emerald-500">{format(new Date(lead.createdAt), 'h:mm a')}</span>
+                                        <span className="text-xs text-emerald-600 dark:text-emerald-500">{formatTimeOnly(lead.createdAt, timezone)}</span>
                                     </div>
                                 </Link>
                             ))}

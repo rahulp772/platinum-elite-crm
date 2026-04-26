@@ -15,6 +15,9 @@ importers:
       bcryptjs:
         specifier: ^2.4.3
         version: 2.4.3
+      dotenv:
+        specifier: ^16.4.0
+        version: 16.6.1
       pg:
         specifier: ^8.20.0
         version: 8.20.0
