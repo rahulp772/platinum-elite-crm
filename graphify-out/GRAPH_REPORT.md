@@ -1,7 +1,7 @@
 # Graph Report - platinum-elite-crm  (2026-04-26)
 
 ## Corpus Check
-- 163 files · ~33,347 words
+- 163 files · ~57,135 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -87,8 +87,8 @@
   apps\frontend\app\(dashboard)\leads\page.tsx → apps\frontend\hooks\use-leads.ts
 - `AddLeadDialog()` --calls--> `useCreateLead()`  [INFERRED]
   apps\frontend\components\leads\add-lead-dialog.tsx → apps\frontend\hooks\use-leads.ts
-- `NotificationsForm()` --calls--> `handleSubmit()`  [INFERRED]
-  apps\frontend\components\settings\notifications-form.tsx → apps\frontend\components\properties\add-property-dialog.tsx
+- `handleSubmit()` --calls--> `NotificationsForm()`  [INFERRED]
+  apps\frontend\components\properties\add-property-dialog.tsx → apps\frontend\components\settings\notifications-form.tsx
 
 ## Communities
 
