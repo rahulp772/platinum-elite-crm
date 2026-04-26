@@ -10,7 +10,17 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import { Moon, Sun } from "lucide-react"
+
+const themeConfig = [
+    { value: "light", label: "Light", description: "Clean light theme" },
+    { value: "dark", label: "Dark", description: "Default dark theme" },
+    { value: "charcoal", label: "Charcoal", description: "Eye-safe dark (#121212)" },
+    { value: "solarized", label: "Solarized", description: "Blue-green balanced" },
+    { value: "gruvbox", label: "Gruvbox", description: "Warm retro tones" },
+    { value: "sage", label: "Sage", description: "Nature charcoal" },
+    { value: "everforest", label: "Everforest", description: "Soft nature dark" },
+    { value: "blue-eclipse", label: "Blue Eclipse", description: "Cool blue tones" },
+]
 
 export function AppearanceForm() {
     const { setTheme, theme } = useTheme()
@@ -26,23 +36,22 @@ export function AppearanceForm() {
             <CardContent className="space-y-8">
                 <div className="space-y-2">
                     <Label>Theme</Label>
-                    <div className="grid max-w-md grid-cols-2 gap-4">
-                        <Button
-                            variant="outline"
-                            className={`h-24 flex-col gap-2 ${theme === "light" ? "border-primary border-2" : ""}`}
-                            onClick={() => setTheme("light")}
-                        >
-                            <Sun className="h-6 w-6" />
-                            <span>Light</span>
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className={`h-24 flex-col gap-2 ${theme === "dark" ? "border-primary border-2" : ""}`}
-                            onClick={() => setTheme("dark")}
-                        >
-                            <Moon className="h-6 w-6" />
-                            <span>Dark</span>
-                        </Button>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        {themeConfig.map((t) => (
+                            <Button
+                                key={t.value}
+                                variant="outline"
+                                className={`h-auto py-4 flex-col gap-1.5 px-2 ${
+                                    theme === t.value ? "border-primary border-2" : ""
+                                }`}
+                                onClick={() => setTheme(t.value)}
+                            >
+                                <span className="font-semibold text-sm">{t.label}</span>
+                                <span className="text-[0.65rem] text-muted-foreground leading-tight">
+                                    {t.description}
+                                </span>
+                            </Button>
+                        ))}
                     </div>
                     <p className="text-[0.8rem] text-muted-foreground">
                         Select your preferred theme for the dashboard.

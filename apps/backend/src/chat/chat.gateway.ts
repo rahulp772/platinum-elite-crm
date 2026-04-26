@@ -9,11 +9,30 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 import { ChatService } from './chat.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../users/entities/user.entity';
+
+interface JwtPayload {
+  sub: string;
+  email: string;
+  tenantId?: string;
+  isSuperAdmin?: boolean;
+  roleId?: string;
+  role?: {
+    id: string;
+    name: string;
+    level: number;
+    permissions: string[];
+  };
+}
 
 @WebSocketGateway({
   cors: {
     origin: '*',
+    credentials: true,
   },
 })
 export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -25,6 +44,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   constructor(
     private jwtService: JwtService,
     private chatService: ChatService,
+    private configService: ConfigService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) {}
 
   async handleConnection(client: Socket) {
@@ -38,11 +60,22 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
         return;
       }
 
-      const payload = this.jwtService.verify(token);
-      client.data.user = payload;
-      this.userSockets.set(payload.sub, client.id);
+      const payload = this.jwtService.verify<JwtPayload>(token);
+      
+      const user = await this.userRepository.findOne({
+        where: { id: payload.sub },
+        relations: ['role', 'tenant'],
+      });
 
-      client.join(`user:${payload.sub}`);
+      if (!user) {
+        client.disconnect();
+        return;
+      }
+
+      client.data.user = user;
+      this.userSockets.set(user.id, client.id);
+
+      client.join(`user:${user.id}`);
     } catch (error) {
       client.disconnect();
     }
@@ -50,7 +83,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   handleDisconnect(client: Socket) {
     if (client.data.user) {
-      this.userSockets.delete(client.data.user.sub);
+      this.userSockets.delete(client.data.user.id);
     }
   }
 
@@ -75,21 +108,35 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_message')
   async handleSendMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { conversationId: string; content: string },
+    @MessageBody() data: { conversationId: string; content?: string; attachments?: any[] },
   ) {
-    const user = client.data.user;
+    const user = client.data.user as User;
     if (!user) return;
 
-    const message = await this.chatService.sendMessage(
-      data.conversationId,
-      data.content,
-      { id: user.sub } as any,
-    );
+    try {
+      const message = await this.chatService.sendMessage(
+        data.conversationId,
+        data.content,
+        user,
+        data.attachments,
+      );
 
-    this.server
-      .to(`conversation:${data.conversationId}`)
-      .emit('new_message', message);
-    return message;
+      // Emit to the conversation room for active chat windows
+      this.server
+        .to(`conversation:${data.conversationId}`)
+        .emit('new_message', message);
+      
+      // Also emit to each participant's individual room for global notifications
+      if (message.participants) {
+        message.participants.forEach((participant: any) => {
+          this.server.to(`user:${participant.id}`).emit('new_message', message);
+        });
+      }
+      
+      return message;
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
   }
 
   @SubscribeMessage('mark_read')
@@ -97,16 +144,20 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
-    const user = client.data.user;
+    const user = client.data.user as User;
     if (!user) return;
 
-    await this.chatService.markMessagesAsRead(data.conversationId, user.sub);
-    this.server
-      .to(`conversation:${data.conversationId}`)
-      .emit('messages_read', {
-        conversationId: data.conversationId,
-        userId: user.sub,
-      });
+    try {
+      await this.chatService.markMessagesAsRead(data.conversationId, user.id);
+      this.server
+        .to(`conversation:${data.conversationId}`)
+        .emit('messages_read', {
+          conversationId: data.conversationId,
+          userId: user.id,
+        });
+    } catch (error) {
+      client.emit('error', { message: error.message });
+    }
   }
 
   sendMessageToUser(userId: string, event: string, data: any) {

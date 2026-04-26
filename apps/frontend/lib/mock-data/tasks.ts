@@ -8,14 +8,14 @@ export const mockTasks: Task[] = [
         status: "todo",
         priority: "high",
         type: "call",
-        dueDate: new Date(new Date().setHours(14, 0, 0, 0)), // Today at 2 PM
-        relatedTo: {
-            id: "DEA-001",
-            type: "deal",
-            name: "Downtown Loft Purchase",
+        dueDate: new Date(new Date().setHours(14, 0, 0, 0)),
+        assignedTo: {
+            id: "user-001",
+            name: "Indica Watson",
+            email: "indica@example.com",
         },
-        assignedTo: "Indica Watson",
         createdAt: new Date("2024-01-20"),
+        updatedAt: new Date("2024-01-20"),
     },
     {
         id: "TSK-002",
@@ -24,14 +24,14 @@ export const mockTasks: Task[] = [
         status: "in_progress",
         priority: "high",
         type: "deadline",
-        dueDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Tomorrow
-        relatedTo: {
-            id: "DEA-002",
-            type: "deal",
-            name: "Riverside Condo Investment",
+        dueDate: new Date(new Date().setDate(new Date().getDate() + 1)),
+        assignedTo: {
+            id: "user-001",
+            name: "Indica Watson",
+            email: "indica@example.com",
         },
-        assignedTo: "Indica Watson",
         createdAt: new Date("2024-01-21"),
+        updatedAt: new Date("2024-01-21"),
     },
     {
         id: "TSK-003",
@@ -39,14 +39,14 @@ export const mockTasks: Task[] = [
         status: "done",
         priority: "medium",
         type: "meeting",
-        dueDate: new Date(new Date().setDate(new Date().getDate() - 1)), // Yesterday
-        relatedTo: {
-            id: "DEA-005",
-            type: "deal",
-            name: "Family Home Upgrade",
+        dueDate: new Date(new Date().setDate(new Date().getDate() - 1)),
+        assignedTo: {
+            id: "user-001",
+            name: "Indica Watson",
+            email: "indica@example.com",
         },
-        assignedTo: "Indica Watson",
         createdAt: new Date("2024-01-18"),
+        updatedAt: new Date("2024-01-18"),
     },
     {
         id: "TSK-004",
@@ -55,14 +55,14 @@ export const mockTasks: Task[] = [
         status: "todo",
         priority: "medium",
         type: "email",
-        dueDate: new Date(), // Today
-        relatedTo: {
-            id: "LEA-003",
-            type: "lead",
-            name: "Sarah Connor",
+        dueDate: new Date(),
+        assignedTo: {
+            id: "user-001",
+            name: "Indica Watson",
+            email: "indica@example.com",
         },
-        assignedTo: "Indica Watson",
         createdAt: new Date("2024-01-22"),
+        updatedAt: new Date("2024-01-22"),
     },
     {
         id: "TSK-005",
@@ -72,13 +72,13 @@ export const mockTasks: Task[] = [
         priority: "low",
         type: "todo",
         dueDate: new Date(new Date().setDate(new Date().getDate() + 2)),
-        relatedTo: {
-            id: "PROP-005",
-            type: "property",
-            name: "Prime Commercial Space",
+        assignedTo: {
+            id: "user-001",
+            name: "Indica Watson",
+            email: "indica@example.com",
         },
-        assignedTo: "Indica Watson",
         createdAt: new Date("2024-01-22"),
+        updatedAt: new Date("2024-01-22"),
     },
     {
         id: "TSK-006",
@@ -87,7 +87,12 @@ export const mockTasks: Task[] = [
         priority: "medium",
         type: "meeting",
         dueDate: new Date(new Date().setDate(new Date().getDate() + 5)),
-        assignedTo: "Indica Watson",
+        assignedTo: {
+            id: "user-001",
+            name: "Indica Watson",
+            email: "indica@example.com",
+        },
         createdAt: new Date("2024-01-15"),
+        updatedAt: new Date("2024-01-15"),
     },
 ]

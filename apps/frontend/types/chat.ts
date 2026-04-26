@@ -19,6 +19,12 @@ export interface Message {
     }
     timestamp: Date
     read: boolean
+    attachments?: {
+        url: string
+        type: 'image' | 'pdf' | 'other'
+        name: string
+        size: number
+    }[]
 }
 
 export interface Conversation {
@@ -30,4 +36,5 @@ export interface Conversation {
     unreadCount: number
     createdAt: Date
     updatedAt: Date
+    isNewConversation?: boolean
 }

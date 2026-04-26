@@ -1,6 +1,19 @@
 export type DealStage = "lead" | "negotiation" | "under_contract" | "closed"
 export type DealPriority = "low" | "medium" | "high"
 
+export type DealActivityAction = 
+    | "created"
+    | "stage_changed"
+    | "note_added"
+    | "value_updated"
+    | "property_linked"
+    | "property_unlinked"
+    | "assigned"
+    | "reassigned"
+    | "priority_changed"
+    | "expected_close_updated"
+    | "viewed"
+
 export interface Deal {
     id: string
     title: string
@@ -12,7 +25,7 @@ export interface Deal {
         id: string
         title: string
     }
-    expectedCloseDate: Date
+    expectedCloseDate?: Date
     priority: DealPriority
     agent: {
         id: string
@@ -20,6 +33,22 @@ export interface Deal {
     }
     createdAt: Date
     updatedAt: Date
+    activities?: DealActivity[]
+}
+
+export interface DealActivity {
+    id: string
+    dealId: string
+    userId: string
+    user?: {
+        id: string
+        name: string
+    }
+    action: DealActivityAction
+    oldValue?: string
+    newValue?: string
+    description?: string
+    timestamp: Date
 }
 
 export const dealStages: { id: DealStage; label: string; color: string }[] = [

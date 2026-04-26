@@ -62,12 +62,18 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                 onClick={handleClick}
             >
                 <div className="relative w-48 min-w-48 aspect-square sm:aspect-[4/3] overflow-hidden bg-muted">
-                    <Image
-                        src={property.images[0]}
-                        alt={property.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                    />
+                    {property.images?.[0] && property.images[0].startsWith('http') ? (
+                        <Image
+                            src={property.images[0]}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-muted-foreground text-xs">No Image</span>
+                        </div>
+                    )}
                     <Button
                         variant="ghost"
                         size="icon"
@@ -141,12 +147,18 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
             onClick={handleClick}
         >
             <div className={cn("relative overflow-hidden bg-muted", isCompact ? "aspect-square" : "aspect-[4/3]")}>
-                <Image
-                    src={property.images[0]}
-                    alt={property.title}
-                    fill
-                    className="object-cover transition-transform group-hover:scale-105"
-                />
+                {property.images?.[0] && property.images[0].startsWith('http') ? (
+                    <Image
+                        src={property.images[0]}
+                        alt={property.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                    />
+                ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                        <span className="text-muted-foreground text-sm">No Image</span>
+                    </div>
+                )}
                 <div className={cn("absolute flex gap-1", isCompact ? "top-2 left-2" : "top-3 left-3")}>
                     <Badge
                         variant="outline"

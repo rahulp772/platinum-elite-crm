@@ -7,8 +7,10 @@ import {
   ManyToOne,
   ManyToMany,
   JoinTable,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Tenant } from '../../tenants/entities/tenant.entity';
 import { PropertyStatus, PropertyType } from '../enums/property.enum';
 
 @Entity('properties')
@@ -86,6 +88,13 @@ export class Property {
   @ManyToMany(() => User)
   @JoinTable({ name: 'property_favorites' })
   favoritedBy: User[];
+
+  @Column({ nullable: true })
+  tenantId: string;
+
+  @ManyToOne(() => Tenant, (tenant) => tenant.properties, { nullable: true })
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
 
   @CreateDateColumn()
   listed: Date;

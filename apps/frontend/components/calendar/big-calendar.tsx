@@ -6,13 +6,18 @@ import { Task } from "@/types/task"
 import { cn } from "@/lib/utils"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { formatDateInTimezone, formatTimeOnly, getUserTimezone } from "@/lib/date-utils"
+import { useAuth } from "@/lib/auth-context"
 
 interface BigCalendarProps {
     tasks: Task[]
+    onTaskClick?: (task: Task) => void
 }
 
-export function BigCalendar({ tasks }: BigCalendarProps) {
+export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
     const [currentDate, setCurrentDate] = React.useState(new Date())
+    const { user } = useAuth()
+    const timezone = getUserTimezone(user)
 
     const nextMonth = () => {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1))
@@ -99,6 +104,7 @@ export function BigCalendar({ tasks }: BigCalendarProps) {
                                 {dayTasks.map(task => (
                                     <div
                                         key={task.id}
+                                        onClick={() => onTaskClick?.(task)}
                                         className={cn(
                                             "text-[10px] px-2 py-1 rounded truncate border-l-2 font-medium cursor-pointer hover:opacity-80",
                                             task.priority === 'high' ? "bg-rose-100 dark:bg-rose-900/30 border-rose-500 text-rose-700 dark:text-rose-300" :
@@ -107,7 +113,7 @@ export function BigCalendar({ tasks }: BigCalendarProps) {
                                             task.status === "done" && "opacity-50 line-through"
                                         )}
                                     >
-                                        {format(task.dueDate, "h:mm a")} {task.title}
+                                        {formatTimeOnly(task.dueDate, timezone)} {task.title}
                                     </div>
                                 ))}
                             </div>

@@ -30,21 +30,21 @@ export class PropertiesController {
 
   @Get()
   @ApiOperation({ summary: 'Get all property listings' })
-  findAll() {
-    return this.propertiesService.findAll();
+  findAll(@Request() req) {
+    return this.propertiesService.findAll(req.user);
   }
 
   @Get(':id/related')
   @ApiOperation({ summary: 'Get related properties by type' })
-  async findRelated(@Param('id') id: string) {
-    const property = await this.propertiesService.findOne(id);
-    return this.propertiesService.findRelated(id, property.type);
+  async findRelated(@Param('id') id: string, @Request() req) {
+    const property = await this.propertiesService.findOne(id, req.user);
+    return this.propertiesService.findRelated(id, property.type, 3, req.user);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a property by ID' })
-  findOne(@Param('id') id: string) {
-    return this.propertiesService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.propertiesService.findOne(id, req.user);
   }
 
   @Patch(':id')
@@ -52,14 +52,15 @@ export class PropertiesController {
   update(
     @Param('id') id: string,
     @Body() updatePropertyDto: UpdatePropertyDto,
+    @Request() req,
   ) {
-    return this.propertiesService.update(id, updatePropertyDto);
+    return this.propertiesService.update(id, updatePropertyDto, req.user);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a property listing' })
-  remove(@Param('id') id: string) {
-    return this.propertiesService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.propertiesService.remove(id, req.user);
   }
 
   @Post(':id/favorite')

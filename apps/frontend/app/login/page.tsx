@@ -7,13 +7,22 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Building2, Loader2, AlertCircle } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+
+interface TenantInfo {
+  tenantId: string
+  name: string
+}
 
 export default function LoginPage() {
   const { login } = useAuth()
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const [showTenantSelect, setShowTenantSelect] = React.useState(false)
+  const [tenants, setTenants] = React.useState<TenantInfo[]>([])
+  const [pendingCredentials, setPendingCredentials] = React.useState<{ email: string; password: string } | null>(null)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -25,9 +34,47 @@ export default function LoginPage() {
     const password = formData.get("password") as string
 
     try {
-      await login({ email, password })
+      const result = await login({ email, password })
+
+      if (result?.tenants && result.tenants.length > 0) {
+        setTenants(result.tenants)
+        setPendingCredentials({ email, password })
+        setShowTenantSelect(true)
+        setIsLoading(false)
+        return
+      }
     } catch (err: any) {
-      setError(err.response?.data?.message || "Invalid credentials. Please try again.")
+      setError(err.message || "Invalid credentials. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleTenantSelect = async (tenantId: string) => {
+    if (!pendingCredentials) return
+
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const { email, password } = pendingCredentials
+      await login({ email, password, tenantId })
+      setShowTenantSelect(false)
+    } catch (err: any) {
+      setError(err.message || "Failed to complete login")
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleDemoLogin = async () => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      await login({ email: 'admin@demo1.com', password: 'Admin@123' })
+    } catch (err: any) {
+      setError(err.message || "Demo login failed. Please ensure demo tenant exists.")
     } finally {
       setIsLoading(false)
     }
@@ -35,7 +82,6 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
-      {/* Background Effects */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-amber-600/10 blur-[150px]" />
         <div className="absolute top-1/3 -left-20 w-80 h-80 rounded-full bg-blue-900/20 blur-[120px]" />
@@ -52,7 +98,7 @@ export default function LoginPage() {
             Enter your credentials to access your dashboard
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form method="POST" onSubmit={handleSubmit} autoComplete="off">
           <CardContent className="space-y-4">
             {error && (
               <Alert variant="destructive" className="bg-red-950/20 border-red-900/50 text-red-400">
@@ -69,6 +115,7 @@ export default function LoginPage() {
                 type="email"
                 placeholder="name@example.com"
                 required
+                autoComplete="off"
                 className="bg-slate-900/50 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-realty-gold/50"
               />
             </div>
@@ -87,6 +134,7 @@ export default function LoginPage() {
                 name="password"
                 type="password"
                 required
+                autoComplete="off"
                 className="bg-slate-900/50 border-slate-800 text-white focus-visible:ring-realty-gold/50"
               />
             </div>
@@ -100,6 +148,16 @@ export default function LoginPage() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Sign In
             </Button>
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full border-realty-gold/30 text-realty-gold hover:bg-realty-gold/10 hover:text-realty-gold"
+              onClick={handleDemoLogin}
+              disabled={isLoading}
+            >
+              {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Try Demo Account
+            </Button>
             <div className="text-sm text-center text-slate-400">
               Don&apos;t have an account?{" "}
               <Link
@@ -112,6 +170,31 @@ export default function LoginPage() {
           </CardFooter>
         </form>
       </Card>
+
+      <Dialog open={showTenantSelect} onOpenChange={setShowTenantSelect}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Select Workspace</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-2 py-4">
+            <p className="text-sm text-muted-foreground">
+              You have access to multiple workspaces. Please select one to continue.
+            </p>
+            {tenants.map((tenant) => (
+              <Button
+                key={tenant.tenantId}
+                variant="outline"
+                onClick={() => handleTenantSelect(tenant.tenantId)}
+                className="justify-start font-normal"
+                disabled={isLoading}
+              >
+                <Building2 className="mr-2 h-4 w-4" />
+                {tenant.name}
+              </Button>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

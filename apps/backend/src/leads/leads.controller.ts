@@ -8,19 +8,23 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { LeadsService } from './leads.service';
-import { CreateLeadDto } from './dto/create-lead.dto';
-import { UpdateLeadDto } from './dto/update-lead.dto';
+import { CreateLeadDto, UpdateLeadDto, LeadLookupDto } from './dto/create-lead.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { LeadAiEngineService } from './services/lead-ai-engine.service';
 
 @ApiTags('leads')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('leads')
 export class LeadsController {
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly leadAiEngineService: LeadAiEngineService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new lead' })
@@ -30,25 +34,88 @@ export class LeadsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all leads' })
-  findAll() {
-    return this.leadsService.findAll();
+  findAll(@Request() req) {
+    return this.leadsService.findAll(req.user);
+  }
+
+  @Get('my')
+  @ApiOperation({ summary: 'Get my leads' })
+  getMyLeads(@Request() req) {
+    return this.leadsService.getMyLeads(req.user);
+  }
+
+  @Get('followups')
+  @ApiOperation({ summary: 'Get upcoming follow-ups (today)' })
+  getUpcomingFollowUps(@Request() req) {
+    return this.leadsService.getUpcomingFollowUps(req.user);
+  }
+
+  @Get('followups/overdue')
+  @ApiOperation({ summary: 'Get overdue follow-ups' })
+  getOverdueFollowUps(@Request() req) {
+    return this.leadsService.getOverdueFollowUps(req.user);
+  }
+
+  @Get('new')
+  @ApiOperation({ summary: 'Get new leads' })
+  getNewLeads(@Request() req) {
+    return this.leadsService.getNewLeads(req.user);
+  }
+
+  @Get('lookup')
+  @ApiOperation({ summary: 'Lookup lead by phone number (admin only)' })
+  @ApiQuery({ name: 'phone', type: String })
+  lookup(@Query('phone') phone: string, @Request() req) {
+    return this.leadsService.lookup(phone, req.user);
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a lead by ID' })
-  findOne(@Param('id') id: string) {
-    return this.leadsService.findOne(id);
+  findOne(@Param('id') id: string, @Request() req) {
+    return this.leadsService.findOne(id, req.user);
+  }
+
+  @Get(':id/activities')
+  @ApiOperation({ summary: 'Get lead activities' })
+  getActivities(@Param('id') id: string, @Request() req) {
+    return this.leadsService.getActivities(id, req.user);
+  }
+
+  @Get(':id/suggestion')
+  @ApiOperation({ summary: 'Get AI suggestion for lead' })
+  getAiSuggestion(@Param('id') id: string, @Request() req) {
+    return this.leadsService.findOne(id, req.user).then((lead) => {
+      return this.leadAiEngineService.suggestNextAction(lead);
+    });
   }
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a lead' })
-  update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto) {
-    return this.leadsService.update(id, updateLeadDto);
+  update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto, @Request() req) {
+    return this.leadsService.update(id, updateLeadDto, req.user);
   }
 
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a lead' })
-  remove(@Param('id') id: string) {
-    return this.leadsService.remove(id);
+  remove(@Param('id') id: string, @Request() req) {
+    return this.leadsService.remove(id, req.user);
+  }
+
+  @Post('bulk-assign')
+  @ApiOperation({ summary: 'Bulk assign leads to a user' })
+  bulkAssign(@Body() body: { leadIds: string[]; assignedToId: string }, @Request() req) {
+    return this.leadsService.bulkAssign(body.leadIds, body.assignedToId, req.user);
+  }
+
+  @Post(':id/reassign')
+  @ApiOperation({ summary: 'Reassign lead to another user' })
+  reassign(@Param('id') id: string, @Body() body: { assignedToId: string }, @Request() req) {
+    return this.leadsService.reassign(id, body.assignedToId, req.user);
+  }
+
+  @Post(':id/log-activity')
+  @ApiOperation({ summary: 'Log activity for lead' })
+  logActivity(@Param('id') id: string, @Body() body: { action: string; description?: string }, @Request() req) {
+    return this.leadsService.logLeadActivity(id, body.action, body.description, req.user);
   }
 }

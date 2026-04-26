@@ -26,6 +26,8 @@ import { Property, PropertyStatus, PropertyType } from "@/types/property"
 import { cn } from "@/lib/utils"
 import { PropertyCard } from "@/components/properties/property-card"
 import { useProperty, useRelatedProperties } from "@/hooks/use-properties"
+import { useAuth } from "@/lib/auth-context"
+import { formatDateOnly, getUserTimezone } from "@/lib/date-utils"
 
 const statusColors: Record<PropertyStatus, string> = {
     available: "bg-teal-500/10 text-teal-600 border-teal-500/20",
@@ -61,6 +63,8 @@ export default function PropertyDetailPage() {
     const [lightboxOpen, setLightboxOpen] = React.useState(false)
     const [currentImageIndex, setCurrentImageIndex] = React.useState(0)
     const [isFavorite, setIsFavorite] = React.useState(false)
+    const { user } = useAuth()
+    const timezone = getUserTimezone(user)
 
     const openLightbox = (index: number) => {
         setCurrentImageIndex(index)
@@ -96,12 +100,8 @@ export default function PropertyDetailPage() {
         }).format(price)
     }
 
-    const formatDate = (date: Date) => {
-        return new Date(date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-        })
+    const formatDate = (date: Date | string) => {
+        return formatDateOnly(date, timezone)
     }
 
     if (isLoading) {

@@ -47,6 +47,146 @@
     --input: 217.2 32.6% 17.5%;
     --ring: 43 52% 54%;
   }
+
+  /* Theme: Soft Charcoal (Eye-Safe Dark) */
+  .charcoal {
+    --background: 222.2 84% 3.9%;
+    --foreground: 210 40% 91.8%;
+    --card: 222.2 84% 5.5%;
+    --card-foreground: 210 40% 91.8%;
+    --popover: 222.2 84% 3.9%;
+    --popover-foreground: 210 40% 91.8%;
+    --primary: 43 52% 54%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 215 20% 12%;
+    --secondary-foreground: 210 40% 91.8%;
+    --muted: 215 20% 12%;
+    --muted-foreground: 215 20% 65.1%;
+    --accent: 215 20% 15%;
+    --accent-foreground: 210 40% 91.8%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 91.8%;
+    --border: 215 20% 18%;
+    --input: 215 20% 18%;
+    --ring: 43 52% 54%;
+    --realty-navy: 222 47% 5%;
+    --realty-gold: 45 52% 50%;
+  }
+
+  /* Theme: Solarized Dark */
+  .solarized {
+    --background: 193 100% 11%;
+    --foreground: 192 15% 62%;
+    --card: 193 100% 14%;
+    --card-foreground: 192 15% 62%;
+    --popover: 193 100% 11%;
+    --popover-foreground: 192 15% 62%;
+    --primary: 192 25% 45%;
+    --primary-foreground: 192 15% 85%;
+    --secondary: 193 100% 17%;
+    --secondary-foreground: 192 15% 62%;
+    --muted: 193 100% 17%;
+    --muted-foreground: 192 15% 50%;
+    --accent: 193 100% 20%;
+    --accent-foreground: 192 15% 85%;
+    --destructive: 354 70% 50%;
+    --destructive-foreground: 192 15% 85%;
+    --border: 193 100% 22%;
+    --input: 193 100% 22%;
+    --ring: 192 25% 45%;
+  }
+
+  /* Theme: Gruvbox Dark (Warm/Retro) */
+  .gruvbox {
+    --background: 20 20% 12%;
+    --foreground: 30 30% 85%;
+    --card: 20 20% 15%;
+    --card-foreground: 30 30% 85%;
+    --popover: 20 20% 12%;
+    --popover-foreground: 30 30% 85%;
+    --primary: 100 30% 50%;
+    --primary-foreground: 30 30% 10%;
+    --secondary: 20 20% 18%;
+    --secondary-foreground: 30 30% 85%;
+    --muted: 20 20% 18%;
+    --muted-foreground: 30 20% 60%;
+    --accent: 20 20% 22%;
+    --accent-foreground: 30 30% 85%;
+    --destructive: 354 70% 55%;
+    --destructive-foreground: 30 30% 10%;
+    --border: 30 15% 22%;
+    --input: 30 15% 22%;
+    --ring: 100 30% 50%;
+  }
+
+  /* Theme: Charcoal Sage (Nature) */
+  .sage {
+    --background: 220 15% 15%;
+    --foreground: 140 10% 90%;
+    --card: 220 15% 18%;
+    --card-foreground: 140 10% 90%;
+    --popover: 220 15% 15%;
+    --popover-foreground: 140 10% 90%;
+    --primary: 140 25% 50%;
+    --primary-foreground: 220 15% 10%;
+    --secondary: 220 15% 20%;
+    --secondary-foreground: 140 10% 90%;
+    --muted: 220 15% 20%;
+    --muted-foreground: 140 10% 65%;
+    --accent: 220 15% 25%;
+    --accent-foreground: 140 10% 90%;
+    --destructive: 354 70% 50%;
+    --destructive-foreground: 220 15% 10%;
+    --border: 220 15% 25%;
+    --input: 220 15% 25%;
+    --ring: 140 25% 50%;
+  }
+
+  /* Theme: Everforest (Soft Nature) */
+  .everforest {
+    --background: 200 15% 22%;
+    --foreground: 140 15% 82%;
+    --card: 200 15% 26%;
+    --card-foreground: 140 15% 82%;
+    --popover: 200 15% 22%;
+    --popover-foreground: 140 15% 82%;
+    --primary: 90 30% 55%;
+    --primary-foreground: 200 15% 15%;
+    --secondary: 200 15% 28%;
+    --secondary-foreground: 140 15% 82%;
+    --muted: 200 15% 28%;
+    --muted-foreground: 140 10% 55%;
+    --accent: 200 15% 32%;
+    --accent-foreground: 140 15% 82%;
+    --destructive: 354 70% 50%;
+    --destructive-foreground: 200 15% 15%;
+    --border: 200 15% 35%;
+    --input: 200 15% 35%;
+    --ring: 90 30% 55%;
+  }
+
+  /* Theme: Blue Eclipse */
+  .blue-eclipse {
+    --background: 220 40% 11%;
+    --foreground: 210 20% 70%;
+    --card: 220 40% 14%;
+    --card-foreground: 210 20% 70%;
+    --popover: 220 40% 11%;
+    --popover-foreground: 210 20% 70%;
+    --primary: 215 50% 60%;
+    --primary-foreground: 220 40% 8%;
+    --secondary: 220 40% 18%;
+    --secondary-foreground: 210 20% 70%;
+    --muted: 220 40% 18%;
+    --muted-foreground: 210 15% 55%;
+    --accent: 220 40% 22%;
+    --accent-foreground: 210 20% 70%;
+    --destructive: 354 70% 50%;
+    --destructive-foreground: 220 40% 8%;
+    --border: 220 40% 25%;
+    --input: 220 40% 25%;
+    --ring: 215 50% 60%;
+  }
 }
 
 @layer base {

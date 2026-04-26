@@ -6,20 +6,29 @@ import {
   UpdateDateColumn,
   OneToMany,
   ManyToMany,
+  JoinColumn,
+  Unique,
+  ManyToOne,
+  OneToOne,
 } from 'typeorm';
-import { UserRole, UserStatus } from '../enums/user.enum';
+import { UserStatus } from '../enums/user.enum';
 import { Property } from '../../properties/entities/property.entity';
 import { Lead } from '../../leads/entities/lead.entity';
 import { Deal } from '../../deals/entities/deal.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Message } from '../../chat/entities/message.entity';
+import { Tenant } from '../../tenants/entities/tenant.entity';
+import { Role } from '../../roles/entities/role.entity';
+import { Team } from '../../teams/entities/team.entity';
+import { AgentProfile } from './agent-profile.entity';
 
 @Entity('users')
+@Unique(['email', 'tenantId'])
 export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
   @Column({ select: false })
@@ -47,12 +56,24 @@ export class User {
   })
   status: UserStatus;
 
-  @Column({
-    type: 'enum',
-    enum: UserRole,
-    default: UserRole.AGENT,
-  })
-  role: UserRole;
+  @Column({ nullable: true })
+  tenantId: string;
+
+  @ManyToOne(() => Tenant, (tenant) => tenant.users, { nullable: true })
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
+
+  @Column({ nullable: true })
+  roleId: string;
+
+  @ManyToOne(() => Role, (role) => role.users, { nullable: true })
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
+
+  @Column({ default: false })
+  isSuperAdmin: boolean;
+
+  permissions: string[];
 
   @OneToMany(() => Property, (property) => property.agent)
   properties: Property[];
@@ -66,15 +87,45 @@ export class User {
   @OneToMany(() => Task, (task) => task.assignedTo)
   tasks: Task[];
 
+  @OneToMany(() => Task, (task) => task.createdBy)
+  createdTasks: Task[];
+
   @OneToMany(() => Message, (message) => message.sender)
   messages: Message[];
 
   @ManyToMany(() => Property, (property) => property.favoritedBy)
   favoriteProperties: Property[];
 
-  @CreateDateColumn()
+  @ManyToMany(() => Team, (team) => team.members)
+  teams: Team[];
+
+  @OneToMany(() => Team, (team) => team.teamLead)
+  ledTeams: Team[];
+
+  @OneToOne(() => AgentProfile, (profile) => profile.user)
+  agentProfile: AgentProfile;
+
+  @Column({ nullable: true })
+  timezone: string;
+
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lockedUntil: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lastLoginAt: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  passwordChangedAt: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  passwordExpiresAt: Date;
+
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

@@ -1,0 +1,291 @@
+you need a crystal-clear operational blueprint so AI (or your team) can implement the behavior correctly.
+
+Think of this as a playbook for your CRM brain — step by step, what should happen, why, and what the user experiences.
+
+🧠 OVERALL GOAL
+
+Build a system that forces agents to act, not just store data.
+
+Everything below is designed around one idea:
+
+👉 No lead should sit idle. Ever.
+
+🏗️ PHASE 1: FOUNDATION (Before Any Screen Exists)
+1. Define Lead Lifecycle (Non-Negotiable)
+
+Every lead MUST follow a strict journey:
+
+New → Contacted → Qualified → Site Visit → Negotiation → Won / Lost
+Rules:
+A lead cannot skip stages randomly
+Every stage requires an action (call, visit, note)
+2. Define Ownership
+
+At any moment:
+
+👉 One lead = One owner
+
+Owner = Agent responsible
+Visible to Team Lead + Manager
+No “shared responsibility” confusion
+3. Define Mandatory Behaviors
+
+AI must enforce:
+
+Every lead must have:
+Next follow-up date
+Latest activity
+No empty leads allowed
+⚙️ PHASE 2: LEAD ENTRY FLOW
+Step 1: Lead Arrives
+
+Source:
+
+Ads / website / manual / call
+Step 2: Instant Processing
+
+Immediately:
+
+Lead is created
+Lead is scored (high / medium / low)
+Lead is tagged (location, budget, type)
+Step 3: Assignment
+
+System decides:
+
+Who should handle this lead
+Based on:
+Value
+Agent capability
+Workload
+Step 4: Timer Starts (Critical)
+
+👉 Countdown begins immediately:
+
+Agent must act within X minutes
+📞 PHASE 3: FIRST ACTION FLOW
+Scenario A: Agent acts on time
+Agent opens lead
+Clicks call
+After call → system asks:
+
+👉 “What happened?”
+
+Options:
+
+Not connected
+Interested
+Not interested
+Call later
+Then system forces:
+
+👉 “Set next follow-up”
+
+Scenario B: Agent does NOT act
+
+System reacts:
+
+After X minutes:
+Alert agent
+After more delay:
+Notify Team Lead
+Still no action:
+Reassign lead
+
+👉 No silent failure allowed
+
+🔄 PHASE 4: DAILY WORKFLOW LOOP
+
+This is what agents repeat every day.
+
+Morning Flow
+
+When agent logs in:
+
+System shows:
+
+🔴 Overdue follow-ups
+🟡 Today’s follow-ups
+🟢 New leads
+
+👉 Priority order:
+
+Overdue
+Today
+New
+During the Day (Per Lead)
+
+Every interaction follows same loop:
+
+Open Lead →
+    Take Action (Call / Message / Visit) →
+        Log Outcome →
+            Set Next Follow-up →
+                Move Stage (if needed)
+
+👉 This loop is EVERYTHING
+
+🧭 PHASE 5: DECISION FLOW (Lead Movement)
+After each interaction, system asks:
+1. Is lead interested?
+Yes → Move forward
+No → Mark lost
+Not sure → Stay + follow-up
+2. Should stage change?
+
+Examples:
+
+Interested → Qualified
+Visit scheduled → Site Visit
+Price discussion → Negotiation
+3. What’s next action?
+
+Always required:
+
+Call again
+Visit
+Send details
+
+👉 No action = invalid state
+
+📅 PHASE 6: FOLLOW-UP ENFORCEMENT
+
+This is your biggest money driver.
+
+Every lead must have:
+Next follow-up date
+Time
+System behavior:
+If follow-up is due:
+Show in “Today”
+If missed:
+Move to “Overdue”
+Highlight in red
+If still ignored:
+Alert agent
+Escalate to Team Lead
+Possible reassignment
+🚨 PHASE 7: ESCALATION FLOW
+Conditions:
+1. No first call
+
+→ Reassign
+
+2. No updates
+
+→ Notify Team Lead
+
+3. Repeated negligence
+
+→ Manager visibility
+
+👉 System should behave like a strict supervisor
+
+🔁 PHASE 8: REASSIGNMENT FLOW
+
+Triggers:
+
+Agent inactive
+Lead ignored
+Manual override
+Rules:
+New owner is assigned
+Old owner loses control
+History remains intact
+🧾 PHASE 9: ACTIVITY TRACKING
+
+Every action is recorded:
+
+Calls
+Notes
+Status changes
+Visits
+
+👉 Timeline must tell full story without asking agent
+
+🏁 PHASE 10: CLOSURE FLOW
+If WON:
+
+System asks:
+
+Property selected
+Deal value
+Booking date
+If LOST:
+
+System forces reason:
+
+Budget issue
+Not interested
+No response
+Bought elsewhere
+
+👉 This feeds future decisions
+
+🧠 PHASE 11: AI BEHAVIOR LAYER
+
+Now comes intelligence (without tech details).
+
+1. Suggest Next Action
+
+After every update:
+
+👉 “Best next step could be…”
+
+Call tomorrow
+Schedule visit
+Send options
+2. Prioritize Leads
+
+System highlights:
+
+Hot leads (high chance)
+At-risk leads (ignored)
+3. Agent Guidance
+
+AI nudges:
+
+“You haven’t contacted this lead yet”
+“This lead is similar to ones you closed”
+📊 PHASE 12: MANAGER CONTROL FLOW
+
+Managers don’t work leads — they control system.
+
+They monitor:
+Lead aging
+Conversion rates
+Agent activity
+They act:
+Reassign leads
+Intervene in deals
+Fix bottlenecks
+🔄 FULL SYSTEM LOOP (MASTER FLOW)
+Lead Created →
+    Scored →
+        Assigned →
+            Timer Starts →
+                Agent Action →
+                    Outcome Logged →
+                        Follow-up Set →
+                            Stage Updated →
+                                Repeat Until →
+                                    Won / Lost
+⚠️ REALITY CHECK (VERY IMPORTANT)
+
+If your system allows:
+
+Leads without follow-ups ❌
+Leads without owner ❌
+Leads without recent activity ❌
+
+👉 Then your CRM will fail.
+
+🔥 FINAL INSIGHT
+
+You are not building:
+
+❌ “Lead Management Software”
+
+You are building:
+
+✅ A disciplined sales machine

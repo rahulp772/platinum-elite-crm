@@ -1,0 +1,167 @@
+Lead assignment algorithm (very interesting part)
+
+Most people build “round-robin assignment” and think they’re done. That works for small teams, but once you scale, it kills high-value leads.
+
+Let’s design this like a real brokerage that cares about conversion + revenue, not fairness.
+
+🧠 First Principle
+
+All leads are NOT equal → So assignment cannot be equal
+
+You need a hybrid intelligent assignment system.
+
+⚙️ Step 1: Lead Scoring (Before Assignment)
+
+Every lead should get a score immediately on creation.
+
+Example scoring factors:
+Factor	Example	Weight
+Budget	₹20L vs ₹2Cr	High
+Source	Referral vs Cold ad	High
+Intent	“Buy now” vs “Just browsing”	High
+Location match	Exact vs vague	Medium
+Response speed (if inbound chat)	High	Medium
+Output:
+lead_score = 0–100
+lead_tier = HIGH / MEDIUM / LOW
+⚙️ Step 2: Agent Profiling
+
+Every agent should also have a dynamic score/profile:
+
+Agent attributes:
+Experience level (Junior / Mid / Senior)
+Closing rate (%)
+Active workload (no. of leads)
+Specialization:
+Location
+Budget segment
+Property type
+Recent performance (last 7–30 days)
+Example:
+agent_score = (closing_rate * 0.4) + (availability * 0.3) + (recent_perf * 0.3)
+⚙️ Step 3: Assignment Strategy (Core Logic)
+
+Now comes the real brain.
+
+🔥 Rule 1: High-Value Leads → Best Agents
+IF lead_tier == HIGH:
+    assign to TOP agents (highest score, lowest load)
+
+👉 Never waste premium leads on weak agents.
+
+⚖️ Rule 2: Medium Leads → Balanced Distribution
+IF lead_tier == MEDIUM:
+    assign via weighted round robin
+
+Weight based on:
+
+Performance
+Availability
+🔁 Rule 3: Low Leads → Training Pool
+IF lead_tier == LOW:
+    assign to junior agents
+
+👉 This helps:
+
+Train juniors
+Protect senior bandwidth
+⚙️ Step 4: Smart Matching Layer
+
+Before final assignment, filter agents:
+
+Matching conditions:
+Location expertise
+Budget range familiarity
+Language match (important in India)
+Property type
+eligible_agents = filter(all_agents, match_conditions)
+
+Then apply scoring logic on this subset.
+
+⚙️ Step 5: Availability & Load Check
+
+Even top agents shouldn’t be overloaded.
+
+availability_score = 1 / (active_leads + pending_followups)
+
+👉 More workload → lower priority
+
+⚙️ Step 6: Final Selection
+final_score = agent_score * 0.6 + availability_score * 0.4
+
+assigned_agent = max(final_score)
+⚙️ Step 7: Time-Based Reassignment (Very Important)
+
+This is where you beat 90% CRMs.
+
+🚨 SLA Rules
+Case 1: No First Contact
+IF no_call_in_5_min:
+    reassign_to_next_best_agent
+Case 2: No Follow-up
+IF followup_missed:
+    notify_team_lead
+    possible_reassignment
+Case 3: Lead Ignored
+IF no_activity_for_24_hours:
+    mark_at_risk
+    escalate_to_manager
+⚙️ Step 8: Manual Override Layer
+
+Always allow:
+
+Team Lead → reassign
+Manager → force assign
+Admin → define rules
+
+👉 Automation should help, not control everything blindly.
+
+⚙️ Step 9: Learning System (Advanced)
+
+This is your future advantage.
+
+Track:
+
+Which agent converts which type of leads best
+
+Then evolve:
+
+IF agent_X performs best for 2BHK in Area_A:
+    increase weight for similar leads
+
+👉 This becomes AI-driven assignment over time
+
+⚙️ Step 10: Edge Cases (Real World)
+
+You MUST handle these:
+
+1. Agent Rejects Lead
+Reason required
+Reassign immediately
+Penalize agent score (optional)
+2. Duplicate Leads
+Same phone/email → merge
+Assign to previous agent (ownership consistency)
+3. VIP Leads
+Tag manually or via source
+Direct assign to senior/top closer
+4. Returning Customer
+Assign to previous agent (relationship matters)
+🧾 Full Flow (Putting It All Together)
+Lead Created →
+    Lead Scored →
+        Filter Eligible Agents →
+            Apply Tier Logic →
+                Calculate Final Score →
+                    Assign Agent →
+                        Start SLA Timer →
+                            Monitor Activity →
+                                Reassign/Escalate if needed
+🔥 Brutal Truth (From Real Estate Ops)
+
+If you implement this correctly:
+
+Conversion rate ↑ 20–40%
+Lead wastage ↓ drastically
+Managers get real control
+Top agents stop complaining about “bad leads”

@@ -4,9 +4,10 @@ import {
   Column,
   CreateDateColumn,
   ManyToOne,
+  JoinColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Conversation } from './conversation.entity';
+import { Tenant } from '../../tenants/entities/tenant.entity';
 
 @Entity('messages')
 export class Message {
@@ -19,12 +20,31 @@ export class Message {
   @Column({ default: false })
   read: boolean;
 
+  @Column({ nullable: true })
+  senderId: string;
+
   @ManyToOne(() => User, (user) => user.messages)
+  @JoinColumn({ name: 'senderId' })
   sender: User;
 
-  @ManyToOne(() => Conversation, (conversation) => conversation.messages)
-  conversation: Conversation;
+  @Column({ nullable: true })
+  conversationId: string;
 
-  @CreateDateColumn()
+  @Column({ nullable: true })
+  tenantId: string;
+
+  @ManyToOne(() => Tenant, { nullable: true })
+  @JoinColumn({ name: 'tenantId' })
+  tenant: Tenant;
+
+  @Column('jsonb', { nullable: true })
+  attachments: {
+    url: string;
+    type: 'image' | 'pdf' | 'other';
+    name: string;
+    size: number;
+  }[];
+
+  @CreateDateColumn({ type: 'timestamptz' })
   timestamp: Date;
 }

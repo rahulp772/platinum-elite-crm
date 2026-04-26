@@ -5,6 +5,7 @@ import {
   UseGuards,
   Get,
   Request,
+  Headers,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -26,8 +27,20 @@ export class AuthController {
   @ApiOperation({ summary: 'User login' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
-  async login(@Body() loginDto: LoginDto) {
-    return this.authService.login(loginDto);
+  @ApiResponse({ status: 405, description: 'Method Not Allowed' })
+  async login(
+    @Body() loginDto: LoginDto,
+    @Headers('x-forwarded-for') xForwardedFor: string,
+    @Headers('user-agent') userAgent: string,
+  ) {
+    const ipAddress = xForwardedFor?.split(',')[0]?.trim();
+    return this.authService.login(loginDto, ipAddress, userAgent);
+  }
+
+  @Get('login')
+  @ApiOperation({ summary: 'Method not allowed' })
+  methodNotAllowed() {
+    return { message: 'Method Not Allowed. Use POST for login.' };
   }
 
   @Post('register')
