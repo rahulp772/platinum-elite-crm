@@ -15,21 +15,21 @@ export class LeadSlaCron {
     private readonly leadRepository: Repository<Lead>,
     private readonly leadAssignmentService: LeadAssignmentService,
     // Add Gateway/WebSocket injection here later
-  ) {}
+  ) { }
 
   /**
    * Runs every minute to check for SLA breaches on new leads (5-min rule)
    */
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_10_MINUTES)
   async handleNewLeadSla() {
     this.logger.debug('Checking for 5-minute SLA breaches on NEW leads...');
 
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const tenMinutesAgo = new Date(Date.now() - 10 * 60 * 1000);
 
     const breachedLeads = await this.leadRepository.find({
       where: {
         status: LeadStatus.NEW,
-        createdAt: LessThan(fiveMinutesAgo),
+        createdAt: LessThan(tenMinutesAgo),
         slaBreachedAt: IsNull(),
       },
     });
@@ -39,7 +39,7 @@ export class LeadSlaCron {
 
       // Record breach
       lead.slaBreachedAt = new Date();
-      
+
       // Reassign
       const newAgentId = await this.leadAssignmentService.assignAgent(lead);
       if (newAgentId && newAgentId !== lead.assignedToId) {
@@ -48,7 +48,7 @@ export class LeadSlaCron {
       }
 
       await this.leadRepository.save(lead);
-      
+
       // TODO: Emit WebSocket event to Manager/Team Lead regarding breach
     }
   }
@@ -56,10 +56,10 @@ export class LeadSlaCron {
   /**
    * Runs every 15 minutes to check for missed follow-ups
    */
-  @Cron('0 */15 * * * *')
+  @Cron('0 */10 * * * *')
   async handleMissedFollowUps() {
     this.logger.debug('Checking for missed follow-ups...');
-    
+
     const now = new Date();
     const missedFollowUps = await this.leadRepository.find({
       where: {
@@ -71,7 +71,7 @@ export class LeadSlaCron {
     for (const lead of missedFollowUps) {
       // In a real app, we'd want to track if we already alerted about this specific follow-up
       this.logger.warn(`Lead ${lead.id} has a missed follow-up from ${lead.followUpAt}`);
-      
+
       // TODO: Emit WebSocket event to Agent & Team Lead
     }
   }

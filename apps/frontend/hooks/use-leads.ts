@@ -72,12 +72,16 @@ export function useUpdateLead() {
     return useMutation({
         mutationFn: async ({ id, ...lead }: Partial<Lead> & { id: string }) => {
             const { data } = await api.patch<Lead>(`/leads/${id}`, lead)
-            return data
+            return { data, id }
         },
-        onSuccess: () => {
+        onSuccess: ({ id }) => {
             queryClient.invalidateQueries({ queryKey: ["leads"] })
-            queryClient.invalidateQueries({ queryKey: ["lead"] })
-            queryClient.invalidateQueries({ queryKey: ["lead-activities"] })
+            queryClient.invalidateQueries({ queryKey: ["lead", id] })
+            queryClient.invalidateQueries({ queryKey: ["lead-activities", id] })
+        },
+        onSettled: (_, __, { id }) => {
+            queryClient.invalidateQueries({ queryKey: ["lead", id] })
+            queryClient.invalidateQueries({ queryKey: ["lead-activities", id] })
         },
     })
 }
@@ -123,10 +127,12 @@ export function useReassignLead() {
     return useMutation({
         mutationFn: async ({ leadId, assignedToId }: { leadId: string; assignedToId: string }) => {
             const { data } = await api.post(`/leads/${leadId}/reassign`, { assignedToId })
-            return data
+            return { data, leadId }
         },
-        onSuccess: () => {
+        onSuccess: ({ leadId }) => {
             queryClient.invalidateQueries({ queryKey: ["leads"] })
+            queryClient.invalidateQueries({ queryKey: ["lead", leadId] })
+            queryClient.invalidateQueries({ queryKey: ["lead-activities", leadId] })
         },
     })
 }
@@ -136,10 +142,11 @@ export function useLogLeadActivity() {
     return useMutation({
         mutationFn: async ({ leadId, action, description }: { leadId: string; action: string; description?: string }) => {
             const { data } = await api.post(`/leads/${leadId}/log-activity`, { action, description })
-            return data
+            return { data, leadId }
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["lead-activities"] })
+        onSuccess: ({ leadId }) => {
+            queryClient.invalidateQueries({ queryKey: ["lead-activities", leadId] })
+            queryClient.invalidateQueries({ queryKey: ["lead", leadId] })
         },
     })
 }
@@ -151,5 +158,24 @@ export function useLeadProperties() {
             const { data } = await api.get<{ id: string; title: string }[]>("/properties?status=available")
             return data
         },
+    })
+}
+
+export interface LeadSuggestion {
+    suggestion: string
+    reason: string
+    action: string
+    priority: 'urgent' | 'high' | 'medium' | 'low'
+    ctaLabel: string
+}
+
+export function useLeadSuggestion(leadId: string) {
+    return useQuery({
+        queryKey: ["lead-suggestion", leadId],
+        queryFn: async () => {
+            const { data } = await api.get<LeadSuggestion>(`/leads/${leadId}/suggestion`)
+            return data
+        },
+        enabled: !!leadId,
     })
 }

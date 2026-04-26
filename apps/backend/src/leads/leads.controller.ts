@@ -14,13 +14,17 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { LeadsService } from './leads.service';
 import { CreateLeadDto, UpdateLeadDto, LeadLookupDto } from './dto/create-lead.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { LeadAiEngineService } from './services/lead-ai-engine.service';
 
 @ApiTags('leads')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard)
 @Controller('leads')
 export class LeadsController {
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly leadAiEngineService: LeadAiEngineService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new lead' })
@@ -75,6 +79,14 @@ export class LeadsController {
   @ApiOperation({ summary: 'Get lead activities' })
   getActivities(@Param('id') id: string, @Request() req) {
     return this.leadsService.getActivities(id, req.user);
+  }
+
+  @Get(':id/suggestion')
+  @ApiOperation({ summary: 'Get AI suggestion for lead' })
+  getAiSuggestion(@Param('id') id: string, @Request() req) {
+    return this.leadsService.findOne(id, req.user).then((lead) => {
+      return this.leadAiEngineService.suggestNextAction(lead);
+    });
   }
 
   @Patch(':id')
