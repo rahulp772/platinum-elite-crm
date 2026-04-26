@@ -1,12 +1,12 @@
 # Graph Report - platinum-elite-crm  (2026-04-27)
 
 ## Corpus Check
-- 254 files · ~243,714 words
+- 254 files · ~244,394 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 813 nodes · 783 edges · 90 communities detected
-- Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 93 edges (avg confidence: 0.8)
+- 814 nodes · 786 edges · 90 communities detected
+- Extraction: 88% EXTRACTED · 12% INFERRED · 0% AMBIGUOUS · INFERRED: 95 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -29,7 +29,7 @@
 - [[_COMMUNITY_Community 16|Community 16]]
 - [[_COMMUNITY_Community 17|Community 17]]
 - [[_COMMUNITY_Community 18|Community 18]]
-- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 19|Community 19]]
 - [[_COMMUNITY_Community 21|Community 21]]
 - [[_COMMUNITY_Community 22|Community 22]]
 - [[_COMMUNITY_Community 23|Community 23]]
@@ -122,50 +122,50 @@
   apps\frontend\components\auth\has-permission.tsx → apps\frontend\lib\auth-context.tsx
 - `handleDateChange()` --calls--> `toISOStringFromLocal()`  [INFERRED]
   apps\frontend\components\leads\lead-detail-split-view.tsx → apps\frontend\lib\date-utils.ts
-- `CalendarPage()` --calls--> `useTasksInfinite()`  [INFERRED]
-  apps\frontend\app\(dashboard)\calendar\page.tsx → apps\frontend\hooks\use-tasks.ts
+- `handleSaveFollowUp()` --calls--> `toISOString()`  [INFERRED]
+  apps\frontend\components\leads\lead-detail-split-view.tsx → apps\frontend\lib\date-utils.ts
 
 ## Communities
 
 ### Community 0 - "Community 0"
-Cohesion: 0.07
-Nodes (8): AuthService, ChatGateway, JwtStrategy, handleDemoLogin(), handleSubmit(), handleTenantSelect(), PortalWebhooksService, UsersService
+Cohesion: 0.05
+Nodes (10): AuthService, ChatGateway, ChatService, JwtStrategy, handleDemoLogin(), handleSubmit(), handleTenantSelect(), PortalWebhooksService (+2 more)
 
 ### Community 1 - "Community 1"
 Cohesion: 0.09
-Nodes (23): formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel(), getUserTimezone(), parseDate() (+15 more)
+Nodes (24): formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel(), getUserTimezone(), parseDate() (+16 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.1
-Nodes (3): AnalyticsService, ChatService, TasksController
-
-### Community 3 - "Community 3"
 Cohesion: 0.16
 Nodes (9): AuditService, createDemoTenants(), deleteDemoTenants(), main(), refreshDemoTenants(), seedDemoData(), showStatus(), bootstrap() (+1 more)
 
-### Community 4 - "Community 4"
+### Community 3 - "Community 3"
 Cohesion: 0.17
 Nodes (2): LeadScoringService, LeadsService
 
-### Community 5 - "Community 5"
+### Community 4 - "Community 4"
 Cohesion: 0.12
 Nodes (5): BulkActionsDialog(), EditLeadDialog(), useLeads(), useUpdateLead(), useUsers()
 
-### Community 6 - "Community 6"
+### Community 5 - "Community 5"
 Cohesion: 0.12
 Nodes (1): LeadsController
 
-### Community 7 - "Community 7"
+### Community 6 - "Community 6"
 Cohesion: 0.21
 Nodes (11): handleAssignedToChange(), handleBudgetMaxChange(), handleBudgetMinChange(), handleCreatedFromChange(), handleCreatedToChange(), handleFollowUpFromChange(), handleFollowUpToChange(), handlePropertyTypeChange() (+3 more)
 
-### Community 8 - "Community 8"
+### Community 7 - "Community 7"
 Cohesion: 0.13
 Nodes (6): useAuth(), HasPermission(), DashboardLayout(), useNotifications(), PipelinePage(), SocketProvider()
 
-### Community 9 - "Community 9"
+### Community 8 - "Community 8"
 Cohesion: 0.22
 Nodes (2): LeadAssignmentService, LeadSlaCron
+
+### Community 9 - "Community 9"
+Cohesion: 0.35
+Nodes (1): AnalyticsService
 
 ### Community 10 - "Community 10"
 Cohesion: 0.18
@@ -184,26 +184,26 @@ Cohesion: 0.25
 Nodes (1): TeamsService
 
 ### Community 14 - "Community 14"
+Cohesion: 0.31
+Nodes (1): TasksService
+
+### Community 15 - "Community 15"
 Cohesion: 0.2
 Nodes (1): DealsController
 
-### Community 15 - "Community 15"
+### Community 16 - "Community 16"
 Cohesion: 0.22
 Nodes (1): PropertiesController
 
-### Community 16 - "Community 16"
+### Community 17 - "Community 17"
 Cohesion: 0.27
 Nodes (1): PropertiesService
-
-### Community 17 - "Community 17"
-Cohesion: 0.31
-Nodes (1): TasksService
 
 ### Community 18 - "Community 18"
 Cohesion: 0.22
 Nodes (3): handleConnect(), handleNewMessageFn(), transformMessage()
 
-### Community 20 - "Community 20"
+### Community 19 - "Community 19"
 Cohesion: 0.25
 Nodes (3): CalendarPage(), useTasks(), useTasksInfinite()
 
@@ -490,11 +490,13 @@ Nodes (1): User
 ## Knowledge Gaps
 - **53 isolated node(s):** `AppModule`, `AnalyticsModule`, `AuditModule`, `AuditLog`, `AuthModule` (+48 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Community 4`** (22 nodes): `leads.service.ts`, `lead-scoring.service.ts`, `LeadScoringService`, `.evaluateLead()`, `LeadsService`, `.bulkAssign()`, `.checkDuplicate()`, `.constructor()`, `.create()`, `.findOne()`, `.getActivities()`, `.getMyLeads()`, `.getNewLeads()`, `.getOverdueFollowUps()`, `.getUpcomingFollowUps()`, `.logActivity()`, `.logLeadActivity()`, `.lookup()`, `.reassign()`, `.recalculateAgentClosingRate()`, `.remove()`, `.update()`
+- **Thin community `Community 3`** (22 nodes): `leads.service.ts`, `lead-scoring.service.ts`, `LeadScoringService`, `.evaluateLead()`, `LeadsService`, `.bulkAssign()`, `.checkDuplicate()`, `.constructor()`, `.create()`, `.findOne()`, `.getActivities()`, `.getMyLeads()`, `.getNewLeads()`, `.getOverdueFollowUps()`, `.getUpcomingFollowUps()`, `.logActivity()`, `.logLeadActivity()`, `.lookup()`, `.reassign()`, `.recalculateAgentClosingRate()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 6`** (18 nodes): `leads.controller.ts`, `LeadsController`, `.bulkAssign()`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getActivities()`, `.getAiSuggestion()`, `.getMyLeads()`, `.getNewLeads()`, `.getOverdueFollowUps()`, `.getUpcomingFollowUps()`, `.logActivity()`, `.lookup()`, `.reassign()`, `.remove()`, `.update()`
+- **Thin community `Community 5`** (18 nodes): `leads.controller.ts`, `LeadsController`, `.bulkAssign()`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getActivities()`, `.getAiSuggestion()`, `.getMyLeads()`, `.getNewLeads()`, `.getOverdueFollowUps()`, `.getUpcomingFollowUps()`, `.logActivity()`, `.lookup()`, `.reassign()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 9`** (13 nodes): `lead-sla.cron.ts`, `lead-assignment.service.ts`, `LeadAssignmentService`, `.assignAgent()`, `.constructor()`, `.filterEligibleAgents()`, `.getBalancedAgent()`, `.getBestAgent()`, `.getJuniorAgent()`, `LeadSlaCron`, `.constructor()`, `.handleMissedFollowUps()`, `.handleNewLeadSla()`
+- **Thin community `Community 8`** (13 nodes): `lead-sla.cron.ts`, `lead-assignment.service.ts`, `LeadAssignmentService`, `.assignAgent()`, `.constructor()`, `.filterEligibleAgents()`, `.getBalancedAgent()`, `.getBestAgent()`, `.getJuniorAgent()`, `LeadSlaCron`, `.constructor()`, `.handleMissedFollowUps()`, `.handleNewLeadSla()`
+  Too small to be a meaningful cluster - may be noise or needs more connections extracted.
+- **Thin community `Community 9`** (13 nodes): `AnalyticsService`, `.applyHierarchyFilters()`, `.constructor()`, `.getDashboardStats()`, `.getLeadFunnelStats()`, `.getLeadResponseTime()`, `.getLeadStats()`, `.getPipelineValue()`, `.getPropertyStats()`, `.getRevenueTrend()`, `.getRoleLevel()`, `.getTeamPerformance()`, `analytics.service.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 10`** (11 nodes): `AnalyticsController`, `.constructor()`, `.getDashboardStats()`, `.getLeadFunnelStats()`, `.getLeadResponseTime()`, `.getLeadStats()`, `.getPipelineValue()`, `.getPropertyStats()`, `.getRevenueTrend()`, `.getTeamPerformance()`, `analytics.controller.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -504,13 +506,13 @@ Nodes (1): User
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 13`** (11 nodes): `teams.service.ts`, `.findAll()`, `TeamsService`, `.constructor()`, `.findAll()`, `.findOne()`, `.getTeamLeadMembers()`, `.getTeamMembers()`, `.getUserTeam()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 14`** (10 nodes): `deals.controller.ts`, `DealsController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getActivities()`, `.reassign()`, `.remove()`, `.update()`
+- **Thin community `Community 14`** (10 nodes): `tasks.service.ts`, `TasksService`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getBaseQuery()`, `.getUserWithRole()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 15`** (10 nodes): `properties.controller.ts`, `PropertiesController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
+- **Thin community `Community 15`** (10 nodes): `deals.controller.ts`, `DealsController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getActivities()`, `.reassign()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 16`** (10 nodes): `properties.service.ts`, `PropertiesService`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
+- **Thin community `Community 16`** (10 nodes): `properties.controller.ts`, `PropertiesController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 17`** (10 nodes): `tasks.service.ts`, `TasksService`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getBaseQuery()`, `.getUserWithRole()`, `.remove()`, `.update()`
+- **Thin community `Community 17`** (10 nodes): `properties.service.ts`, `PropertiesService`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 21`** (8 nodes): `chat.controller.ts`, `ChatController`, `.constructor()`, `.createConversation()`, `.getConversations()`, `.getMessages()`, `.sendMessage()`, `.uploadFile()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -650,17 +652,17 @@ Nodes (1): User
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `toISOString()` connect `Community 1` to `Community 0`?**
-  _High betweenness centrality (0.019) - this node is a cross-community bridge._
-- **Why does `LeadsService` connect `Community 4` to `Community 13`?**
-  _High betweenness centrality (0.008) - this node is a cross-community bridge._
+- **Why does `toISOString()` connect `Community 1` to `Community 0`, `Community 3`?**
+  _High betweenness centrality (0.023) - this node is a cross-community bridge._
+- **Why does `LeadsService` connect `Community 3` to `Community 13`?**
+  _High betweenness centrality (0.009) - this node is a cross-community bridge._
 - **What connects `AppModule`, `AnalyticsModule`, `AuditModule` to the rest of the system?**
   _53 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `Community 0` be split into smaller, more focused modules?**
-  _Cohesion score 0.07 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.05 - nodes in this community are weakly interconnected._
 - **Should `Community 1` be split into smaller, more focused modules?**
   _Cohesion score 0.09 - nodes in this community are weakly interconnected._
-- **Should `Community 2` be split into smaller, more focused modules?**
-  _Cohesion score 0.1 - nodes in this community are weakly interconnected._
+- **Should `Community 4` be split into smaller, more focused modules?**
+  _Cohesion score 0.12 - nodes in this community are weakly interconnected._
 - **Should `Community 5` be split into smaller, more focused modules?**
   _Cohesion score 0.12 - nodes in this community are weakly interconnected._
