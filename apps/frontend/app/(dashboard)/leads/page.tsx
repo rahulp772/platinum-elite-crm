@@ -10,7 +10,7 @@ import { BulkActionsDialog } from "@/components/leads/bulk-actions-dialog"
 import { LeadActionZone } from "@/components/leads/lead-action-zone"
 import { useLeads, useUpdateLead, useUsers } from "@/hooks/use-leads"
 import { Card } from "@/components/ui/card"
-import { LoaderCircle, Users, Trash2, MessageSquare, UserPlus } from "lucide-react"
+import { LoaderCircle, Users, Trash2, MessageSquare, UserPlus, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Lead, LeadStatus } from "@/types/lead"
 
@@ -174,7 +174,17 @@ export default function LeadsPage() {
                         Manage your real estate leads and prospects
                     </p>
                 </div>
-                <AddLeadDialog />
+                <div className="flex items-center gap-3">
+                    <Button 
+                        variant="outline" 
+                        className="border-realty-gold/50 text-realty-gold hover:bg-realty-gold/10"
+                        onClick={() => router.push("/leads/import")}
+                    >
+                        <Download className="mr-2 h-4 w-4" />
+                        Import Leads
+                    </Button>
+                    <AddLeadDialog />
+                </div>
             </div>
 
             {/* Action Zone */}
