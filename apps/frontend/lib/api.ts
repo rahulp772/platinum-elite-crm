@@ -10,15 +10,15 @@ const getApiUrl = () => {
   if (typeof window !== 'undefined') {
     const hostname = window.location.hostname;
     const protocol = window.location.protocol;
-    
+
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return 'http://localhost:3001';
     }
-    
+
     // On EC2/Production, if accessed via IP or domain, assume API is on port 3001
     return `${protocol}//${hostname}:3001`;
   }
-  
+
   return 'http://localhost:3001';
 };
 

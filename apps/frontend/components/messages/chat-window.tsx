@@ -41,9 +41,9 @@ function getOtherParticipant(conv: Conversation, currentUserId: string): { name:
     }
 }
 
-export function ChatWindow({ 
-    conversation, 
-    onSendMessage, 
+export function ChatWindow({
+    conversation,
+    onSendMessage,
     currentUserId,
     isLoading = false,
     hasMore = false,
@@ -70,8 +70,8 @@ export function ChatWindow({
             if (msg.attachments) {
                 msg.attachments.forEach(att => {
                     if (att.type === 'image') {
-                        images.push({ 
-                            url: att.url, 
+                        images.push({
+                            url: att.url,
                             name: att.name,
                             messageId: msg.id
                         })
@@ -127,7 +127,7 @@ export function ChatWindow({
                 const handleScroll = () => {
                     const isBottom = viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 100
                     setIsAtBottom(isBottom)
-                    
+
                     if (viewport.scrollTop < 100 && hasMore && !isLoading && onLoadMore) {
                         onLoadMore()
                     }
@@ -151,9 +151,9 @@ export function ChatWindow({
 
     const handleSend = async () => {
         if (!message.trim() && selectedFiles.length === 0) return
-        
+
         let attachments: any[] = []
-        
+
         if (selectedFiles.length > 0) {
             setIsUploading(true)
             try {
@@ -215,9 +215,9 @@ export function ChatWindow({
                             <Video className="h-4 w-4" />
                         </Button>
                         <div className="w-px h-4 bg-border mx-1" />
-                        <Button 
-                            variant="ghost" 
-                            size="icon" 
+                        <Button
+                            variant="ghost"
+                            size="icon"
                             onClick={() => setShowDetails(!showDetails)}
                             className={cn(
                                 "text-muted-foreground transition-all",
@@ -259,17 +259,17 @@ export function ChatWindow({
                                         const isMe = msg.senderId === currentUserId
                                         const prevMsg = conversation.messages[index - 1]
                                         const nextMsg = conversation.messages[index + 1]
-                                        
-                                        const showDateSeparator = !prevMsg || 
+
+                                        const showDateSeparator = !prevMsg ||
                                             formatDateOnly(prevMsg.timestamp, timezone) !== formatDateOnly(msg.timestamp, timezone)
 
                                         const isFirstInGroup = !prevMsg || prevMsg.senderId !== msg.senderId || (msg.timestamp.getTime() - prevMsg.timestamp.getTime() > 300000) || showDateSeparator
                                         const isLastInGroup = !nextMsg || nextMsg.senderId !== msg.senderId || (nextMsg.timestamp.getTime() - msg.timestamp.getTime() > 300000)
-                                        
-                                        const sender = isMe 
+
+                                        const sender = isMe
                                             ? { name: 'You', avatar: undefined }
                                             : (conversation.participants.find(p => p.id === msg.senderId) || { name: 'Unknown', avatar: undefined })
-                                        
+
                                         return (
                                             <React.Fragment key={msg.id}>
                                                 {showDateSeparator && (
@@ -286,98 +286,98 @@ export function ChatWindow({
                                                     isMe ? "items-end" : "items-start",
                                                     isFirstInGroup && "mt-1"
                                                 )}>
-                                                {isFirstInGroup && !isMe && (
-                                                    <span className="text-[10px] font-bold text-muted-foreground px-2 mb-1 uppercase tracking-tight">
-                                                        {sender.name}
-                                                    </span>
-                                                )}
-                                                <div className={cn(
-                                                    "flex gap-2 max-w-[75%] group items-end",
-                                                    isMe ? "flex-row-reverse" : ""
-                                                )}>
-                                                    {!isMe && (
-                                                        <div className="w-8 shrink-0">
+                                                    {isFirstInGroup && !isMe && (
+                                                        <span className="text-[10px] font-bold text-muted-foreground px-2 mb-1 uppercase tracking-tight">
+                                                            {sender.name}
+                                                        </span>
+                                                    )}
+                                                    <div className={cn(
+                                                        "flex gap-2 max-w-[75%] group items-end",
+                                                        isMe ? "flex-row-reverse" : ""
+                                                    )}>
+                                                        {!isMe && (
+                                                            <div className="w-8 shrink-0">
+                                                                {isLastInGroup && (
+                                                                    <Avatar className="h-8 w-8 ring-1 ring-border">
+                                                                        <AvatarImage src={sender.avatar} />
+                                                                        <AvatarFallback className="text-[10px] bg-muted">{sender.name[0]}</AvatarFallback>
+                                                                    </Avatar>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                        <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
+                                                            <div className={cn(
+                                                                "transition-all duration-300",
+                                                                msg.content
+                                                                    ? (isMe
+                                                                        ? "px-4 py-2.5 text-sm bg-gradient-to-br from-realty-gold to-[#B8860B] text-white rounded-2xl rounded-tr-sm shadow-sm hover:shadow-md hover:shadow-realty-gold/20"
+                                                                        : "px-4 py-2.5 text-sm bg-card border border-border/50 text-foreground rounded-2xl rounded-tl-sm shadow-sm hover:border-realty-gold/30")
+                                                                    : "rounded-2xl overflow-hidden"
+                                                            )}>
+                                                                {msg.content}
+
+                                                                {msg.attachments && msg.attachments.length > 0 && (
+                                                                    <div className={cn(
+                                                                        msg.content ? "mt-3 border-t border-white/10 pt-3" : "",
+                                                                        "flex flex-col gap-2",
+                                                                        msg.attachments.filter(a => a.type === 'image').length > 1 ? "grid grid-cols-2" : "flex"
+                                                                    )}>
+                                                                        {msg.attachments.map((att, i) => (
+                                                                            <div key={i} className={cn(
+                                                                                "group/att relative rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-xl ring-1 ring-white/5",
+                                                                                att.type === 'image' ? "aspect-auto" : "w-full"
+                                                                            )}>
+                                                                                {att.type === 'image' ? (
+                                                                                    <div className="relative group/img overflow-hidden cursor-pointer" onClick={() => openImageInGallery(att.url)}>
+                                                                                        <img
+                                                                                            src={att.url.startsWith('http') ? att.url : `${process.env.NEXT_PUBLIC_API_URL}${att.url}`}
+                                                                                            alt={att.name}
+                                                                                            className="w-full h-full object-cover rounded-xl transition-all duration-700 group-hover/img:scale-110"
+                                                                                        />
+                                                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-end justify-between p-3">
+                                                                                            <div className="flex flex-col gap-0.5">
+                                                                                                <span className="text-[10px] text-white/90 font-bold truncate max-w-[120px]">{att.name}</span>
+                                                                                                <span className="text-[8px] text-white/60 font-medium uppercase">{(att.size / 1024).toFixed(1)} KB</span>
+                                                                                            </div>
+                                                                                            <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/40 transition-colors">
+                                                                                                <Download className="h-3.5 w-3.5 text-white" />
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <a
+                                                                                        href={att.url.startsWith('http') ? att.url : `${process.env.NEXT_PUBLIC_API_URL}${att.url}`}
+                                                                                        target="_blank"
+                                                                                        rel="noopener noreferrer"
+                                                                                        className={cn(
+                                                                                            "flex items-center gap-3 p-3 rounded-xl transition-colors",
+                                                                                            isMe ? "bg-white/10 hover:bg-white/20" : "bg-muted/50 hover:bg-muted"
+                                                                                        )}
+                                                                                    >
+                                                                                        <div className={cn(
+                                                                                            "h-10 w-10 rounded-lg flex items-center justify-center",
+                                                                                            isMe ? "bg-white/20" : "bg-realty-gold/10"
+                                                                                        )}>
+                                                                                            <FileIcon className={cn("h-5 w-5", isMe ? "text-white" : "text-realty-gold")} />
+                                                                                        </div>
+                                                                                        <div className="flex-1 min-w-0">
+                                                                                            <p className={cn("text-xs font-bold truncate", isMe ? "text-white" : "text-foreground")}>{att.name}</p>
+                                                                                            <p className={cn("text-[10px]", isMe ? "text-white/60" : "text-muted-foreground")}>{(att.size / 1024).toFixed(1)} KB • PDF Document</p>
+                                                                                        </div>
+                                                                                        <Download className={cn("h-4 w-4 shrink-0", isMe ? "text-white/40" : "text-muted-foreground/40")} />
+                                                                                    </a>
+                                                                                )}
+                                                                            </div>
+                                                                        ))}
+                                                                    </div>
+                                                                )}
+                                                            </div>
                                                             {isLastInGroup && (
-                                                                <Avatar className="h-8 w-8 ring-1 ring-border">
-                                                                    <AvatarImage src={sender.avatar} />
-                                                                    <AvatarFallback className="text-[10px] bg-muted">{sender.name[0]}</AvatarFallback>
-                                                                </Avatar>
+                                                                <span className="text-[9px] font-medium text-muted-foreground/60 px-1 uppercase">
+                                                                    {formatTimeOnly(msg.timestamp, timezone)}
+                                                                </span>
                                                             )}
                                                         </div>
-                                                    )}
-                                                    <div className={cn("flex flex-col gap-1", isMe ? "items-end" : "items-start")}>
-                                                        <div className={cn(
-                                                            "transition-all duration-300",
-                                                            msg.content 
-                                                                ? (isMe 
-                                                                    ? "px-4 py-2.5 text-sm bg-gradient-to-br from-realty-gold to-[#B8860B] text-white rounded-2xl rounded-tr-sm shadow-sm hover:shadow-md hover:shadow-realty-gold/20" 
-                                                                    : "px-4 py-2.5 text-sm bg-card border border-border/50 text-foreground rounded-2xl rounded-tl-sm shadow-sm hover:border-realty-gold/30")
-                                                                : "rounded-2xl overflow-hidden"
-                                                        )}>
-                                                             {msg.content}
-                                                             
-                                                             {msg.attachments && msg.attachments.length > 0 && (
-                                                                 <div className={cn(
-                                                                     msg.content ? "mt-3 border-t border-white/10 pt-3" : "",
-                                                                     "flex flex-col gap-2",
-                                                                     msg.attachments.filter(a => a.type === 'image').length > 1 ? "grid grid-cols-2" : "flex"
-                                                                 )}>
-                                                                     {msg.attachments.map((att, i) => (
-                                                                         <div key={i} className={cn(
-                                                                             "group/att relative rounded-xl overflow-hidden shadow-sm transition-all duration-300 hover:shadow-xl ring-1 ring-white/5",
-                                                                             att.type === 'image' ? "aspect-auto" : "w-full"
-                                                                         )}>
-                                                                             {att.type === 'image' ? (
-                                                                                 <div className="relative group/img overflow-hidden cursor-pointer" onClick={() => openImageInGallery(att.url)}>
-                                                                                     <img 
-                                                                                         src={att.url.startsWith('http') ? att.url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${att.url}`} 
-                                                                                         alt={att.name}
-                                                                                         className="w-full h-full object-cover rounded-xl transition-all duration-700 group-hover/img:scale-110"
-                                                                                     />
-                                                                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover/img:opacity-100 transition-all duration-300 flex items-end justify-between p-3">
-                                                                                         <div className="flex flex-col gap-0.5">
-                                                                                             <span className="text-[10px] text-white/90 font-bold truncate max-w-[120px]">{att.name}</span>
-                                                                                             <span className="text-[8px] text-white/60 font-medium uppercase">{(att.size / 1024).toFixed(1)} KB</span>
-                                                                                         </div>
-                                                                                         <div className="h-8 w-8 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center border border-white/30 hover:bg-white/40 transition-colors">
-                                                                                             <Download className="h-3.5 w-3.5 text-white" />
-                                                                                         </div>
-                                                                                     </div>
-                                                                                 </div>
-                                                                             ) : (
-                                                                                 <a 
-                                                                                     href={att.url.startsWith('http') ? att.url : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${att.url}`}
-                                                                                     target="_blank"
-                                                                                     rel="noopener noreferrer"
-                                                                                     className={cn(
-                                                                                         "flex items-center gap-3 p-3 rounded-xl transition-colors",
-                                                                                         isMe ? "bg-white/10 hover:bg-white/20" : "bg-muted/50 hover:bg-muted"
-                                                                                     )}
-                                                                                 >
-                                                                                     <div className={cn(
-                                                                                         "h-10 w-10 rounded-lg flex items-center justify-center",
-                                                                                         isMe ? "bg-white/20" : "bg-realty-gold/10"
-                                                                                     )}>
-                                                                                         <FileIcon className={cn("h-5 w-5", isMe ? "text-white" : "text-realty-gold")} />
-                                                                                     </div>
-                                                                                     <div className="flex-1 min-w-0">
-                                                                                         <p className={cn("text-xs font-bold truncate", isMe ? "text-white" : "text-foreground")}>{att.name}</p>
-                                                                                         <p className={cn("text-[10px]", isMe ? "text-white/60" : "text-muted-foreground")}>{(att.size / 1024).toFixed(1)} KB • PDF Document</p>
-                                                                                     </div>
-                                                                                     <Download className={cn("h-4 w-4 shrink-0", isMe ? "text-white/40" : "text-muted-foreground/40")} />
-                                                                                 </a>
-                                                                             )}
-                                                                         </div>
-                                                                     ))}
-                                                                 </div>
-                                                             )}
-                                                        </div>
-                                                        {isLastInGroup && (
-                                                            <span className="text-[9px] font-medium text-muted-foreground/60 px-1 uppercase">
-                                                                {formatTimeOnly(msg.timestamp, timezone)}
-                                                            </span>
-                                                        )}
-                                                    </div>
                                                     </div>
                                                 </div>
                                             </React.Fragment>
@@ -408,7 +408,7 @@ export function ChatWindow({
                                             <p className="text-[11px] font-bold truncate text-foreground leading-tight">{file.name}</p>
                                             <p className="text-[9px] font-medium text-realty-gold/60 uppercase tracking-wider">{(file.size / 1024).toFixed(1)} KB</p>
                                         </div>
-                                        <button 
+                                        <button
                                             onClick={() => removeFile(i)}
                                             className="absolute top-2 right-2 h-6 w-6 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-200 hover:bg-red-500 hover:text-white"
                                         >
@@ -432,9 +432,9 @@ export function ChatWindow({
                                     multiple
                                     accept="image/*,.pdf"
                                 />
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
+                                <Button
+                                    variant="ghost"
+                                    size="icon"
                                     onClick={() => fileInputRef.current?.click()}
                                     className="h-9 w-9 text-muted-foreground hover:text-realty-gold hover:bg-realty-gold/10"
                                 >
@@ -451,14 +451,14 @@ export function ChatWindow({
                                     className="min-h-[48px] max-h-[160px] py-3.5 px-5 resize-none bg-background/80 border-realty-gold/10 focus:border-realty-gold/50 focus:ring-realty-gold/20 rounded-[24px] shadow-inner transition-all text-sm scrollbar-none leading-relaxed"
                                 />
                             </div>
-                            <Button 
-                                onClick={handleSend} 
-                                size="icon" 
+                            <Button
+                                onClick={handleSend}
+                                size="icon"
                                 disabled={(!message.trim() && selectedFiles.length === 0) || isUploading}
                                 className={cn(
                                     "shrink-0 h-11 w-11 rounded-2xl shadow-lg transition-all active:scale-95",
                                     (message.trim() || selectedFiles.length > 0) && !isUploading
-                                        ? "bg-realty-gold text-realty-navy hover:bg-realty-gold-light shadow-realty-gold/20" 
+                                        ? "bg-realty-gold text-realty-navy hover:bg-realty-gold-light shadow-realty-gold/20"
                                         : "bg-muted text-muted-foreground"
                                 )}
                             >
@@ -472,7 +472,7 @@ export function ChatWindow({
                     </div>
                 </div>
 
-                <ChatGallery 
+                <ChatGallery
                     open={galleryOpen}
                     onOpenChange={setGalleryOpen}
                     images={allImages}
@@ -493,7 +493,7 @@ export function ChatWindow({
                         <h3 className="font-bold text-lg text-foreground tracking-tight">{participant?.name}</h3>
                         <p className="text-xs font-medium text-realty-gold uppercase tracking-[0.2em] mt-1">Contact Details</p>
                     </div>
-                    
+
                     <ScrollArea className="flex-1">
                         <div className="p-6 space-y-8">
                             {/* Contact Info */}

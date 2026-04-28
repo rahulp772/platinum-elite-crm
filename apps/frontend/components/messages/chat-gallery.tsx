@@ -3,10 +3,10 @@
 import * as React from "react"
 import Image from "next/image"
 import { ChevronLeft, ChevronRight, X, Download } from "lucide-react"
-import { 
-    Dialog, 
-    DialogContent, 
-    DialogHeader, 
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
     DialogTitle,
     DialogDescription
 } from "@/components/ui/dialog"
@@ -50,9 +50,9 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
     if (images.length === 0) return null
 
     const currentImage = images[currentIndex]
-    const imageUrl = currentImage.url.startsWith('http') 
-        ? currentImage.url 
-        : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${currentImage.url}`
+    const imageUrl = currentImage.url.startsWith('http')
+        ? currentImage.url
+        : `${process.env.NEXT_PUBLIC_API_URL}${currentImage.url}`
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
@@ -61,7 +61,7 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
                     <DialogTitle>Image Gallery</DialogTitle>
                     <DialogDescription>Viewing chat images</DialogDescription>
                 </DialogHeader>
-                
+
                 {/* Top Bar */}
                 <div className="absolute top-0 left-0 right-0 h-16 px-6 flex items-center justify-between bg-gradient-to-b from-black/60 to-transparent z-[60]">
                     <div className="flex flex-col">
@@ -69,14 +69,14 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
                         <span className="text-white/50 text-[10px] uppercase tracking-widest">Image {currentIndex + 1} of {images.length}</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <a 
-                            href={imageUrl} 
+                        <a
+                            href={imageUrl}
                             download={currentImage.name}
                             className="p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all"
                         >
                             <Download className="h-5 w-5" />
                         </a>
-                        <button 
+                        <button
                             onClick={() => onOpenChange(false)}
                             className="p-2.5 text-white/70 hover:text-white hover:bg-white/10 rounded-xl transition-all group"
                         >
@@ -89,14 +89,14 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
                     {/* Navigation */}
                     {images.length > 1 && (
                         <>
-                            <button 
+                            <button
                                 onClick={(e) => { e.stopPropagation(); prevImage(); }}
                                 className="absolute left-6 z-50 p-4 text-white/30 hover:text-white transition-all transform active:scale-95 hover:bg-white/5 rounded-full"
                             >
                                 <ChevronLeft className="h-10 w-10 stroke-[1.5px]" />
                             </button>
-                            
-                            <button 
+
+                            <button
                                 onClick={(e) => { e.stopPropagation(); nextImage(); }}
                                 className="absolute right-6 z-50 p-4 text-white/30 hover:text-white transition-all transform active:scale-95 hover:bg-white/5 rounded-full"
                             >
@@ -123,17 +123,17 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
                         <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/10 p-4 pb-8">
                             <div className="flex items-center justify-center gap-3 overflow-x-auto pb-2 scrollbar-hide max-w-5xl mx-auto">
                                 {images.map((img, idx) => {
-                                    const thumbUrl = img.url.startsWith('http') 
-                                        ? img.url 
-                                        : `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}${img.url}`
+                                    const thumbUrl = img.url.startsWith('http')
+                                        ? img.url
+                                        : `${process.env.NEXT_PUBLIC_API_URL}${img.url}`
                                     return (
-                                        <button 
+                                        <button
                                             key={idx}
                                             onClick={() => setCurrentIndex(idx)}
                                             className={cn(
                                                 "relative flex-shrink-0 w-16 h-12 md:w-20 md:h-14 rounded-lg overflow-hidden transition-all duration-300 border-2",
-                                                currentIndex === idx 
-                                                    ? "border-realty-gold scale-110 shadow-[0_0_20px_rgba(212,175,55,0.3)] z-10" 
+                                                currentIndex === idx
+                                                    ? "border-realty-gold scale-110 shadow-[0_0_20px_rgba(212,175,55,0.3)] z-10"
                                                     : "border-transparent opacity-40 hover:opacity-100 hover:scale-105"
                                             )}
                                         >

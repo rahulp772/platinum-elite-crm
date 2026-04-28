@@ -107,7 +107,7 @@ export class UsersService {
 
     await this.userRepository.save(newUser);
 
-    const loginLink = `${this.configService.get('FRONTEND_URL') || 'http://localhost:3000'}/login`;
+    const loginLink = `${this.configService.get('FRONTEND_URL')}`;
     const emailSent = await this.sendInviteEmail(
       email,
       tempPassword,

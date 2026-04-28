@@ -24,20 +24,20 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const [isConnected, setIsConnected] = React.useState(false)
   const [mounted, setMounted] = React.useState(false)
-  
+
   const userRef = React.useRef(user)
-  const incrementUnreadRef = React.useRef(() => {})
-  
+  const incrementUnreadRef = React.useRef(() => { })
+
   React.useEffect(() => {
     userRef.current = user
   }, [user])
-  
+
   React.useEffect(() => {
     if (notifications) {
       incrementUnreadRef.current = notifications.incrementUnread
     }
   }, [notifications])
-  
+
   React.useEffect(() => {
     setMounted(true)
   }, [])
@@ -54,12 +54,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     if (!user || globalSocket?.connected) return
 
     const getSocketUrl = () => {
-      if (typeof window === 'undefined') return 'http://localhost:3001'
-      const hostname = window.location.hostname
-      if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
-      }
-      return `http://${hostname}:3001`
+      return process.env.NEXT_PUBLIC_API_URL;
     }
 
     console.log('[Socket] Creating socket connection...')
@@ -87,32 +82,32 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
     socket.on('new_message', (message: any) => {
       console.log('[Socket] New message received:', message)
-      
+
       const currentUserId = userRef.current?.id
       console.log('[Socket] Current user ID:', currentUserId)
       console.log('[Socket] Message sender ID:', message.senderId)
-      
+
       const isOwnMessage = message.senderId === currentUserId
       if (isOwnMessage) {
         console.log('[Socket] Ignoring own message')
         return
       }
-      
+
       const messageId = message.id
       if (toastIds.has(messageId)) {
         console.log('[Socket] Duplicate message ignored')
         return
       }
-toastIds.add(messageId)
-       
+      toastIds.add(messageId)
+
       incrementUnreadRef.current()
-      
+
       const senderName = message.sender?.name || 'Someone'
       const content = message.content || ''
       const truncated = content.length > 80 ? content.substring(0, 80) + '...' : content
-      
+
       console.log('[Socket] Showing toast for:', senderName, '-', truncated)
-      
+
       toast(senderName, {
         description: truncated,
         duration: 10000,
@@ -121,7 +116,7 @@ toastIds.add(messageId)
           onClick: () => router.push('/messages'),
         },
       })
-      
+
       if (toastIdsTimeout.has(messageId)) {
         clearTimeout(toastIdsTimeout.get(messageId))
       }

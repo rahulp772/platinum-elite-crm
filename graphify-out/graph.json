@@ -7252,7 +7252,7 @@
       "label": "useSocket()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\socket-context.tsx",
-      "source_location": "L150",
+      "source_location": "L145",
       "id": "socket_context_usesocket",
       "community": 8,
       "norm_label": "usesocket()"
@@ -16962,7 +16962,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\socket-context.tsx",
-      "source_location": "L150",
+      "source_location": "L145",
       "weight": 1.0,
       "_src": "apps_frontend_lib_socket_context_tsx",
       "_tgt": "socket_context_usesocket",

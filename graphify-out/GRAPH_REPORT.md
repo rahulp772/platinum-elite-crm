@@ -1,7 +1,7 @@
-# Graph Report - platinum-elite-crm  (2026-04-28)
+# Graph Report - platinum-elite-crm  (2026-04-29)
 
 ## Corpus Check
-- 258 files · ~248,254 words
+- 258 files · ~248,247 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
