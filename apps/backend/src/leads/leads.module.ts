@@ -12,14 +12,18 @@ import { LeadAssignmentService } from './services/lead-assignment.service';
 import { LeadAiEngineService } from './services/lead-ai-engine.service';
 import { LeadSlaCron } from './cron/lead-sla.cron';
 
+import { LeadsImportController } from './import/leads-import.controller';
+import { LeadsImportService } from './import/leads-import.service';
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([Lead, LeadActivity, User, AgentProfile]),
     TeamsModule,
   ],
-  controllers: [LeadsController],
+  controllers: [LeadsController, LeadsImportController],
   providers: [
     LeadsService,
+    LeadsImportService,
     LeadScoringService,
     LeadAssignmentService,
     LeadAiEngineService,

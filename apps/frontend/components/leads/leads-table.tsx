@@ -35,6 +35,13 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 import { Lead } from "@/types/lead"
 import { cn } from "@/lib/utils"
 
@@ -383,15 +390,95 @@ export function LeadsTable({ data, onEdit, onSelectionChange }: LeadsTableProps)
                     </Table>
                 </div>
             </Card>
-            <div className="flex items-center justify-between px-2">
-                <div className="text-sm text-muted-foreground font-medium">
-                    {table.getFilteredRowModel().rows.length} lead(s) found
+            <div className="flex items-center justify-between px-2 py-4 border-t bg-muted/5">
+                <div className="flex items-center gap-6">
+                    <div className="text-sm text-muted-foreground font-medium">
+                        {(() => {
+                            const total = table.getFilteredRowModel().rows.length
+                            const pageSize = table.getState().pagination.pageSize
+                            const pageIndex = table.getState().pagination.pageIndex
+                            const start = total === 0 ? 0 : pageIndex * pageSize + 1
+                            const end = Math.min(pageIndex * pageSize + pageSize, total)
+                            return (
+                                <>
+                                    Showing <span className="text-foreground font-semibold">{start}</span> to{" "}
+                                    <span className="text-foreground font-semibold">{end}</span> of{" "}
+                                    <span className="text-foreground font-semibold">{total}</span> leads
+                                </>
+                            )
+                        })()}
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <p className="text-sm text-muted-foreground font-medium">Rows per page</p>
+                        <Select
+                            value={`${table.getState().pagination.pageSize}`}
+                            onValueChange={(value) => {
+                                table.setPageSize(Number(value))
+                            }}
+                        >
+                            <SelectTrigger className="h-8 w-[70px] bg-background">
+                                <SelectValue placeholder={table.getState().pagination.pageSize} />
+                            </SelectTrigger>
+                            <SelectContent side="top" className="bg-background border-border">
+                                {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+                                    <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
+                                        {pageSize}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()} className="h-8">
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => table.previousPage()} 
+                        disabled={!table.getCanPreviousPage()} 
+                        className="h-8 px-3"
+                    >
                         Previous
                     </Button>
-                    <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()} className="h-8">
+                    <div className="flex items-center gap-1">
+                        {(() => {
+                            const totalPages = table.getPageCount()
+                            const currentPage = table.getState().pagination.pageIndex + 1
+                            
+                            const getVisiblePages = (current: number, total: number) => {
+                                if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+                                if (current <= 3) return [1, 2, 3, 4, "...", total]
+                                if (current >= total - 2) return [1, "...", total - 3, total - 2, total - 1, total]
+                                return [1, "...", current - 1, current, current + 1, "...", total]
+                            }
+
+                            return getVisiblePages(currentPage, totalPages).map((page, i) => (
+                                <React.Fragment key={i}>
+                                    {page === "..." ? (
+                                        <span className="px-2 text-muted-foreground text-sm">...</span>
+                                    ) : (
+                                        <Button
+                                            variant={currentPage === page ? "default" : "ghost"}
+                                            size="sm"
+                                            onClick={() => table.setPageIndex((page as number) - 1)}
+                                            className={cn(
+                                                "h-8 w-8 p-0 text-xs font-semibold",
+                                                currentPage === page ? "bg-realty-gold text-primary-foreground hover:bg-realty-gold/90" : "hover:bg-realty-gold/10 hover:text-realty-gold"
+                                            )}
+                                        >
+                                            {page}
+                                        </Button>
+                                    )}
+                                </React.Fragment>
+                            ))
+                        })()}
+                    </div>
+                    <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => table.nextPage()} 
+                        disabled={!table.getCanNextPage()} 
+                        className="h-8 px-3"
+                    >
                         Next
                     </Button>
                 </div>
