@@ -1,19 +1,25 @@
 import axios from 'axios';
 
 const getApiUrl = () => {
-  if (typeof window === 'undefined') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+  // Prioritize the environment variable set during build/runtime
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+
+  // Fallback logic for when the environment variable is missing
+  if (typeof window !== 'undefined') {
+    const hostname = window.location.hostname;
+    const protocol = window.location.protocol;
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3001';
+    }
+    
+    // On EC2/Production, if accessed via IP or domain, assume API is on port 3001
+    return `${protocol}//${hostname}:3001`;
   }
   
-  const hostname = window.location.hostname;
-  const protocol = window.location.protocol;
-  const port = window.location.port;
-  
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-  }
-  
-  return `${protocol}//${hostname}:${port ? ':3001' : ''}`;
+  return 'http://localhost:3001';
 };
 
 const API_URL = getApiUrl();
