@@ -7,10 +7,12 @@ import { ConversationList } from "@/components/messages/conversation-list"
 import { ChatWindow } from "@/components/messages/chat-window"
 import { chatApi, ConversationResponse, MessageResponse, PaginatedMessagesResponse } from "@/lib/api-chat"
 import { api } from "@/lib/api"
-import { MessageSquare, Phone, Video, MoreHorizontal, Send, Paperclip } from "lucide-react"
+import { MessageSquare, Phone, Video, MoreHorizontal, Send, Paperclip, ArrowLeft } from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 import { useNotifications } from "@/lib/notification-context"
 import { useSocket } from "@/lib/socket-context"
+import { useIsMobile } from "@/lib/hooks/use-media-query"
+import { cn } from "@/lib/utils"
 import { Conversation, Message } from "@/types/chat"
 import { toast } from "sonner"
 
@@ -62,12 +64,14 @@ export default function MessagesPage() {
     const { incrementUnread, decrementUnread, clearUnread } = (useNotifications() || {})
     const { socket: globalSocket } = useSocket()
     const queryClient = useQueryClient()
+    const isMobile = useIsMobile()
     const [socket, setSocket] = React.useState<Socket | null>(null)
     const [conversations, setConversations] = React.useState<Conversation[]>([])
     const [selectedId, setSelectedId] = React.useState<string | null>(null)
     const [messages, setMessages] = React.useState<Message[]>([])
     const [messagesMeta, setMessagesMeta] = React.useState({ page: 1, totalPages: 1, total: 0 })
     const [loadingMessages, setLoadingMessages] = React.useState(false)
+    const [mobileView, setMobileView] = React.useState<"list" | "chat">("list")
     
     const selectedIdRef = React.useRef(selectedId)
     React.useEffect(() => { selectedIdRef.current = selectedId }, [selectedId])
@@ -328,6 +332,20 @@ export default function MessagesPage() {
         }
     }, [selectedId])
 
+    // Sync mobile view with selected conversation
+    React.useEffect(() => {
+        if (isMobile && selectedId) {
+            setMobileView("chat")
+        } else if (isMobile) {
+            setMobileView("list")
+        }
+    }, [isMobile, selectedId])
+
+    const handleBackToList = () => {
+        setSelectedId(null)
+        setMobileView("list")
+    }
+
     if (!user) {
         return <div className="p-8">Please log in to view messages.</div>
     }
@@ -340,8 +358,12 @@ export default function MessagesPage() {
 
     return (
         <div className="h-[calc(100vh-64px)] -m-6 flex flex-col md:flex-row bg-background overflow-hidden relative">
-            <div className="flex flex-col h-full border-r border-border/50 bg-card/30 backdrop-blur-xl w-80 min-w-[320px] relative z-20">
-                <div className="p-4 border-b border-border/50 flex items-center justify-between">
+            {/* Conversation List - shown on desktop or mobile list view */}
+            <div className={cn(
+                "flex flex-col h-full border-r border-border/50 bg-card/30 backdrop-blur-xl w-80 min-w-[320px] relative z-20 overflow-hidden",
+                isMobile && mobileView === "chat" && "hidden md:flex"
+            )}>
+                <div className="p-4 border-b border-border/50 flex items-center justify-between shrink-0">
                     <h2 className="text-lg font-bold text-foreground tracking-tight">Messages</h2>
                     <div className="h-2 w-2 rounded-full bg-realty-gold animate-pulse" />
                 </div>
@@ -357,7 +379,12 @@ export default function MessagesPage() {
                     currentUserId={user.id}
                 />
             </div>
-            <div className="flex-1 flex flex-col min-w-0 bg-background relative z-10">
+
+            {/* Chat Window */}
+            <div className={cn(
+                "flex-1 flex flex-col min-w-0 bg-background relative z-10 overflow-hidden",
+                isMobile && mobileView === "list" && "hidden md:flex"
+            )}>
                 {selectedConversation ? (
                     <ChatWindow
                         conversation={{ ...selectedConversation, messages }}
@@ -366,6 +393,8 @@ export default function MessagesPage() {
                         isLoading={loadingMessages}
                         hasMore={messagesMeta.page < messagesMeta.totalPages}
                         onLoadMore={() => loadMessages(selectedId!, messagesMeta.page + 1)}
+                        showDetailsOnMobile={false}
+                        onBack={handleBackToList}
                     />
                 ) : (
                     <div className="flex flex-col items-center justify-center h-full text-muted-foreground space-y-4">

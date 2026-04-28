@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Phone, Video, MoreHorizontal, Send, Paperclip, Search, X, FileIcon, Download, Loader2 } from "lucide-react"
+import { Phone, Video, MoreHorizontal, Send, Paperclip, Search, X, FileIcon, Download, Loader2, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatTimeOnly, getUserTimezone, getDateLabel, formatDateOnly } from "@/lib/date-utils"
 import { chatApi } from "@/lib/api-chat"
@@ -21,6 +21,8 @@ interface ChatWindowProps {
     isLoading?: boolean
     hasMore?: boolean
     onLoadMore?: () => void
+    showDetailsOnMobile?: boolean
+    onBack?: () => void
 }
 
 function getOtherParticipant(conv: Conversation, currentUserId: string): { name: string; email?: string; avatar?: string; status: "online" | "offline" | "away" } {
@@ -48,9 +50,11 @@ export function ChatWindow({
     isLoading = false,
     hasMore = false,
     onLoadMore,
+    showDetailsOnMobile = true,
+    onBack,
 }: ChatWindowProps) {
     const [message, setMessage] = React.useState("")
-    const [showDetails, setShowDetails] = React.useState(true)
+    const [showDetails, setShowDetails] = React.useState(showDetailsOnMobile)
     const [selectedFiles, setSelectedFiles] = React.useState<File[]>([])
     const [isUploading, setIsUploading] = React.useState(false)
     const fileInputRef = React.useRef<HTMLInputElement>(null)
@@ -183,8 +187,17 @@ export function ChatWindow({
         <div className="flex h-full overflow-hidden">
             <div className="flex flex-col flex-1 min-w-0 bg-background">
                 {/* Chat Header */}
-                <div className="flex items-center justify-between px-6 py-4 border-b border-border/50 bg-card/50 backdrop-blur-md sticky top-0 z-20">
+                <div className="flex-none shrink-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-border/50 bg-card/50 backdrop-blur-md sticky top-0 z-20">
                     <div className="flex items-center gap-3">
+                        {/* Mobile Back Button */}
+                        {onBack && (
+                            <button
+                                onClick={onBack}
+                                className="md:hidden flex items-center justify-center h-8 w-8 -ml-2 rounded-lg hover:bg-accent"
+                            >
+                                <ArrowLeft className="h-5 w-5" />
+                            </button>
+                        )}
                         <div className="relative">
                             <Avatar className="ring-2 ring-realty-gold/20 ring-offset-2 ring-offset-background h-10 w-10">
                                 <AvatarImage src={participant?.avatar} />
@@ -230,7 +243,7 @@ export function ChatWindow({
                 </div>
 
                 {/* Messages Area */}
-                <div className="flex-1 min-h-0 relative">
+                <div className="flex-1 min-h-0 relative overflow-hidden">
                     {/* Background decoration */}
                     <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-20">
                         <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full bg-realty-gold/5 blur-[120px]" />
@@ -390,7 +403,7 @@ export function ChatWindow({
                 </div>
 
                 {/* Message Input */}
-                <div className="p-4 bg-card/30 backdrop-blur-xl border-t border-border/50">
+                <div className="flex-none shrink-0 p-4 bg-card/30 backdrop-blur-xl border-t border-border/50">
                     <div className="max-w-4xl mx-auto flex flex-col gap-3">
                         {/* Selected Files Preview */}
                         {selectedFiles.length > 0 && (

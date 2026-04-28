@@ -29,7 +29,11 @@ import { useNotifications } from "@/lib/notification-context"
 
 type DialogType = "lead" | "deal" | "property" | "task" | null
 
-export function Header() {
+interface HeaderProps {
+    onMobileMenuToggle?: () => void
+}
+
+export function Header({ onMobileMenuToggle }: HeaderProps) {
     const router = useRouter()
     const { user, logout } = useAuth()
     const { unreadMessages } = useNotifications()
@@ -125,7 +129,18 @@ export function Header() {
     return (
         <>
             <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
-                <div className="flex h-16 items-center gap-4 px-6">
+                <div className="flex h-16 items-center gap-4 px-4 md:px-6">
+                    {/* Mobile Menu Button */}
+                    <button
+                        onClick={onMobileMenuToggle}
+                        className="md:hidden flex items-center justify-center h-10 w-10 rounded-lg hover:bg-accent"
+                        aria-label="Toggle menu"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+
                     {/* Search */}
                     <div className="flex-1" ref={searchContainerRef}>
                         <div className="relative w-full max-w-md">
