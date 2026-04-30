@@ -31,7 +31,7 @@ interface JwtPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: process.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || 'http://localhost:3000',
     credentials: true,
   },
 })
@@ -51,9 +51,17 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      const token =
+      let token =
         client.handshake.auth?.token ||
         client.handshake.headers?.authorization?.replace('Bearer ', '');
+
+      if (!token && client.handshake.headers?.cookie) {
+        const cookieStr = client.handshake.headers.cookie;
+        const match = cookieStr.match(/(?:^| )token=([^;]+)/);
+        if (match) {
+          token = decodeURIComponent(match[1]);
+        }
+      }
 
       if (!token) {
         client.disconnect();
@@ -61,7 +69,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       }
 
       const payload = this.jwtService.verify<JwtPayload>(token);
-      
+
       const user = await this.userRepository.findOne({
         where: { id: payload.sub },
         relations: ['role', 'tenant'],
@@ -108,7 +116,8 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @SubscribeMessage('send_message')
   async handleSendMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: { conversationId: string; content?: string; attachments?: any[] },
+    @MessageBody()
+    data: { conversationId: string; content?: string; attachments?: any[] },
   ) {
     const user = client.data.user as User;
     if (!user) return;
@@ -125,14 +134,14 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.server
         .to(`conversation:${data.conversationId}`)
         .emit('new_message', message);
-      
+
       // Also emit to each participant's individual room for global notifications
       if (message.participants) {
         message.participants.forEach((participant: any) => {
           this.server.to(`user:${participant.id}`).emit('new_message', message);
         });
       }
-      
+
       return message;
     } catch (error) {
       client.emit('error', { message: error.message });

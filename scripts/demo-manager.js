@@ -8,7 +8,7 @@ const pg = require('pg');
 const DEMO_PASSWORD = 'Admin@123';
 
 const DEMO_TENANT_NAMES = [
-  'Platinum Elite Realty',
+  'MakeItCRM Realty',
   'Luxury Homes Global',
   'Apex Properties',
   'Skyline Estates',
@@ -19,6 +19,7 @@ const BASE_PERMISSIONS = [
   'leads:read', 'leads:write', 'deals:read', 'deals:write',
   'properties:read', 'properties:write', 'tasks:read', 'tasks:write',
   'reports:read', 'settings:write', 'users:read', 'users:write', 'roles:write',
+  'chat:read', 'chat:write',
 ];
 
 async function main() {
@@ -220,9 +221,29 @@ async function seedDemoData(db, tenantId) {
     { title: 'Executive Estate', price: 3500000, type: 'house', beds: 6, baths: 7, sqft: 8500, city: 'Greenwich', state: 'CT', features: ['Pool', 'Wine Cellar'] },
   ];
 
+  const sampleImages = [
+    'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
+    'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800',
+    'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800',
+    'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
+    'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
+    'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
+    'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+    'https://images.unsplash.com/photo-1600210492493-0946911120ea?w=800',
+    'https://images.unsplash.com/photo-1600573472591-ee6981cf81c0?w=800',
+    'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800',
+  ];
+
   const propertyIds = [];
-  for (const data of propertyData) {
+  for (let i = 0; i < propertyData.length; i++) {
+    const data = propertyData[i];
     const agentId = agentIds[Math.floor(Math.random() * agentIds.length)];
+    // Assign different images based on index
+    const startIdx = (i * 2) % sampleImages.length;
+    const propertyImages = sampleImages.slice(startIdx, startIdx + 4);
+    if (propertyImages.length < 4) {
+      propertyImages.push(...sampleImages.slice(0, 4 - propertyImages.length));
+    }
     const result = await db.query(
       `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, "yearBuilt", images, features, "agentId", "tenantId") 
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id`,
@@ -240,7 +261,7 @@ async function seedDemoData(db, tenantId) {
         data.baths,
         data.sqft,
         1990 + Math.floor(Math.random() * 35),
-        JSON.stringify(['https://images.unsplash.com/photo-1568605114967-8130f3a36994']),
+        propertyImages.join(','),
         JSON.stringify(data.features),
         agentId,
         tenantId

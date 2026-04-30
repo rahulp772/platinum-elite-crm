@@ -1,6 +1,6 @@
-# Real Estate CRM Frontend 🏠✨
+# MakeItCRM Frontend 🏠✨
 
-A high-end, premium dashboard for real estate professionals. Built with Next.js 15 and styled with a "Platinum Elite" design system, this CRM provides a seamless experience for managing property portfolios, tracking leads, and closing deals.
+A high-end, premium dashboard for real estate professionals. Built with Next.js 15 and styled with the **MakeItCRM** design system, this CRM provides a seamless experience for managing property portfolios, tracking leads, and closing deals.
 
 [![Next.js](https://img.shields.io/badge/next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
@@ -9,7 +9,7 @@ A high-end, premium dashboard for real estate professionals. Built with Next.js 
 
 ## 🌟 Key Features
 
-- **💎 Platinum Elite Design**: A sophisticated Navy and Champagne Gold aesthetic for a premium professional feel.
+- **💎 MakeItCRM Design**: A sophisticated Navy and Champagne Gold aesthetic for a premium professional feel.
 - **📊 Interactive Dashboard**: Real-time overview of active leads, deal pipeline, and property performance.
 - **🏢 Property Portfolio**: Advanced property management with grid/list views, favorites, and detailed property cards.
 - **🎯 Lead Management**: Streamlined lead tracking with status indicators and quick-add capabilities.
@@ -61,7 +61,7 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 ## 🎨 Design System
 
-The application follows the **Platinum Elite** design system:
+The application follows the **MakeItCRM** design system:
 - **Primary**: Navy Blue (`#0A192F`)
 - **Accent**: Champagne Gold (`#D4AF37`)
 - **Secondary**: Slate Gray & Cool White

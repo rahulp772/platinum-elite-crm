@@ -1,4 +1,4 @@
-# 🤖 Real Estate CRM: Full-Stack Architecture Documentation
+# 🤖 MakeItCRM: Full-Stack Architecture Documentation
 
 This document provides a comprehensive overview of the Real Estate CRM project, designed for developers and AI agents to understand the system's architecture, data models, and implementation patterns.
 
@@ -7,7 +7,7 @@ This document provides a comprehensive overview of the Real Estate CRM project, 
 ## 🏗️ System Overview
 The Real Estate CRM is a full-stack application designed to streamline property management, lead tracking, and deal closure for real estate agencies.
 
-- **Frontend**: Next.js 15 (React) with a premium "Platinum Elite" design system.
+- **Frontend**: Next.js 15 (React) with the premium **MakeItCRM** design system.
 - **Backend**: NestJS (Node.js) with TypeORM and PostgreSQL.
 - **Authentication**: JWT-based with Dynamic Roles & Permissions (Multi-Tenant).
 
@@ -175,7 +175,7 @@ Internal and client communication.
 
 ## 🎨 Frontend Architecture (Next.js)
 
-### Design System: "Platinum Elite"
+### Design System: **MakeItCRM**
 - **Palette**: Navy Blue (`#0A192F`) and Champagne Gold (`#D4AF37`).
 - **Components**: Built on [Shadcn UI](https://ui.shadcn.com/) and Radix UI.
 - **Animations**: Subtle micro-animations using Framer Motion.
@@ -245,7 +245,7 @@ Each domain (Leads, Properties, etc.) is encapsulated in its own module containi
 ### Running the Full Stack
 1. Ensure PostgreSQL is running.
 2. Backend: `pnpm --filter backend-real-estate-crm run start:dev`
-3. Frontend: `pnpm --filter crm run dev`
+3. Frontend: `pnpm --filter makeitcrm run dev`
 
 ### Creating a Tenant (via API)
 ```bash
@@ -274,6 +274,14 @@ POST /auth/register
   "roleId": "<role-id>"
 }
 ```
+
+<!-- BEGIN:nextjs-agent-rules -->
+ 
+# Next.js: ALWAYS read docs before coding
+ 
+Before any Next.js work, find and read the relevant doc in `apps/frontend/node_modules/next/dist/docs/`. Your training data is outdated — the docs are the source of truth.
+ 
+<!-- END:nextjs-agent-rules -->
 
 ## graphify
 

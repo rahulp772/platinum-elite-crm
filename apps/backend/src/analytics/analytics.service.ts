@@ -1,6 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, SelectQueryBuilder, ObjectLiteral, MoreThanOrEqual } from 'typeorm';
+import {
+  Repository,
+  SelectQueryBuilder,
+  ObjectLiteral,
+  MoreThanOrEqual,
+} from 'typeorm';
 import { Property } from '../properties/entities/property.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { Deal } from '../deals/entities/deal.entity';
@@ -41,11 +46,15 @@ export class AnalyticsService {
   ) {
     if (user.isSuperAdmin) return query;
 
-    query.andWhere(`${query.alias}.tenantId = :tenantId`, { tenantId: user.tenantId });
+    query.andWhere(`${query.alias}.tenantId = :tenantId`, {
+      tenantId: user.tenantId,
+    });
 
     if (roleLevel < 100) {
       if (roleLevel <= 50) {
-        query.andWhere(`${query.alias}.${userIdField} = :userId`, { userId: user.id });
+        query.andWhere(`${query.alias}.${userIdField} = :userId`, {
+          userId: user.id,
+        });
       }
     }
 
@@ -54,7 +63,7 @@ export class AnalyticsService {
 
   async getDashboardStats(user: User) {
     const roleLevel = this.getRoleLevel(user);
-    
+
     const propQuery = this.propertyRepository.createQueryBuilder('property');
     const leadQuery = this.leadRepository.createQueryBuilder('lead');
     const dealQuery = this.dealRepository.createQueryBuilder('deal');
@@ -146,28 +155,42 @@ export class AnalyticsService {
 
   async getLeadResponseTime(user: User) {
     const roleLevel = this.getRoleLevel(user);
-    
+
     const leadQuery = this.leadRepository.createQueryBuilder('lead');
     this.applyHierarchyFilters(leadQuery, user, roleLevel, 'assignedToId');
-    
-    const leads = await leadQuery.select(['lead.id', 'lead.createdAt']).getRawMany();
+
+    const leads = await leadQuery
+      .select(['lead.id', 'lead.createdAt'])
+      .getRawMany();
     const totalLeads = leads.length;
-    
+
     if (totalLeads === 0) {
       return {
         averageMinutes: 0,
         leadsContacted: 0,
         totalLeads: 0,
         trend: 0,
-        byHour: []
+        byHour: [],
       };
     }
 
-    const leadIds = leads.map(l => l.lead_id);
+    const leadIds = leads.map((l) => l.lead_id);
+    if (leadIds.length === 0) {
+      return {
+        averageResponseTime: 0,
+        leadsContacted: 0,
+        totalLeads: 0,
+        trend: 0,
+        byHour: [],
+      };
+    }
+
     const activities = await this.leadActivityRepository
       .createQueryBuilder('activity')
       .where('activity.leadId IN (:...leadIds)', { leadIds })
-      .andWhere("activity.action IN ('status_changed', 'note_added', 'followup_scheduled')")
+      .andWhere(
+        "activity.action IN ('status_changed', 'note_added', 'followup_scheduled')",
+      )
       .orderBy('activity.timestamp', 'ASC')
       .getMany();
 
@@ -176,10 +199,11 @@ export class AnalyticsService {
 
     for (const activity of activities) {
       if (!leadFirstContact.has(activity.leadId)) {
-        const lead = leads.find(l => l.lead_id === activity.leadId);
+        const lead = leads.find((l) => l.lead_id === activity.leadId);
         if (lead) {
           const createdAt = new Date(lead.lead_createdAt);
-          const responseTime = (activity.timestamp.getTime() - createdAt.getTime()) / (1000 * 60);
+          const responseTime =
+            (activity.timestamp.getTime() - createdAt.getTime()) / (1000 * 60);
           responseTimes.push(responseTime);
           leadFirstContact.set(activity.leadId, activity.timestamp);
         }
@@ -187,13 +211,16 @@ export class AnalyticsService {
     }
 
     const leadsContacted = leadFirstContact.size;
-    const averageMinutes = responseTimes.length > 0
-      ? responseTimes.reduce((sum, t) => sum + t, 0) / responseTimes.length
-      : 0;
+    const averageMinutes =
+      responseTimes.length > 0
+        ? responseTimes.reduce((sum, t) => sum + t, 0) / responseTimes.length
+        : 0;
 
     const hourDistribution: { hours: number; count: number }[] = [];
     for (let h = 0; h <= 24; h++) {
-      const count = responseTimes.filter(t => t >= h * 60 && t < (h + 1) * 60).length;
+      const count = responseTimes.filter(
+        (t) => t >= h * 60 && t < (h + 1) * 60,
+      ).length;
       hourDistribution.push({ hours: h, count });
     }
 
@@ -202,7 +229,7 @@ export class AnalyticsService {
       leadsContacted,
       totalLeads,
       trend: 0,
-      byHour: hourDistribution
+      byHour: hourDistribution,
     };
   }
 
@@ -210,7 +237,7 @@ export class AnalyticsService {
     const roleLevel = this.getRoleLevel(user);
     const dealQuery = this.dealRepository.createQueryBuilder('deal');
     this.applyHierarchyFilters(dealQuery, user, roleLevel, 'agentId');
-    
+
     const deals = await dealQuery
       .select(['deal.id', 'deal.value', 'deal.stage'])
       .getRawMany();
@@ -219,7 +246,7 @@ export class AnalyticsService {
       lead: 0.1,
       negotiation: 0.6,
       under_contract: 0.8,
-      closed: 1.0
+      closed: 1.0,
     };
 
     const byStage: Record<string, { value: number; count: number }> = {};
@@ -230,7 +257,7 @@ export class AnalyticsService {
       const value = parseFloat(deal.deal_value) || 0;
       const stage = deal.deal_stage || 'lead';
       const weight = stageWeights[stage] || 0.1;
-      
+
       rawValue += value;
       weightedValue += value * weight;
 
@@ -247,7 +274,7 @@ export class AnalyticsService {
       stage,
       value: data.value,
       count: data.count,
-      probability: stageWeights[stage] * 100
+      probability: stageWeights[stage] * 100,
     }));
 
     return {
@@ -256,17 +283,18 @@ export class AnalyticsService {
       dealCount: deals.length,
       avgDealSize: Math.round(avgDealSize),
       trend: 0,
-      byStage: byStageArray
+      byStage: byStageArray,
     };
   }
 
   async getTeamPerformance(user: User) {
     const roleLevel = this.getRoleLevel(user);
-    
-    const usersQuery = this.userRepository.createQueryBuilder('user')
+
+    const usersQuery = this.userRepository
+      .createQueryBuilder('user')
       .leftJoin('user.role', 'role')
       .where('user.tenantId = :tenantId', { tenantId: user.tenantId });
-    
+
     if (roleLevel < 100) {
       usersQuery.andWhere('user.id = :userId', { userId: user.id });
     }
@@ -275,10 +303,18 @@ export class AnalyticsService {
       .select(['user.id', 'user.name', 'user.email'])
       .getRawMany();
 
-    const agents: { id: string; name: string; email: string; dealsCount: number; revenue: number; conversionRate: number }[] = [];
+    const agents: {
+      id: string;
+      name: string;
+      email: string;
+      dealsCount: number;
+      revenue: number;
+      conversionRate: number;
+    }[] = [];
 
     for (const member of teamMembers) {
-      const dealsQuery = this.dealRepository.createQueryBuilder('deal')
+      const dealsQuery = this.dealRepository
+        .createQueryBuilder('deal')
         .where('deal.agentId = :agentId', { agentId: member.user_id })
         .andWhere('deal.tenantId = :tenantId', { tenantId: user.tenantId });
 
@@ -286,9 +322,13 @@ export class AnalyticsService {
         .select(['deal.id', 'deal.value', 'deal.stage'])
         .getRawMany();
 
-      const closedDeals = deals.filter(d => d.deal_stage === 'closed');
-      const totalRevenue = closedDeals.reduce((sum, d) => sum + (parseFloat(d.deal_value) || 0), 0);
-      const conversionRate = deals.length > 0 ? (closedDeals.length / deals.length) * 100 : 0;
+      const closedDeals = deals.filter((d) => d.deal_stage === 'closed');
+      const totalRevenue = closedDeals.reduce(
+        (sum, d) => sum + (parseFloat(d.deal_value) || 0),
+        0,
+      );
+      const conversionRate =
+        deals.length > 0 ? (closedDeals.length / deals.length) * 100 : 0;
 
       agents.push({
         id: member.user_id,
@@ -296,7 +336,7 @@ export class AnalyticsService {
         email: member.user_email,
         dealsCount: closedDeals.length,
         revenue: Math.round(totalRevenue),
-        conversionRate: Math.round(conversionRate)
+        conversionRate: Math.round(conversionRate),
       });
     }
 
@@ -307,7 +347,7 @@ export class AnalyticsService {
     const roleLevel = this.getRoleLevel(user);
     const dealQuery = this.dealRepository.createQueryBuilder('deal');
     this.applyHierarchyFilters(dealQuery, user, roleLevel, 'agentId');
-    
+
     const deals = await dealQuery
       .select(['deal.value', 'deal.stage', 'deal.createdAt'])
       .andWhere('deal.stage = :stage', { stage: 'closed' })
@@ -315,25 +355,27 @@ export class AnalyticsService {
 
     const monthlyRevenue: { name: string; value: number }[] = [];
     const now = new Date();
-    
+
     for (let i = 11; i >= 0; i--) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0);
-      
-      const monthDeals = deals.filter(d => {
+
+      const monthDeals = deals.filter((d) => {
         const dealDate = new Date(d.deal_createdAt);
         return dealDate >= monthStart && dealDate <= monthEnd;
       });
-      
-      const revenue = monthDeals.reduce((sum, d) => sum + (parseFloat(d.deal_value) || 0), 0);
-      
+
+      const revenue = monthDeals.reduce(
+        (sum, d) => sum + (parseFloat(d.deal_value) || 0),
+        0,
+      );
+
       monthlyRevenue.push({
         name: monthStart.toLocaleDateString('en-US', { month: 'short' }),
-        value: Math.round(revenue)
+        value: Math.round(revenue),
       });
     }
 
     return monthlyRevenue;
   }
 }
-

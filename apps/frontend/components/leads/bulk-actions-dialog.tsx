@@ -19,7 +19,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useUpdateLead, useUsers, useLeads } from "@/hooks/use-leads"
+import { useUpdateLead, useUsers } from "@/hooks/use-leads"
 import { Lead, LeadStatus } from "@/types/lead"
 
 interface BulkActionsDialogProps {
@@ -27,12 +27,12 @@ interface BulkActionsDialogProps {
     onOpenChange: (open: boolean) => void
     leads: Lead[]
     onComplete: () => void
+    refetch?: () => void
 }
 
-export function BulkActionsDialog({ open, onOpenChange, leads, onComplete }: BulkActionsDialogProps) {
+export function BulkActionsDialog({ open, onOpenChange, leads, onComplete, refetch }: BulkActionsDialogProps) {
     const updateLead = useUpdateLead()
     const { data: users } = useUsers()
-    const { refetch } = useLeads()
     
     const [action, setAction] = React.useState<"status" | "assign" | "notes">("status")
     const [status, setStatus] = React.useState<LeadStatus>("new")
@@ -52,7 +52,7 @@ export function BulkActionsDialog({ open, onOpenChange, leads, onComplete }: Bul
                 await updateLead.mutateAsync(updates)
             }
             
-            await refetch()
+            await refetch?.()
             onComplete()
             onOpenChange(false)
         } catch (error) {

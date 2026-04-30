@@ -2,13 +2,33 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Lead, LeadActivity, LeadLookupResult } from "@/types/lead"
 
-export function useLeads() {
+export interface PaginatedResponse<T> {
+    data: T[]
+    metadata: {
+        page: number
+        limit: number
+        total: number
+        totalPages: number
+    }
+}
+
+interface LeadsFilters {
+    page?: number
+    limit?: number
+    search?: string
+    status?: string
+    source?: string
+    assignedToId?: string
+}
+
+export function useLeads(filters?: LeadsFilters, queryKeyDeps?: unknown[]) {
     return useQuery({
-        queryKey: ["leads"],
+        queryKey: ["leads", filters, ...(queryKeyDeps || [])],
         queryFn: async () => {
-            const { data } = await api.get<Lead[]>("/leads")
+            const { data } = await api.get<PaginatedResponse<Lead>>("/leads", { params: filters })
             return data
         },
+        staleTime: 0,
     })
 }
 

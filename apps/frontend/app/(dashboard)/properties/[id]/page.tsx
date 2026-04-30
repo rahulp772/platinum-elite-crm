@@ -36,6 +36,55 @@ const statusColors: Record<PropertyStatus, string> = {
     off_market: "bg-rose-500/10 text-rose-700 border-rose-500/20",
 }
 
+function parseImages(images: string[] | string | undefined): string[] {
+    const FALLBACK = [
+        'https://images.unsafe-splash.com/photo-15-60448-204-e02f11c3d0e2?w=800',
+        'https://images.unsafe-splash.com/photo-16-00-60-76879-39-ce8a6c25-118c?w=800',
+        'https://images.unsafe-splash.com/photo-16-00-585-15-43-40-be6-eb56a0c?w=800',
+    ]
+    
+    if (!images) return FALLBACK
+    if (Array.isArray(images)) {
+        const valid = images.filter(Boolean)
+        return valid.length > 0 ? valid : FALLBACK
+    }
+    
+    if (typeof images === 'string') {
+        let cleaned = images.trim()
+        
+        try {
+            let parsed = JSON.parse(cleaned)
+            if (Array.isArray(parsed)) {
+                const valid = parsed.filter(Boolean)
+                if (valid.length > 0) return valid
+            } else if (typeof parsed === 'string') {
+                try {
+                    parsed = JSON.parse(parsed)
+                    if (Array.isArray(parsed)) {
+                        const valid = parsed.filter(Boolean)
+                        if (valid.length > 0) return valid
+                    }
+                } catch {}
+            }
+        } catch {}
+        
+        if (cleaned.includes(',"') || cleaned.includes('",') || cleaned.includes(',')) {
+            const parts = cleaned.split(',')
+            const valid = parts.map(s => {
+                s = s.trim()
+                if (s.startsWith('"') && s.endsWith('"')) s = s.slice(1, -1)
+                if (s.startsWith('[') && s.endsWith(']')) s = s.slice(1, -1)
+                return s.replace(/\\"/g, '"').replace(/^"|"$/g, '')
+            }).filter(Boolean)
+            if (valid.length > 0) return valid
+        }
+        
+        return cleaned ? [cleaned] : FALLBACK
+    }
+    
+    return FALLBACK
+}
+
 const statusLabels: Record<PropertyStatus, string> = {
     available: "Available",
     pending: "Pending",
@@ -66,6 +115,9 @@ export default function PropertyDetailPage() {
     const { user } = useAuth()
     const timezone = getUserTimezone(user)
 
+    const parsedImages = React.useMemo(() => parseImages(property?.images), [property?.images])
+    const firstImage = parsedImages.length > 0 && parsedImages[0]?.startsWith('http') ? parsedImages[0] : null
+
     const openLightbox = (index: number) => {
         setCurrentImageIndex(index)
         setLightboxOpen(true)
@@ -73,12 +125,12 @@ export default function PropertyDetailPage() {
 
     const nextImage = () => {
         if (!property) return
-        setCurrentImageIndex((prev) => (prev + 1) % property.images.length)
+        setCurrentImageIndex((prev) => (prev + 1) % parsedImages.length)
     }
 
     const prevImage = () => {
         if (!property) return
-        setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length)
+        setCurrentImageIndex((prev) => (prev - 1 + parsedImages.length) % parsedImages.length)
     }
 
     React.useEffect(() => {
@@ -162,40 +214,72 @@ export default function PropertyDetailPage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-6 h-[400px]">
                 <div 
                     className="md:col-span-2 md:row-span-2 relative rounded-lg overflow-hidden bg-muted cursor-pointer group"
-                    onClick={() => openLightbox(0)}
+                    onClick={() => firstImage ? openLightbox(0) : undefined}
                 >
-                    <Image
-                        src={property.images[0]}
-                        alt={property.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        priority
-                    />
+                    {firstImage ? (
+                        <Image
+                            src={firstImage}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            priority
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-muted-foreground">No Image</span>
+                        </div>
+                    )}
                 </div>
                 <div 
                     className="hidden md:block relative rounded-lg overflow-hidden bg-muted cursor-pointer group"
-                    onClick={() => openLightbox(1)}
+                    onClick={() => firstImage ? openLightbox(1) : undefined}
                 >
-                    <Image
-                        src={property.images[1] || property.images[0]}
-                        alt={property.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
+                    {firstImage && parsedImages[1] ? (
+                        <Image
+                            src={parsedImages[1]}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : firstImage ? (
+                        <Image
+                            src={firstImage}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-muted-foreground">No Image</span>
+                        </div>
+                    )}
                 </div>
                 <div 
                     className="hidden md:block relative rounded-lg overflow-hidden bg-muted cursor-pointer group"
-                    onClick={() => openLightbox(2)}
+                    onClick={() => firstImage ? openLightbox(2) : undefined}
                 >
-                    <Image
-                        src={property.images[2] || property.images[0]}
-                        alt={property.title}
-                        fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
-                    />
-                    {property.images.length > 3 && (
+                    {firstImage && parsedImages[2] ? (
+                        <Image
+                            src={parsedImages[2]}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : firstImage ? (
+                        <Image
+                            src={firstImage}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-muted-foreground">No Image</span>
+                        </div>
+                    )}
+                    {parsedImages.length > 3 && (
                         <div className="absolute inset-0 bg-black/50 flex items-center justify-center transition-colors group-hover:bg-black/40">
-                            <span className="text-white font-semibold">+{property.images.length - 3} photos</span>
+                            <span className="text-white font-semibold">+{parsedImages.length - 3} photos</span>
                         </div>
                     )}
                 </div>
@@ -243,7 +327,7 @@ export default function PropertyDetailPage() {
                             <div className="relative w-full h-[70vh] flex flex-col items-center justify-center">
                                 <div className="relative w-full h-full">
                                     <Image
-                                        src={property.images[currentImageIndex]}
+                                        src={parsedImages[currentImageIndex]}
                                         alt={`${property.title} - Image ${currentImageIndex + 1}`}
                                         fill
                                         className="object-contain"
@@ -266,17 +350,18 @@ export default function PropertyDetailPage() {
                         {/* Thumbnail Tray - Bottom */}
                         <div className="w-full bg-black/40 backdrop-blur-md border-t border-white/10 p-4">
                             <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-hide max-w-5xl mx-auto">
-                                {property.images.map((img, idx) => (
+                                {parsedImages.map((img, idx) => (
                                     <button 
                                         key={idx}
                                         onClick={() => setCurrentImageIndex(idx)}
                                         className={cn(
                                             "relative flex-shrink-0 w-20 h-14 md:w-24 md:h-16 rounded overflow-hidden transition-all duration-200 border-2",
                                             currentImageIndex === idx 
-                                                ? "border-rose-500 scale-105 shadow-[0_0_15px_rgba(244,63,94,0.3)] z-10" 
+                                                ? "border-realty-gold scale-105 shadow-[0_0_15px_rgba(197,160,89,0.3)] z-10" 
                                                 : "border-transparent opacity-50 hover:opacity-100"
                                         )}
                                     >
+                                        <button className="sr-only">Select image {idx + 1}</button>
                                         <Image
                                             src={img}
                                             alt={`Thumbnail ${idx + 1}`}

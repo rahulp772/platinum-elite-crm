@@ -15,7 +15,7 @@ export class LeadSlaCron {
     private readonly leadRepository: Repository<Lead>,
     private readonly leadAssignmentService: LeadAssignmentService,
     // Add Gateway/WebSocket injection here later
-  ) { }
+  ) {}
 
   /**
    * Runs every minute to check for SLA breaches on new leads (5-min rule)
@@ -65,12 +65,14 @@ export class LeadSlaCron {
       where: {
         followUpAt: LessThan(now),
       },
-      relations: ['assignedTo']
+      relations: ['assignedTo'],
     });
 
     for (const lead of missedFollowUps) {
       // In a real app, we'd want to track if we already alerted about this specific follow-up
-      this.logger.warn(`Lead ${lead.id} has a missed follow-up from ${lead.followUpAt}`);
+      this.logger.warn(
+        `Lead ${lead.id} has a missed follow-up from ${lead.followUpAt}`,
+      );
 
       // TODO: Emit WebSocket event to Agent & Team Lead
     }

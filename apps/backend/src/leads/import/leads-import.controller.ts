@@ -22,16 +22,17 @@ import { RequirePermissions } from '../../auth/decorators/permissions.decorator'
 @Controller('leads/import')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 export class LeadsImportController {
-  constructor(private readonly leadsImportService: LeadsImportService) { }
+  constructor(private readonly leadsImportService: LeadsImportService) {}
 
   @Get('template')
   @RequirePermissions('leads:write')
   @ApiOperation({ summary: 'Download lead import template' })
   async downloadTemplate(@Res({ passthrough: true }) res: express.Response) {
     const buffer = await this.leadsImportService.getTemplate();
-    
+
     res.set({
-      'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'Content-Disposition': 'attachment; filename=leads_template.xlsx',
     });
 
@@ -65,6 +66,10 @@ export class LeadsImportController {
     @Body() body: { data: any[]; mapping: Record<string, string> },
     @Request() req,
   ) {
-    return this.leadsImportService.importLeads(body.data, body.mapping, req.user);
+    return this.leadsImportService.importLeads(
+      body.data,
+      body.mapping,
+      req.user,
+    );
   }
 }

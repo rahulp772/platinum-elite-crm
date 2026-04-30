@@ -14,10 +14,21 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { ChatService } from './chat.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { SendMessageDto, CreateConversationDto, GetMessagesQueryDto } from './dto/chat.dto';
+import {
+  SendMessageDto,
+  CreateConversationDto,
+  GetMessagesQueryDto,
+} from './dto/chat.dto';
 
 @ApiTags('chat')
 @ApiBearerAuth()
@@ -51,7 +62,12 @@ export class ChatController {
     @Body() dto: SendMessageDto,
     @Request() req,
   ) {
-    return this.chatService.sendMessage(id, dto.content, req.user, dto.attachments);
+    return this.chatService.sendMessage(
+      id,
+      dto.content,
+      req.user,
+      dto.attachments,
+    );
   }
 
   @Post('upload')
@@ -103,10 +119,7 @@ export class ChatController {
 
   @Post('conversations')
   @ApiOperation({ summary: 'Create a new conversation' })
-  createConversation(
-    @Body() dto: CreateConversationDto,
-    @Request() req,
-  ) {
+  createConversation(@Body() dto: CreateConversationDto, @Request() req) {
     return this.chatService.createConversation(dto.participantIds, req.user);
   }
 }

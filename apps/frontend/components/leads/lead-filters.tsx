@@ -22,13 +22,13 @@ interface LeadFiltersProps {
     onStatusChange: (value: string) => void
     onSourceChange: (value: string) => void
     onAssignedToChange: (value: string) => void
-    onPropertyTypeChange: (value: string) => void
-    onBudgetMinChange: (value: number | undefined) => void
-    onBudgetMaxChange: (value: number | undefined) => void
-    onCreatedFromChange: (value: Date | undefined) => void
-    onCreatedToChange: (value: Date | undefined) => void
-    onFollowUpFromChange: (value: Date | undefined) => void
-    onFollowUpToChange: (value: Date | undefined) => void
+    onPropertyTypeChange?: (value: string) => void
+    onBudgetMinChange?: (value: number | undefined) => void
+    onBudgetMaxChange?: (value: number | undefined) => void
+    onCreatedFromChange?: (value: Date | undefined) => void
+    onCreatedToChange?: (value: Date | undefined) => void
+    onFollowUpFromChange?: (value: Date | undefined) => void
+    onFollowUpToChange?: (value: Date | undefined) => void
     users?: { id: string; name: string }[]
 }
 
@@ -102,45 +102,45 @@ export function LeadFilters({
 
     const handlePropertyTypeChange = (value: string) => {
         setPropertyType(value)
-        onPropertyTypeChange(value)
+        onPropertyTypeChange?.(value)
         updateActiveFilters("propertyType", value !== "all")
     }
 
     const handleBudgetMinChange = (value: string) => {
         setBudgetMin(value)
         const num = value ? parseInt(value) : undefined
-        onBudgetMinChange(num)
+        onBudgetMinChange?.(num)
         updateActiveFilters("budgetMin", !!num)
     }
 
     const handleBudgetMaxChange = (value: string) => {
         setBudgetMax(value)
         const num = value ? parseInt(value) : undefined
-        onBudgetMaxChange(num)
+        onBudgetMaxChange?.(num)
         updateActiveFilters("budgetMax", !!num)
     }
 
     const handleCreatedFromChange = (date: Date | undefined) => {
         setCreatedFrom(date)
-        onCreatedFromChange(date)
+        onCreatedFromChange?.(date)
         updateActiveFilters("createdFrom", !!date)
     }
 
     const handleCreatedToChange = (date: Date | undefined) => {
         setCreatedTo(date)
-        onCreatedToChange(date)
+        onCreatedToChange?.(date)
         updateActiveFilters("createdTo", !!date)
     }
 
     const handleFollowUpFromChange = (date: Date | undefined) => {
         setFollowUpFrom(date)
-        onFollowUpFromChange(date)
+        onFollowUpFromChange?.(date)
         updateActiveFilters("followUpFrom", !!date)
     }
 
     const handleFollowUpToChange = (date: Date | undefined) => {
         setFollowUpTo(date)
-        onFollowUpToChange(date)
+        onFollowUpToChange?.(date)
         updateActiveFilters("followUpTo", !!date)
     }
 
@@ -176,13 +176,13 @@ export function LeadFilters({
         onStatusChange("all")
         onSourceChange("all")
         onAssignedToChange("all")
-        onPropertyTypeChange("all")
-        onBudgetMinChange(undefined)
-        onBudgetMaxChange(undefined)
-        onCreatedFromChange(undefined)
-        onCreatedToChange(undefined)
-        onFollowUpFromChange(undefined)
-        onFollowUpToChange(undefined)
+        onPropertyTypeChange?.("all")
+        onBudgetMinChange?.(undefined)
+        onBudgetMaxChange?.(undefined)
+        onCreatedFromChange?.(undefined)
+        onCreatedToChange?.(undefined)
+        onFollowUpFromChange?.(undefined)
+        onFollowUpToChange?.(undefined)
     }
 
     const removeFilter = (filter: string) => {
@@ -201,31 +201,31 @@ export function LeadFilters({
                 break
             case "propertyType":
                 setPropertyType("all")
-                onPropertyTypeChange("all")
+                onPropertyTypeChange?.("all")
                 break
             case "budgetMin":
                 setBudgetMin("")
-                onBudgetMinChange(undefined)
+                onBudgetMinChange?.(undefined)
                 break
             case "budgetMax":
                 setBudgetMax("")
-                onBudgetMaxChange(undefined)
+                onBudgetMaxChange?.(undefined)
                 break
             case "createdFrom":
                 setCreatedFrom(undefined)
-                onCreatedFromChange(undefined)
+                onCreatedFromChange?.(undefined)
                 break
             case "createdTo":
                 setCreatedTo(undefined)
-                onCreatedToChange(undefined)
+                onCreatedToChange?.(undefined)
                 break
             case "followUpFrom":
                 setFollowUpFrom(undefined)
-                onFollowUpFromChange(undefined)
+                onFollowUpFromChange?.(undefined)
                 break
             case "followUpTo":
                 setFollowUpTo(undefined)
-                onFollowUpToChange(undefined)
+                onFollowUpToChange?.(undefined)
                 break
         }
         setActiveFilters(prev => prev.filter(f => f !== filter))

@@ -10,7 +10,12 @@ import {
   Request,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -34,7 +39,10 @@ export class TasksController {
   @ApiQuery({ name: 'page', required: false, type: Number })
   @ApiQuery({ name: 'limit', required: false, type: Number })
   @ApiQuery({ name: 'status', required: false, type: String })
-  findAll(@Request() req, @Query() query: { page?: number; limit?: number; status?: string }) {
+  findAll(
+    @Request() req,
+    @Query() query: { page?: number; limit?: number; status?: string },
+  ) {
     return this.tasksService.findAll(req.user, query);
   }
 

@@ -64,7 +64,7 @@ export class LeadsImportService {
     const workbook = XLSX.read(file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const worksheet = workbook.Sheets[sheetName];
-    
+
     // Get headers
     const range = XLSX.utils.decode_range(worksheet['!ref'] || 'A1');
     const headers: string[] = [];
@@ -74,7 +74,10 @@ export class LeadsImportService {
     }
 
     // Get all data
-    const data = XLSX.utils.sheet_to_json(worksheet, { header: headers, range: 1 });
+    const data = XLSX.utils.sheet_to_json(worksheet, {
+      header: headers,
+      range: 1,
+    });
     const preview = data.slice(0, 5);
 
     return {
@@ -98,16 +101,24 @@ export class LeadsImportService {
       try {
         // Apply mapping: mapping is now { systemField: fileColumn }
         Object.entries(mapping).forEach(([systemField, fileColumn]) => {
-          if (fileColumn && fileColumn !== 'unmapped' && row[fileColumn] !== undefined) {
+          if (
+            fileColumn &&
+            fileColumn !== 'unmapped' &&
+            row[fileColumn] !== undefined
+          ) {
             let value = row[fileColumn];
-            
+
             // Basic data transformation/validation
-            if (systemField === 'budgetMin' || systemField === 'budgetMax' || systemField === 'bedroom') {
+            if (
+              systemField === 'budgetMin' ||
+              systemField === 'budgetMax' ||
+              systemField === 'bedroom'
+            ) {
               value = parseFloat(value) || 0;
             }
-            
+
             if (systemField === 'phone' || systemField === 'whatsappNumber') {
-                value = value.toString();
+              value = value.toString();
             }
 
             (leadData as any)[systemField] = value;
@@ -115,8 +126,11 @@ export class LeadsImportService {
         });
 
         if (!leadData.name || !leadData.phone) {
-           errors.push({ row: i + 1, error: 'Missing required fields (Name or Phone)' });
-           continue;
+          errors.push({
+            row: i + 1,
+            error: 'Missing required fields (Name or Phone)',
+          });
+          continue;
         }
 
         leadsToSave.push(leadData);
@@ -129,22 +143,26 @@ export class LeadsImportService {
     // Note: This doesn't handle duplicates gracefully if we use save() with unique constraint.
     // We might want to use insert/upsert or check before saving.
     // For now, let's do it row by row to capture errors or use a try-catch on the whole thing.
-    
+
     let successCount = 0;
     for (const lead of leadsToSave) {
-        try {
-            await this.leadRepository.save(lead);
-            successCount++;
-        } catch (err) {
-            let errorMessage = err.message;
-            
-            // Handle PostgreSQL unique constraint violation (Error code 23505)
-            if (err.code === '23505' || err.message.includes('unique constraint') || err.message.includes('duplicate key')) {
-                errorMessage = `A lead with the phone number '${lead.phone}' already exists.`;
-            }
-            
-            errors.push({ lead: lead.name, error: errorMessage });
+      try {
+        await this.leadRepository.save(lead);
+        successCount++;
+      } catch (err) {
+        let errorMessage = err.message;
+
+        // Handle PostgreSQL unique constraint violation (Error code 23505)
+        if (
+          err.code === '23505' ||
+          err.message.includes('unique constraint') ||
+          err.message.includes('duplicate key')
+        ) {
+          errorMessage = `A lead with the phone number '${lead.phone}' already exists.`;
         }
+
+        errors.push({ lead: lead.name, error: errorMessage });
+      }
     }
 
     return {

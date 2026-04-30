@@ -9,8 +9,11 @@ import { AgentProfile } from '../users/entities/agent-profile.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { LeadStatus, LeadSource } from '../leads/enums/lead.enum';
 import { Property } from '../properties/entities/property.entity';
+import {
+  PropertyStatus,
+  PropertyType,
+} from '../properties/enums/property.enum';
 import { Deal } from '../deals/entities/deal.entity';
-import { DealStage, DealPriority } from '../deals/enums/deal.enum';
 import { Task } from '../tasks/entities/task.entity';
 import { TaskStatus, TaskPriority, TaskType } from '../tasks/enums/task.enum';
 
@@ -28,6 +31,8 @@ const BASE_PERMISSIONS = [
   'users:read',
   'users:write',
   'roles:write',
+  'chat:read',
+  'chat:write',
 ];
 
 @Injectable()
@@ -57,6 +62,7 @@ export class SeedService {
     await this.seedTenantsAndRoles();
     await this.seedSuperAdmin();
     await this.seedLeads();
+    await this.seedProperties();
     await this.seedTasks();
     console.log('✅ Seed completed successfully!');
   }
@@ -81,7 +87,7 @@ export class SeedService {
     console.log('🏢 Creating tenants, roles, and users...');
 
     const TENANTS = [
-      { name: 'Platinum Elite Realty', domain: 'platinum-elite.com' },
+      { name: 'MakeItCRM Realty', domain: 'makeitcrm.com' },
       { name: 'Luxury Homes Global', domain: 'luxury-homes.com' },
       { name: 'Apex Properties', domain: 'apex-props.com' },
       { name: 'Skyline Estates', domain: 'skyline-estates.com' },
@@ -190,7 +196,10 @@ export class SeedService {
       const agentUsers: User[] = [];
       for (let i = 1; i <= 4; i++) {
         const name = i === 1 ? 'Anjali Sharma' : `Agent ${i}`;
-        const email = i === 1 ? `anjali@${tenantData.domain}` : `agent${i}@${tenantData.domain}`;
+        const email =
+          i === 1
+            ? `anjali@${tenantData.domain}`
+            : `agent${i}@${tenantData.domain}`;
         const agent = this.userRepository.create({
           email,
           password: hashedPassword,
@@ -204,9 +213,11 @@ export class SeedService {
         const profile = this.agentProfileRepository.create({
           userId: savedAgent.id,
           experienceLevel: i === 1 ? 'senior' : i === 2 ? 'mid' : 'junior',
-          closingRate: i === 1 ? 65 : i === 2 ? 45 : Math.floor(Math.random() * 30 + 10),
+          closingRate:
+            i === 1 ? 65 : i === 2 ? 45 : Math.floor(Math.random() * 30 + 10),
           activeLeadCount: 0,
-          locationSpecializations: i === 1 ? ['Manhattan, NY', 'Brooklyn, NY'] : [],
+          locationSpecializations:
+            i === 1 ? ['Manhattan, NY', 'Brooklyn, NY'] : [],
           budgetSpecializations: i === 1 ? ['5000000-15000000'] : [],
         });
         await this.agentProfileRepository.save(profile);
@@ -256,46 +267,113 @@ export class SeedService {
     const tenantId = tenants[0].id;
 
     const firstNames = [
-      'James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer',
-      'Michael', 'Linda', 'William', 'Elizabeth', 'David', 'Barbara',
-      'Richard', 'Susan', 'Joseph', 'Jessica', 'Thomas', 'Sarah',
-      'Charles', 'Karen', 'Daniel', 'Nancy', 'Matthew', 'Lisa',
+      'James',
+      'Mary',
+      'John',
+      'Patricia',
+      'Robert',
+      'Jennifer',
+      'Michael',
+      'Linda',
+      'William',
+      'Elizabeth',
+      'David',
+      'Barbara',
+      'Richard',
+      'Susan',
+      'Joseph',
+      'Jessica',
+      'Thomas',
+      'Sarah',
+      'Charles',
+      'Karen',
+      'Daniel',
+      'Nancy',
+      'Matthew',
+      'Lisa',
     ];
     const lastNames = [
-      'Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia',
-      'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez',
-      'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore',
-      'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White',
+      'Smith',
+      'Johnson',
+      'Williams',
+      'Brown',
+      'Jones',
+      'Garcia',
+      'Miller',
+      'Davis',
+      'Rodriguez',
+      'Martinez',
+      'Hernandez',
+      'Lopez',
+      'Gonzalez',
+      'Wilson',
+      'Anderson',
+      'Thomas',
+      'Taylor',
+      'Moore',
+      'Jackson',
+      'Martin',
+      'Lee',
+      'Perez',
+      'Thompson',
+      'White',
     ];
     const locations = [
-      'Manhattan, NY', 'Brooklyn, NY', 'Queens, NY', 'Bronx, NY',
-      'Los Angeles, CA', 'Miami, FL', 'Chicago, IL', 'San Francisco, CA',
+      'Manhattan, NY',
+      'Brooklyn, NY',
+      'Queens, NY',
+      'Bronx, NY',
+      'Los Angeles, CA',
+      'Miami, FL',
+      'Chicago, IL',
+      'San Francisco, CA',
     ];
 
     for (let i = 0; i < 60; i++) {
-      const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
+      const firstName =
+        firstNames[Math.floor(Math.random() * firstNames.length)];
       const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
       const location = locations[Math.floor(Math.random() * locations.length)];
       const budgetMin = Math.floor(Math.random() * 10 + 1) * 100000;
       const budgetMax = budgetMin + Math.floor(Math.random() * 5 + 1) * 100000;
-      const assignedTo = users.length > 0 ? users[Math.floor(Math.random() * users.length)] : null;
+      const assignedTo =
+        users.length > 0
+          ? users[Math.floor(Math.random() * users.length)]
+          : null;
       const hasFollowUp = Math.random() > 0.5;
 
       const leadData: Partial<Lead> = {
         name: `${firstName} ${lastName}`,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}${i}@email.com`,
         phone: `+1 (${Math.floor(Math.random() * 900 + 100)}) ${Math.floor(Math.random() * 900 + 100)}-${Math.floor(Math.random() * 9000 + 1000)}`,
-        status: [LeadStatus.NEW, LeadStatus.CONTACTED, LeadStatus.QUALIFIED, LeadStatus.INTERESTED, LeadStatus.LOST][Math.floor(Math.random() * 5)],
-        source: [LeadSource.WEBSITE, LeadSource.REFERRAL, LeadSource.SOCIAL, LeadSource.COLD_CALL][Math.floor(Math.random() * 4)],
+        status: [
+          LeadStatus.NEW,
+          LeadStatus.CONTACTED,
+          LeadStatus.QUALIFIED,
+          LeadStatus.INTERESTED,
+          LeadStatus.LOST,
+        ][Math.floor(Math.random() * 5)],
+        source: [
+          LeadSource.WEBSITE,
+          LeadSource.REFERRAL,
+          LeadSource.SOCIAL,
+          LeadSource.COLD_CALL,
+        ][Math.floor(Math.random() * 4)],
         budgetMin,
         budgetMax,
         preferredLocation: location,
-        propertyType: ['Apartment', 'House', 'Condo', 'Townhouse'][Math.floor(Math.random() * 4)],
+        propertyType: ['Apartment', 'House', 'Condo', 'Townhouse'][
+          Math.floor(Math.random() * 4)
+        ],
         notes: `Interested in ${location}. Budget: ₹${budgetMin.toLocaleString()}-₹${budgetMax.toLocaleString()}.`,
         assignedToId: assignedTo?.id || undefined,
         tenantId,
-        lastContact: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000),
-        followUpAt: hasFollowUp ? new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000) : undefined,
+        lastContact: new Date(
+          Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000,
+        ),
+        followUpAt: hasFollowUp
+          ? new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000)
+          : undefined,
       };
 
       await this.leadRepository.save(leadData);
@@ -304,28 +382,163 @@ export class SeedService {
     console.log(`   Created 60 leads`);
   }
 
+  private async seedProperties() {
+    console.log('🏠 Seeding properties...');
+
+    const tenants = await this.tenantRepository.find();
+    const users = await this.userRepository.find({
+      where: { tenantId: Not(IsNull()) },
+    });
+    const tenantId = tenants[0].id;
+    const agent = users.find((u) => u.name === 'Anjali Sharma') || users[0];
+
+    const sampleImages = [
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
+      'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800',
+      'https://images.unsplash.com/photo-1493809842364-78817add7ffb?w=800',
+      'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
+      'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
+      'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
+      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
+      'https://images.unsplash.com/photo-1600210492493-0946911120ea?w=800',
+      'https://images.unsplash.com/photo-1600573472591-ee6981cf81c0?w=800',
+      'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800',
+    ];
+
+    const properties = [
+      {
+        title: 'Modern Downtown Apartment',
+        description:
+          'Stunning 2-bedroom apartment in the heart of downtown with panoramic city views. Features modern finishes, stainless steel appliances, and hardwood floors throughout.',
+        price: 450000,
+        status: PropertyStatus.AVAILABLE,
+        type: PropertyType.APARTMENT,
+        address: '123 Broadway',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10001',
+        bedrooms: 2,
+        bathrooms: 2,
+        sqft: 1200,
+        images: sampleImages.slice(0, 4),
+        views: 245,
+        mlsId: 'MLS-2024-001',
+      },
+      {
+        title: 'Spacious Family Home',
+        description:
+          'Beautiful 4-bedroom colonial with updated kitchen, finished basement, and large backyard. Perfect for families. Located in top-rated school district.',
+        price: 850000,
+        status: PropertyStatus.AVAILABLE,
+        type: PropertyType.HOUSE,
+        address: '456 Oak Street',
+        city: 'Brooklyn',
+        state: 'NY',
+        zipCode: '11201',
+        bedrooms: 4,
+        bathrooms: 3,
+        sqft: 2800,
+        images: sampleImages.slice(2, 6),
+        views: 189,
+        mlsId: 'MLS-2024-002',
+      },
+      {
+        title: 'Luxury Penthouse Suite',
+        description:
+          'Exclusive penthouse with 360-degree views, private terrace, and premium amenities. Smart home technology throughout.',
+        price: 1250000,
+        status: PropertyStatus.AVAILABLE,
+        type: PropertyType.CONDO,
+        address: '789 Park Avenue',
+        city: 'Manhattan',
+        state: 'NY',
+        zipCode: '10021',
+        bedrooms: 3,
+        bathrooms: 3.5,
+        sqft: 2200,
+        images: sampleImages.slice(4, 8),
+        views: 312,
+        mlsId: 'MLS-2024-003',
+      },
+      {
+        title: 'Cozy Studio Loft',
+        description:
+          'Perfect starter home or investment property. Open floor plan with high ceilings and tons of natural light.',
+        price: 275000,
+        status: PropertyStatus.PENDING,
+        type: PropertyType.APARTMENT,
+        address: '321 W 42nd St',
+        city: 'New York',
+        state: 'NY',
+        zipCode: '10036',
+        bedrooms: 1,
+        bathrooms: 1,
+        sqft: 650,
+        images: sampleImages.slice(0, 3),
+        views: 156,
+        mlsId: 'MLS-2024-004',
+      },
+      {
+        title: 'Beachfront Townhouse',
+        description:
+          'Wake up to ocean views in this beautifully renovated townhouse. Walking distance to the beach and boardwalk.',
+        price: 725000,
+        status: PropertyStatus.AVAILABLE,
+        type: PropertyType.TOWNHOUSE,
+        address: '55 Ocean Drive',
+        city: 'Miami',
+        state: 'FL',
+        zipCode: '33139',
+        bedrooms: 3,
+        bathrooms: 2.5,
+        sqft: 1800,
+        images: sampleImages.slice(6, 10),
+        views: 278,
+        mlsId: 'MLS-2024-005',
+      },
+    ];
+
+    for (const prop of properties) {
+      await this.propertyRepository.save({
+        ...prop,
+        agentId: agent?.id,
+        tenantId,
+        features: ['Hardwood Floors', 'Central AC', 'Dishwasher', 'Parking'],
+        listed: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000),
+        yearBuilt: 2015 + Math.floor(Math.random() * 10),
+      });
+    }
+
+    console.log(`   Created 5 properties`);
+  }
+
   private async seedTasks() {
     console.log('📋 Seeding tasks...');
 
-    const users = await this.userRepository.find({ where: { tenantId: Not(IsNull()) } });
+    const users = await this.userRepository.find({
+      where: { tenantId: Not(IsNull()) },
+    });
     const anjali = users.find((u) => u.name === 'Anjali Sharma') || users[0];
 
     const taskTemplates = [
       {
         title: 'Follow up with James Smith - Manhattan apartment interest',
-        description: 'James called yesterday about the 2 BHK in Manhattan. Needs pricing details.',
+        description:
+          'James called yesterday about the 2 BHK in Manhattan. Needs pricing details.',
         priority: TaskPriority.HIGH,
         type: TaskType.CALL,
       },
       {
         title: 'Schedule site visit for Jennifer Lopez',
-        description: 'Pre-approved buyer. Interested in Brooklyn properties between 80L-1.2Cr.',
+        description:
+          'Pre-approved buyer. Interested in Brooklyn properties between 80L-1.2Cr.',
         priority: TaskPriority.HIGH,
         type: TaskType.MEETING,
       },
       {
         title: 'Send property options to Robert',
-        description: 'Robert asked for 3 BHK options in Queens under 1Cr. Send listings.',
+        description:
+          'Robert asked for 3 BHK options in Queens under 1Cr. Send listings.',
         priority: TaskPriority.MEDIUM,
         type: TaskType.EMAIL,
       },
@@ -337,13 +550,15 @@ export class SeedService {
       },
       {
         title: 'Call Michael re: property viewing confirmation',
-        description: 'Michael requested a viewing but hasn\'t confirmed. Follow up.',
+        description:
+          "Michael requested a viewing but hasn't confirmed. Follow up.",
         priority: TaskPriority.MEDIUM,
         type: TaskType.CALL,
       },
       {
         title: 'Send brochure to Sarah - Bandra project',
-        description: 'Sarah is interested in the new Bandra launch. Send digital brochure.',
+        description:
+          'Sarah is interested in the new Bandra launch. Send digital brochure.',
         priority: TaskPriority.LOW,
         type: TaskType.EMAIL,
       },
@@ -361,13 +576,15 @@ export class SeedService {
       },
       {
         title: 'Team meeting preparation',
-        description: 'Prepare presentation for Friday team meeting. Include pipeline update.',
+        description:
+          'Prepare presentation for Friday team meeting. Include pipeline update.',
         priority: TaskPriority.MEDIUM,
         type: TaskType.MEETING,
       },
       {
         title: 'Send WhatsApp details to Linda',
-        description: 'Linda asked for the WhatsApp group link for property updates.',
+        description:
+          'Linda asked for the WhatsApp group link for property updates.',
         priority: TaskPriority.LOW,
         type: TaskType.CALL,
       },
@@ -379,13 +596,15 @@ export class SeedService {
       },
       {
         title: 'Call Thomas about rental inquiry',
-        description: 'Thomas submitted an inquiry for a 3-month rental. Call back.',
+        description:
+          'Thomas submitted an inquiry for a 3-month rental. Call back.',
         priority: TaskPriority.MEDIUM,
         type: TaskType.CALL,
       },
       {
         title: 'Update lead status for Barbara Johnson',
-        description: 'Barbara went silent after second visit. Mark status and follow up.',
+        description:
+          'Barbara went silent after second visit. Mark status and follow up.',
         priority: TaskPriority.LOW,
         type: TaskType.TODO,
       },
@@ -403,7 +622,8 @@ export class SeedService {
       },
       {
         title: 'Email new listings to Susan',
-        description: 'Susan wants all listings above 2Cr in South Mumbai. Filter and send.',
+        description:
+          'Susan wants all listings above 2Cr in South Mumbai. Filter and send.',
         priority: TaskPriority.LOW,
         type: TaskType.EMAIL,
       },
@@ -421,13 +641,15 @@ export class SeedService {
       },
       {
         title: 'Welcome call to new lead - Jessica',
-        description: 'New lead from website. Introduce yourself and set expectations.',
+        description:
+          'New lead from website. Introduce yourself and set expectations.',
         priority: TaskPriority.MEDIUM,
         type: TaskType.CALL,
       },
       {
         title: 'Log all week 1 activities',
-        description: 'Update lead statuses from this week before reports are due.',
+        description:
+          'Update lead statuses from this week before reports are due.',
         priority: TaskPriority.LOW,
         type: TaskType.TODO,
       },
@@ -469,6 +691,8 @@ export class SeedService {
       await this.taskRepository.save(task);
     }
 
-    console.log(`   Created ${taskTemplates.length} tasks assigned to Anjali Sharma`);
+    console.log(
+      `   Created ${taskTemplates.length} tasks assigned to Anjali Sharma`,
+    );
   }
 }

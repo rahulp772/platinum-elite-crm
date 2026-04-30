@@ -27,13 +27,13 @@ import { LeadsImportService } from './import/leads-import.service';
     LeadScoringService,
     LeadAssignmentService,
     LeadAiEngineService,
-    LeadSlaCron
+    LeadSlaCron,
   ],
   exports: [
     LeadsService,
     LeadScoringService,
     LeadAssignmentService,
-    LeadAiEngineService
+    LeadAiEngineService,
   ],
 })
 export class LeadsModule {}

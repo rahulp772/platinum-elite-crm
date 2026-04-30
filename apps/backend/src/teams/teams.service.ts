@@ -27,7 +27,9 @@ export class TeamsService {
         where: { id: teamLeadId, tenantId: currentUser.tenantId },
       });
       if (!teamLead) {
-        throw new NotFoundException(`User with ID ${teamLeadId} not found in your tenant`);
+        throw new NotFoundException(
+          `User with ID ${teamLeadId} not found in your tenant`,
+        );
       }
       team.teamLead = teamLead;
     }
@@ -35,9 +37,9 @@ export class TeamsService {
     const savedTeam = await this.teamRepository.save(team);
 
     if (memberIds && memberIds.length > 0) {
-      const members = await this.userRepository.findBy({ 
+      const members = await this.userRepository.findBy({
         id: In(memberIds),
-        tenantId: currentUser.tenantId 
+        tenantId: currentUser.tenantId,
       });
       savedTeam.members = members;
       await this.teamRepository.save(savedTeam);
@@ -100,15 +102,17 @@ export class TeamsService {
         where: { id: teamLeadId, tenantId: user.tenantId },
       });
       if (!teamLead) {
-        throw new NotFoundException(`User with ID ${teamLeadId} not found in your tenant`);
+        throw new NotFoundException(
+          `User with ID ${teamLeadId} not found in your tenant`,
+        );
       }
       team.teamLead = teamLead;
     }
 
     if (memberIds) {
-      const members = await this.userRepository.findBy({ 
+      const members = await this.userRepository.findBy({
         id: In(memberIds),
-        tenantId: user.tenantId
+        tenantId: user.tenantId,
       });
       team.members = members;
     }
@@ -129,7 +133,9 @@ export class TeamsService {
   }
 
   async getUserTeam(userId: string, currentUser: User) {
-    const where = currentUser.isSuperAdmin ? {} : { tenantId: currentUser.tenantId };
+    const where = currentUser.isSuperAdmin
+      ? {}
+      : { tenantId: currentUser.tenantId };
     return this.teamRepository.findOne({
       where: {
         ...where,
@@ -150,8 +156,8 @@ export class TeamsService {
     });
 
     const memberIds = new Set<string>();
-    teams.forEach(team => {
-      team.members.forEach(member => memberIds.add(member.id));
+    teams.forEach((team) => {
+      team.members.forEach((member) => memberIds.add(member.id));
     });
 
     return Array.from(memberIds);

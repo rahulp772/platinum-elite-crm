@@ -21,8 +21,9 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useCreateLead } from "@/hooks/use-leads"
+import { createLead } from "@/app/actions/leads"
 import { LeadStatus, LeadSource, PropertyType } from "@/types/lead"
+import { toast } from "sonner"
 
 const PROPERTY_TYPES: { value: PropertyType; label: string }[] = [
     { value: "1 BHK", label: "1 BHK" },
@@ -86,7 +87,7 @@ function parseBudget(value: string): number {
 
 export function AddLeadDialog() {
     const [open, setOpen] = React.useState(false)
-    const createLead = useCreateLead()
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -111,11 +112,16 @@ export function AddLeadDialog() {
         }
 
         try {
-            await createLead.mutateAsync(leadData)
+            setIsSubmitting(true)
+            await createLead(leadData)
+            toast.success("Lead created successfully")
             setOpen(false)
             e.currentTarget.reset()
         } catch (error) {
             console.error("Failed to create lead:", error)
+            toast.error("Failed to create lead. Please try again.")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -251,8 +257,8 @@ export function AddLeadDialog() {
                         <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={createLead.isPending}>
-                            {createLead.isPending ? "Adding..." : "Add Lead"}
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? "Adding..." : "Add Lead"}
                         </Button>
                     </DialogFooter>
                 </form>

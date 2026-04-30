@@ -29,6 +29,7 @@ import {
   Moon,
   Check,
   X,
+  Target,
 } from "lucide-react"
 
 // --- Components ---
@@ -65,7 +66,7 @@ const Navbar = () => {
             <Building2 className="h-6 w-6 text-slate-950" />
           </div>
           <span className="text-xl font-bold tracking-tight text-foreground">
-            Platinum<span className="text-[#D4AF37]">Elite</span>
+            MakeIt<span className="text-[#D4AF37]">CRM</span>
           </span>
         </Link>
 
@@ -145,50 +146,70 @@ const HeroSection = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8 }}
         >
-          <Badge variant="outline" className="mb-6 py-1 px-4 border-[#D4AF37]/30 text-[#D4AF37] bg-[#D4AF37]/10 rounded-full">
-            <Sparkles className="h-3 w-3 mr-2 animate-pulse" />
-            The Future of Real Estate Management
-          </Badge>
-          <h1 className="text-5xl md:text-7xl font-bold text-foreground leading-[1.1] mb-6">
-            Your All-in-One <br />
+          <div className="flex items-center gap-2 mb-6">
+            <Badge variant="outline" className="py-1 px-4 border-[#D4AF37]/30 text-[#D4AF37] bg-[#D4AF37]/10 rounded-full">
+              <Sparkles className="h-3 w-3 mr-2 animate-pulse" />
+              The Future of Real Estate Management
+            </Badge>
+            <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+              <Shield className="h-3 w-3 text-emerald-500" />
+              SOC2 Compliant
+            </div>
+          </div>
+          <h1 className="text-5xl md:text-[80px] font-bold text-foreground leading-[1] mb-6 tracking-tight">
+            The Elite <br />
             <span className="bg-gradient-to-r from-[#D4AF37] via-[#F1D279] to-[#D4AF37] bg-clip-text text-transparent">
-              CRM Solution
+              MakeItCRM
             </span> <br />
-            for Growth
+            Standard
           </h1>
-          <p className="text-lg text-muted-foreground max-w-xl mb-10 leading-relaxed">
-            Unlock your business potential. Manage your pipeline, boost collaboration, 
-            and drive revenue with a CRM that's as dynamic as your business.
+          <p className="text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed font-medium">
+            Stop losing leads in messy spreadsheets. Scale your agency with bank-grade 
+            security, intelligent role hierarchy, and a CRM as elite as your properties.
           </p>
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-col sm:flex-row gap-4 mb-8">
             <Link href="/register">
-                <Button size="lg" className="h-14 px-8 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-xl group">
-                Try for Free
+                <Button size="lg" className="h-16 px-10 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-2xl group text-lg shadow-[0_20px_50px_rgba(212,175,55,0.3)] hover:scale-[1.02] transition-transform">
+                Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
             </Link>
-            <Button size="lg" variant="outline" className="h-14 px-8 border-border bg-accent/5 text-foreground rounded-xl hover:bg-accent group">
+            <Button size="lg" variant="outline" className="h-16 px-10 border-border bg-accent/5 text-foreground rounded-2xl hover:bg-accent group text-lg border-2">
               <Play className="mr-2 h-5 w-5 fill-[#D4AF37] text-[#D4AF37]" />
               Watch Demo
             </Button>
           </div>
 
-          <div className="mt-12 flex items-center gap-6">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground mb-12">
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-[#D4AF37]" />
+              No Credit Card Required
+            </div>
+            <div className="w-1 h-1 rounded-full bg-border" />
+            <div className="flex items-center gap-1.5">
+              <CheckCircle2 className="h-4 w-4 text-[#D4AF37]" />
+              Setup in 2 Minutes
+            </div>
+          </div>
+
+          <div className="flex items-center gap-6 p-4 rounded-3xl bg-accent/10 border border-border/50 max-w-md">
             <div className="flex -space-x-3">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="h-10 w-10 rounded-full border-2 border-background bg-slate-800 overflow-hidden relative">
-                  <Image src={`https://i.pravatar.cc/150?u=${i}`} alt="User" fill className="object-cover" />
+                <div key={i} className="h-12 w-12 rounded-full border-2 border-background bg-slate-800 overflow-hidden relative shadow-xl">
+                  <Image src={`https://i.pravatar.cc/150?u=${i + 10}`} alt="User" fill className="object-cover" />
                 </div>
               ))}
+              <div className="h-12 w-12 rounded-full border-2 border-background bg-[#D4AF37] flex items-center justify-center text-slate-950 text-xs font-bold shadow-xl">
+                +2k
+              </div>
             </div>
             <div>
-              <p className="text-sm font-bold text-foreground">Over 20K+ Users</p>
-              <div className="flex gap-1 mt-1">
+              <div className="flex gap-1 mb-1">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star key={i} className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
                 ))}
-                <span className="text-[10px] text-muted-foreground ml-1 underline cursor-pointer">Read Reviews</span>
               </div>
+              <p className="text-xs font-bold text-foreground">Trusted by 2,000+ Agencies</p>
             </div>
           </div>
         </motion.div>
@@ -197,43 +218,48 @@ const HeroSection = () => {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="relative lg:h-[600px] flex items-center justify-center"
+          className="relative lg:h-[700px] flex items-center justify-center"
         >
+          {/* Decorative background for the mockup */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/10 to-blue-500/10 rounded-[40px] blur-[100px] scale-90 opacity-50" />
+          
           {/* Main Infographic */}
-          <div className="relative z-10 w-full max-w-[650px] aspect-[4/3] rounded-3xl overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.2)] dark:shadow-[0_30px_100px_rgba(0,0,0,0.5)] border border-border group bg-card/50 backdrop-blur-sm">
-             <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent dark:from-black/40 z-10" />
-             {mounted && (
-               <Image 
-                  src={theme === "dark" ? "/images/hero-dark.png" : "/images/hero-light.png"} 
-                  alt="CRM Infographic" 
-                  fill
-                  className="object-cover transition-transform duration-1000 group-hover:scale-105"
-                  priority
-               />
-             )}
+          <div className="relative z-10 w-full max-w-[650px] aspect-[4/3] rounded-[40px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.3)] dark:shadow-[0_50px_100px_rgba(0,0,0,0.6)] border border-[#D4AF37]/20 group bg-card/50 backdrop-blur-md p-2">
+             <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent dark:from-black/40 z-10 pointer-events-none" />
+             <div className="relative w-full h-full rounded-[32px] overflow-hidden border border-border/50">
+               {mounted && (
+                 <Image 
+                    src={theme === "dark" ? "/images/hero-dark.png" : "/images/hero-light.png"} 
+                    alt="CRM Infographic" 
+                    fill
+                    className="object-cover transition-transform duration-1000 group-hover:scale-105"
+                    priority
+                 />
+               )}
+             </div>
           </div>
 
           {/* Floating Elements */}
           <FloatingCard 
             icon={TrendingUp} 
-            title="Total Revenue" 
-            value="$4,032,903" 
+            title="Agency Revenue" 
+            value="+42.8%" 
             color="emerald" 
-            className="top-[10%] -left-4 animate-float"
+            className="top-[5%] -left-8 animate-float shadow-emerald-500/10 border-emerald-500/20"
           />
           <FloatingCard 
             icon={Users} 
-            title="Active Leads" 
-            value="1,248" 
+            title="Lead Conversion" 
+            value="3.5x Faster" 
             color="blue" 
-            className="bottom-[15%] -right-4 animate-float-delayed"
+            className="bottom-[10%] -right-8 animate-float-delayed shadow-blue-500/10 border-blue-500/20"
           />
           <FloatingCard 
-            icon={CheckCircle2} 
-            title="Deals Closed" 
-            value="84" 
+            icon={Shield} 
+            title="Data Security" 
+            value="Isolated" 
             color="amber" 
-            className="-bottom-6 left-1/4"
+            className="-bottom-8 left-1/4 shadow-amber-500/10 border-amber-500/20"
           />
         </motion.div>
       </div>
@@ -260,39 +286,39 @@ const LogoCloud = () => {
 const BenefitsSection = () => {
   const benefits = [
     {
-      title: "Lead Management",
-      desc: "Capture and nurture leads automatically with smart AI scoring and routing.",
-      icon: Users,
+      title: "Lead Intelligence",
+      desc: "Bank-grade lead isolation with AI scoring that identifies hot prospects in real-time.",
+      icon: Target,
       color: "blue"
     },
     {
-      title: "Deal Pipeline",
-      desc: "Visualize your entire sales cycle with our interactive Kanban-style interface.",
+      title: "Deal Pipeline v2",
+      desc: "Manage high-value transactions with our premium Kanban interface and predictive deal closing.",
       icon: TrendingUp,
       color: "amber"
     },
     {
-      title: "Team Sync",
-      desc: "Keep your entire team aligned with real-time chat and shared tasks.",
+      title: "Secure Collaboration",
+      desc: "Cross-team communication powered by multi-tenant isolation and granular role-based chat.",
       icon: MessageSquare,
       color: "purple"
     },
     {
-        title: "Auto-Scheduling",
-        desc: "Never miss a follow-up with intelligent calendar sync and reminders.",
-        icon: CalendarCheck,
+        title: "Intelligent Hierarchy",
+        desc: "Level 10-200 role system ensures your team only sees the data they need to perform.",
+        icon: Shield,
         color: "emerald"
       },
       {
         title: "Elite Analytics",
-        desc: "Deep-dive into performance metrics with custom reporting and dashboards.",
+        desc: "Interactive dashboards with deep-dive performance metrics and agency leaderboards.",
         icon: BarChart3,
         color: "rose"
       },
       {
-        title: "Secure Access",
-        desc: "Enterprise-grade security with multi-tenant isolation and role-based control.",
-        icon: Shield,
+        title: "Global Reach",
+        desc: "Manage properties and agents across multiple domains and territories from one hub.",
+        icon: Globe,
         color: "sky"
       }
   ]
@@ -302,7 +328,7 @@ const BenefitsSection = () => {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-primary/5 blur-[150px] rounded-full pointer-events-none" />
       <div className="container mx-auto px-6">
         <div className="max-w-3xl mb-20">
-          <Badge variant="outline" className="mb-6 border-[#D4AF37]/30 text-[#D4AF37]">The Platinum Advantage</Badge>
+          <Badge variant="outline" className="mb-6 border-[#D4AF37]/30 text-[#D4AF37]">The MakeItCRM Advantage</Badge>
           <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">The benefits of utilizing <br /> our elite service</h2>
           <p className="text-muted-foreground text-lg">We provide a comprehensive suite of tools designed to transform how you manage real estate deals and client relationships.</p>
         </div>
@@ -406,28 +432,28 @@ const FeatureSplit = () => {
                         className="order-1 lg:order-2"
                     >
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500 text-xs font-bold mb-6">
-                            <Globe className="h-3 w-3" />
-                            Global Collaboration
+                            <Shield className="h-3 w-3" />
+                            Security-First Architecture
                         </div>
                         <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
-                            Seamless Collaboration for <br />
-                            <span className="text-[#D4AF37]">Global Teams</span>
+                            Multi-Tenant Isolation for <br />
+                            <span className="text-[#D4AF37]">Ultimate Privacy</span>
                         </h2>
                         <p className="text-muted-foreground text-lg mb-10 leading-relaxed">
-                            Whether your team is across the hall or across the globe, Platinum Elite 
-                            keeps everyone in sync with real-time updates, shared workrooms, and 
-                            advanced multi-tenant security.
+                            Your agency's data is your competitive edge. Platinum Elite uses 
+                            strict database-level isolation and a level-based role system (Level 10-200) 
+                            to ensure absolute data integrity and visibility control.
                         </p>
                         <div className="grid grid-cols-2 gap-6">
                             {[
-                                { label: "Uptime", val: "99.9%" },
-                                { label: "Latency", val: "<50ms" },
-                                { label: "Security", val: "SOC2" },
-                                { label: "Users", val: "Unlimited" }
+                                { label: "Tenant Isolation", val: "100%" },
+                                { label: "Role Levels", val: "5 Default" },
+                                { label: "Encryption", val: "AES-256" },
+                                { label: "Compliance", val: "SOC2" }
                             ].map((stat, i) => (
-                                <div key={i} className="p-4 rounded-2xl bg-card border border-border">
+                                <div key={i} className="p-4 rounded-2xl bg-card border border-border group hover:border-[#D4AF37]/30 transition-colors">
                                     <p className="text-[10px] uppercase text-muted-foreground font-bold mb-1">{stat.label}</p>
-                                    <p className="text-xl font-bold text-foreground">{stat.val}</p>
+                                    <p className="text-xl font-bold text-foreground group-hover:text-[#D4AF37] transition-colors">{stat.val}</p>
                                 </div>
                             ))}
                         </div>
@@ -471,6 +497,60 @@ const StatsSection = () => {
     )
 }
 
+const ComparisonTable = () => {
+    const features = [
+        { name: "Multi-Tenant Data Isolation", platinum: true, legacy: false },
+        { name: "Role-Level Visibility (10-200)", platinum: true, legacy: false },
+        { name: "Integrated Team Messaging", platinum: true, legacy: "Basic" },
+        { name: "Predictive Lead Scoring", platinum: true, legacy: "Add-on" },
+        { name: "Luxury Brand UI/UX", platinum: true, legacy: false },
+        { name: "Bank-Grade SOC2 Security", platinum: true, legacy: "Enterprise Only" },
+    ]
+
+    return (
+        <section className="py-32 bg-background relative overflow-hidden">
+             <div className="absolute top-1/2 left-0 w-64 h-64 bg-blue-500/5 blur-[100px] rounded-full" />
+            <div className="container mx-auto px-6">
+                <div className="text-center mb-20">
+                    <Badge variant="outline" className="mb-6 border-[#D4AF37]/30 text-[#D4AF37]">The Comparison</Badge>
+                    <h2 className="text-4xl md:text-5xl font-bold text-foreground">Why Elite Teams Switch</h2>
+                </div>
+
+                <div className="max-w-4xl mx-auto rounded-[32px] overflow-hidden border border-border bg-card shadow-2xl">
+                    <table className="w-full text-left border-collapse">
+                        <thead>
+                            <tr className="bg-accent/50">
+                                <th className="p-8 text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border">Feature</th>
+                                <th className="p-8 text-sm font-bold uppercase tracking-wider text-[#D4AF37] border-b border-border text-center bg-[#D4AF37]/5">MakeItCRM</th>
+                                <th className="p-8 text-sm font-bold uppercase tracking-wider text-muted-foreground border-b border-border text-center">Legacy CRMs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {features.map((f, i) => (
+                                <tr key={i} className="group hover:bg-accent/20 transition-colors">
+                                    <td className="p-8 border-b border-border font-medium text-foreground">{f.name}</td>
+                                    <td className="p-8 border-b border-border text-center bg-[#D4AF37]/5">
+                                        {f.platinum ? <CheckCircle2 className="h-6 w-6 text-[#D4AF37] mx-auto" /> : <X className="h-6 w-6 text-muted-foreground mx-auto" />}
+                                    </td>
+                                    <td className="p-8 border-b border-border text-center">
+                                        {typeof f.legacy === "string" ? (
+                                            <span className="text-xs font-bold px-3 py-1 rounded-full bg-accent text-muted-foreground uppercase">{f.legacy}</span>
+                                        ) : f.legacy ? (
+                                            <CheckCircle2 className="h-6 w-6 text-emerald-500 mx-auto" />
+                                        ) : (
+                                            <X className="h-6 w-6 text-muted-foreground/30 mx-auto" />
+                                        )}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    )
+}
+
 const Testimonials = () => {
     const reviews = [
         {
@@ -482,7 +562,7 @@ const Testimonials = () => {
         {
             name: "Michael Chen",
             role: "Global Head, Urban Core",
-            text: "Platinum Elite gives us the high-level visibility we need for our international property portfolio.",
+            text: "MakeItCRM gives us the high-level visibility we need for our international property portfolio.",
             img: "https://i.pravatar.cc/150?u=mike"
         },
         {
@@ -633,13 +713,13 @@ const AboutSection = () => {
                         whileInView={{ opacity: 1, x: 0 }}
                         viewport={{ once: true }}
                     >
-                        <Badge variant="outline" className="mb-6 border-[#D4AF37]/30 text-[#D4AF37]">About Platinum Elite</Badge>
+                        <Badge variant="outline" className="mb-6 border-[#D4AF37]/30 text-[#D4AF37]">About MakeItCRM</Badge>
                         <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-8 leading-[1.1]">
                             Redefining Real Estate <br />
                             <span className="text-[#D4AF37]">Excellence</span> through Tech
                         </h2>
                         <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-                            Founded in 2024, Platinum Elite CRM was born out of a simple observation: 
+                            Founded in 2024, MakeItCRM was born out of a simple observation: 
                             the real estate industry was moving faster than its tools. We set out to 
                             build a platform that wasn't just a database, but a strategic engine for growth.
                         </p>
@@ -678,7 +758,7 @@ const AboutSection = () => {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                             <div className="absolute bottom-10 left-10 right-10 p-8 rounded-3xl bg-white/5 backdrop-blur-md border border-white/10">
-                                <p className="text-white/90 text-lg italic mb-4">"Platinum Elite hasn't just changed how we track leads; it's changed how we think about our entire business strategy."</p>
+                                <p className="text-white/90 text-lg italic mb-4">"MakeItCRM hasn't just changed how we track leads; it's changed how we think about our entire business strategy."</p>
                                 <div className="flex items-center gap-3">
                                     <div className="h-1 w-10 bg-[#D4AF37]" />
                                     <p className="text-white font-bold uppercase tracking-widest text-xs">James Sterling, CEO of Sterling Realty</p>
@@ -710,23 +790,26 @@ const FinalCTA = () => {
                     </div>
 
                     <h2 className="text-4xl md:text-7xl font-bold text-foreground mb-8 relative z-10">
-                        Ready to <span className="text-[#D4AF37]">Elevate</span> <br /> Your Business?
+                        Stop Settling. <br /> Start <span className="text-[#D4AF37]">Dominating.</span>
                     </h2>
-                    <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-12 relative z-10">
-                        Join hundreds of elite real estate professionals who are already using 
-                        Platinum Elite CRM to scale their agencies.
+                    <p className="text-muted-foreground text-xl max-w-2xl mx-auto mb-12 relative z-10 font-medium">
+                        Join the elite 1% of real estate agencies that have moved past legacy tools. 
+                        Get the security, intelligence, and speed you deserve.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
                         <Link href="/register">
-                            <Button size="lg" className="h-16 px-10 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-2xl text-xl shadow-[0_20px_50px_rgba(212,175,55,0.3)]">
-                                Start Your Free Trial
+                            <Button size="lg" className="h-16 px-12 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-2xl text-xl shadow-[0_20px_50px_rgba(212,175,55,0.4)] hover:scale-[1.05] transition-transform">
+                                Get MakeItCRM Now
                             </Button>
                         </Link>
-                        <Button size="lg" variant="ghost" className="text-foreground hover:bg-background/50 h-16 px-10 rounded-2xl text-lg group">
-                            Talk to an Expert
+                        <Button size="lg" variant="ghost" className="text-foreground hover:bg-background/50 h-16 px-10 rounded-2xl text-lg group border border-border/50">
+                            Book a Strategy Call
                             <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                         </Button>
                     </div>
+                    <p className="mt-8 text-xs text-muted-foreground uppercase tracking-[0.2em] font-bold opacity-50">
+                        Free 14-day trial • No setup fees • Cancel anytime
+                    </p>
                 </motion.div>
             </div>
         </section>
@@ -776,7 +859,7 @@ const Footer = () => {
                 </div>
 
                 <div className="pt-10 border-t border-border flex flex-col md:flex-row items-center justify-between gap-6">
-                    <p className="text-muted-foreground text-xs">&copy; 2026 Platinum Elite CRM. All rights reserved.</p>
+                    <p className="text-muted-foreground text-xs">&copy; 2026 MakeItCRM. All rights reserved.</p>
                     <div className="flex gap-8 text-xs text-muted-foreground">
                         <Link href="#" className="hover:text-foreground">Privacy Policy</Link>
                         <Link href="#" className="hover:text-foreground">Terms of Service</Link>
@@ -791,26 +874,13 @@ const Footer = () => {
 export default function LandingV2() {
   return (
     <main className="min-h-screen bg-background text-foreground selection:bg-[#D4AF37] selection:text-slate-950 overflow-x-hidden">
-      <style jsx global>{`
-        @keyframes float {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-20px); }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-        .animate-float-delayed {
-          animation: float 6s ease-in-out infinite;
-          animation-delay: 2s;
-        }
-      `}</style>
-      
       <Navbar />
       <HeroSection />
       <LogoCloud />
       <BenefitsSection />
       <FeatureSplit />
       <StatsSection />
+      <ComparisonTable />
       <Testimonials />
       <PricingSection />
       <AboutSection />

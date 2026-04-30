@@ -3,13 +3,65 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Heart, Bed, Bath, Ruler, Eye } from "lucide-react"
+import { Heart, Bed, Bath, Ruler, Eye, Camera, Map } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Property } from "@/types/property"
 import { cn } from "@/lib/utils"
 import { useToggleFavorite } from "@/hooks/use-properties"
+
+function parsePropertyImages(images: string[] | string | undefined): string[] {
+    const FALLBACK = [
+        'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800',
+        'https://images.unsplash.photo/photo-1600607687939-ce8a6c25118c?w=800',
+        'https://images.unsplash.com/photo-1600585154340-be6eb56a0c?w=800',
+    ]
+    
+    if (!images) return FALLBACK
+    if (Array.isArray(images)) {
+        const valid = images.filter(Boolean)
+        return valid.length > 0 ? valid : FALLBACK
+    }
+    
+    if (typeof images === 'string') {
+        let cleaned = images.trim()
+        
+        // Try direct parse (normal JSON array)
+        try {
+            let parsed = JSON.parse(cleaned)
+            if (Array.isArray(parsed)) {
+                const valid = parsed.filter(Boolean)
+                if (valid.length > 0) return valid
+            } else if (typeof parsed === 'string') {
+                // Try parsing the inner string (double-encoded)
+                try {
+                    parsed = JSON.parse(parsed)
+                    if (Array.isArray(parsed)) {
+                        const valid = parsed.filter(Boolean)
+                        if (valid.length > 0) return valid
+                    }
+                } catch {}
+            }
+        } catch {}
+        
+        // Try comma--separated format (TypeORM simple-array)
+        if (cleaned.includes(',"') || cleaned.includes('",') || cleaned.includes(',')) {
+            const parts = cleaned.split(',')
+            const valid = parts.map(s => {
+                s = s.trim()
+                if (s.startsWith('"') && s.endsWith('"')) s = s.slice(1, -1)
+                if (s.startsWith('[') && s.endsWith(']')) s = s.slice(1, -1)
+                return s.replace(/\\"/g, '"').replace(/^"|"$/g, '')
+            }).filter(Boolean)
+            if (valid.length > 0) return valid
+        }
+        
+        return cleaned ? [cleaned] : FALLBACK
+    }
+    
+    return FALLBACK
+}
 
 const statusColors = {
     available: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20",
@@ -50,88 +102,125 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 0,
-    }).format(property.price)
+}).format(property.price)
 
+    const propertyImages = parsePropertyImages(property.images)
     const isCompact = variant === "compact"
     const isList = variant === "list"
 
     if (isList) {
         return (
             <Card
-                className="group overflow-hidden hover:shadow-lg transition-all cursor-pointer flex"
+                className="group overflow-hidden hover:shadow-xl transition-all cursor-pointer rounded-2xl border border-border bg-card mb-4"
                 onClick={handleClick}
             >
-                <div className="relative w-48 min-w-48 aspect-square sm:aspect-[4/3] overflow-hidden bg-muted">
-                    {property.images?.[0] && property.images[0].startsWith('http') ? (
-                        <Image
-                            src={property.images[0]}
-                            alt={property.title}
-                            fill
-                            className="object-cover transition-transform group-hover:scale-105"
-                        />
-                    ) : (
-                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
-                            <span className="text-muted-foreground text-xs">No Image</span>
-                        </div>
-                    )}
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className={cn(
-                            "absolute top-2 right-2 h-7 w-7 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background",
-                            property.favorited && "text-rose-500"
-                        )}
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            toggleFavorite.mutate(property.id)
-                        }}
-                    >
-                        <Heart className={cn("h-3 w-3", property.favorited && "fill-current")} />
-                    </Button>
-                </div>
-                <div className="flex-1 p-4 flex flex-col justify-between">
-                    <div>
-                        <div className="flex items-start justify-between">
-                            <div>
-                                <h3 className="text-xl font-bold tabular-nums">{formattedPrice}</h3>
-                                <h4 className="font-semibold text-base line-clamp-1">{property.title}</h4>
-                                <p className="text-sm text-muted-foreground line-clamp-1">
-                                    {property.address}, {property.city}, {property.state}
-                                </p>
+                <div className="flex flex-col md:grid md:grid-cols-12 gap-4 p-3 items-center">
+                    {/* Column 1: Image & Basic Info (5 cols) */}
+                    <div className="md:col-span-5 flex items-center gap-4 w-full">
+                        <div className="relative h-24 w-32 min-w-[128px] rounded-xl overflow-hidden bg-muted shadow-sm">
+                            {propertyImages && propertyImages.length > 0 && propertyImages[0] ? (
+                                propertyImages[0] && propertyImages[0].startsWith('http') ? (
+                                    <Image
+                                        src={propertyImages[0]}
+                                        alt={property.title}
+                                        fill
+                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                    />
+                                ) : (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                                        <span className="text-muted-foreground text-[10px]">No Image</span>
+                                    </div>
+                                )
+                            ) : (
+                                <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                                    <span className="text-muted-foreground text-[10px]">No Image</span>
+                                </div>
+                            )}
+                            <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-medium flex items-center gap-1">
+                                <Camera className="h-2.5 w-2.5" />
+                                <span>{propertyImages?.length || 0}</span>
                             </div>
-                            <div className="flex items-center gap-1 text-sm text-muted-foreground">
-                                <Eye className="h-3 w-3" />
-                                <span>{property.views}</span>
+                        </div>
+                        <div className="flex flex-col min-w-0">
+                            <h4 className="font-semibold text-foreground truncate text-base tracking-tight">{property.title}</h4>
+                            <p className="text-muted-foreground text-xs truncate mt-0.5 tracking-tight">
+                                {property.address}, {property.city}
+                            </p>
+                            <div className="flex items-center gap-2 mt-2">
+                                <div className={cn(
+                                    "w-1.5 h-1.5 rounded-full",
+                                    property.status === 'available' ? "bg-realty-gold" : "bg-muted-foreground/30"
+                                )} />
+                                <span className="text-[10px] font-bold text-realty-gold uppercase tracking-wider">
+                                    For {property.status === 'available' ? 'sale' : property.status.replace('_', ' ')}
+                                </span>
                             </div>
                         </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3 text-sm">
-                            {property.bedrooms && (
-                                <div className="flex items-center gap-1">
-                                    <Bed className="h-3 w-3 text-muted-foreground" />
-                                    <span>{property.bedrooms} bd</span>
+
+                    {/* Column 2: Price (2 cols) */}
+                    <div className="md:col-span-2 flex flex-col justify-center w-full md:border-l md:pl-6 border-border">
+                        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Price</span>
+                        <h3 className="text-xl font-bold text-foreground tabular-nums mt-1 tracking-tight">
+                            {formattedPrice}
+                        </h3>
+                    </div>
+
+                    {/* Column 3: Specs (3 cols) */}
+                    <div className="md:col-span-3 flex items-center gap-6 w-full md:border-l md:pl-6 border-border">
+                        {property.bedrooms && (
+                            <div className="flex flex-col items-start">
+                                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Beds</span>
+                                <div className="flex items-center gap-1.5 mt-1">
+                                    <Bed className="h-3.5 w-3.5 text-muted-foreground" />
+                                    <span className="text-sm font-bold text-foreground tracking-tight">{property.bedrooms}</span>
                                 </div>
-                            )}
-                            {property.bathrooms && (
-                                <div className="flex items-center gap-1">
-                                    <Bath className="h-3 w-3 text-muted-foreground" />
-                                    <span>{property.bathrooms} ba</span>
+                            </div>
+                        )}
+                        {property.bathrooms && (
+                            <div className="flex flex-col items-start">
+                                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Baths</span>
+                                <div className="flex items-center gap-1.5 mt-1">
+                                    <Bath className="h-3.5 w-3.5 text-muted-foreground" />
+                                    <span className="text-sm font-bold text-foreground tracking-tight">{property.bathrooms}</span>
                                 </div>
-                            )}
-                            <div className="flex items-center gap-1">
-                                <Ruler className="h-3 w-3 text-muted-foreground" />
-                                <span>{property.sqft.toLocaleString()} sqft</span>
+                            </div>
+                        )}
+                        <div className="flex flex-col items-start">
+                            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Sqft</span>
+                            <div className="flex items-center gap-1.5 mt-1">
+                                <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
+                                <span className="text-sm font-bold text-foreground tracking-tight">{property.sqft.toLocaleString()}</span>
                             </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={cn("text-xs font-medium", statusColors[property.status])}>
-                                {statusLabels[property.status]}
-                            </Badge>
-                            <Badge variant="secondary" className="capitalize text-xs">
-                                {property.type}
-                            </Badge>
-                        </div>
+                    </div>
+
+                    {/* Column 4: Actions (2 cols) */}
+                    <div className="md:col-span-2 flex items-center justify-end gap-3 w-full">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-10 w-10 rounded-xl border-border text-muted-foreground hover:bg-accent hover:text-foreground transition-all"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                            }}
+                        >
+                            <Map className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className={cn(
+                                "h-10 w-10 rounded-xl border-border transition-all",
+                                property.favorited ? "text-realty-gold bg-realty-gold/10 border-realty-gold/20" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                            )}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                toggleFavorite.mutate(property.id)
+                            }}
+                        >
+                            <Heart className={cn("h-4 w-4", property.favorited && "fill-current")} />
+                        </Button>
                     </div>
                 </div>
             </Card>
@@ -141,97 +230,112 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
     return (
         <Card
             className={cn(
-                "group overflow-hidden hover:shadow-lg transition-all cursor-pointer",
+                "group overflow-hidden hover:shadow-xl transition-all cursor-pointer rounded-[2rem] border border-border bg-card",
                 isCompact ? "text-sm" : ""
             )}
             onClick={handleClick}
         >
-            <div className={cn("relative overflow-hidden bg-muted", isCompact ? "aspect-square" : "aspect-[4/3]")}>
-                {property.images?.[0] && property.images[0].startsWith('http') ? (
-                    <Image
-                        src={property.images[0]}
-                        alt={property.title}
-                        fill
-                        className="object-cover transition-transform group-hover:scale-105"
-                    />
+            {/* Image Section */}
+            <div className={cn("relative overflow-hidden", isCompact ? "aspect-square" : "aspect-[4/3]")}>
+                {propertyImages && propertyImages.length > 0 && propertyImages[0] ? (
+                    propertyImages[0] && propertyImages[0].startsWith('http') ? (
+                        <Image
+                            src={propertyImages[0]}
+                            alt={property.title}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                        />
+                    ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-muted">
+                            <span className="text-muted-foreground text-sm">No Image</span>
+                        </div>
+                    )
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center bg-muted">
                         <span className="text-muted-foreground text-sm">No Image</span>
                     </div>
                 )}
-                <div className={cn("absolute flex gap-1", isCompact ? "top-2 left-2" : "top-3 left-3")}>
-                    <Badge
-                        variant="outline"
-                        className={cn("font-medium", statusColors[property.status], isCompact && "text-[10px] px-1")}
-                    >
-                        {statusLabels[property.status]}
-                    </Badge>
-                    <Badge variant="secondary" className={cn("capitalize", isCompact && "text-[10px] px-1")}>
-                        {property.type}
-                    </Badge>
+                
+                {/* Photo Count Badge */}
+                <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white text-xs font-medium">
+                    <Camera className="h-3.5 w-3.5" />
+                    <span>{propertyImages?.length || 0}</span>
                 </div>
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className={cn(
-                        "absolute rounded-full bg-background/80 backdrop-blur-sm hover:bg-background",
-                        property.favorited && "text-rose-500",
-                        isCompact ? "top-2 right-2 h-6 w-6" : "top-3 right-3 h-8 w-8"
-                    )}
-                    onClick={(e) => {
-                        e.stopPropagation()
-                        toggleFavorite.mutate(property.id)
-                    }}
-                >
-                    <Heart className={cn(isCompact ? "h-3 w-3" : "h-4 w-4", property.favorited && "fill-current")} />
-                </Button>
+
             </div>
 
-            <CardContent className={cn("space-y-2", isCompact ? "p-3" : "p-4")}>
-                <div className="flex items-baseline justify-between">
-                    <h3 className={cn("font-bold tabular-nums", isCompact ? "text-base" : "text-2xl")}>{formattedPrice}</h3>
-                    <div className="flex items-center gap-1 text-muted-foreground">
-                        <Eye className={cn("h-3 w-3", isCompact && "h-2 w-2")} />
-                        <span>{property.views}</span>
+            {/* Details Section */}
+            <CardContent className={cn("p-5 pt-4 space-y-3", isCompact ? "p-3" : "")}>
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <div className={cn(
+                            "w-2 h-2 rounded-full",
+                            property.status === 'available' ? "bg-realty-gold" : "bg-muted-foreground/30"
+                        )} />
+                        <span className="text-sm font-semibold text-realty-gold capitalize">
+                            For {property.status === 'available' ? 'sale' : property.status.replace('_', ' ')}
+                        </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className="h-9 w-9 rounded-full border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                // Handle map click
+                            }}
+                        >
+                            <Map className="h-4 w-4" />
+                        </Button>
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            className={cn(
+                                "h-9 w-9 rounded-full border-border transition-colors",
+                                property.favorited ? "text-realty-gold bg-realty-gold/10 border-realty-gold/20" : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                            )}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                toggleFavorite.mutate(property.id)
+                            }}
+                        >
+                            <Heart className={cn("h-4 w-4", property.favorited && "fill-current")} />
+                        </Button>
                     </div>
                 </div>
 
-                <h4 className={cn("font-semibold line-clamp-1", isCompact ? "text-sm" : "text-lg")}>{property.title}</h4>
+                <div>
+                    <h3 className={cn("font-bold text-foreground tabular-nums tracking-tight", isCompact ? "text-lg" : "text-2xl")}>
+                        {formattedPrice}
+                    </h3>
+                </div>
 
-                <p className="text-sm text-muted-foreground line-clamp-1">
-                    {property.address}, {property.city}, {property.state}
-                </p>
-
-                <div className={cn("flex items-center gap-3 text-sm", isCompact ? "gap-2 text-xs" : "gap-4")}>
+                <div className="flex items-center gap-4 text-muted-foreground text-sm">
                     {property.bedrooms && (
-                        <div className="flex items-center gap-1">
-                            <Bed className={cn("text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-                            <span>{property.bedrooms} bd</span>
+                        <div className="flex items-center gap-1.5">
+                            <Bed className="h-4 w-4" />
+                            <span className="font-medium"><span className="font-bold text-foreground">{property.bedrooms}</span> bed</span>
                         </div>
                     )}
                     {property.bathrooms && (
-                        <div className="flex items-center gap-1">
-                            <Bath className={cn("text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-                            <span>{property.bathrooms} ba</span>
+                        <div className="flex items-center gap-1.5">
+                            <Bath className="h-4 w-4" />
+                            <span className="font-medium"><span className="font-bold text-foreground">{property.bathrooms}</span> bath</span>
                         </div>
                     )}
-                    <div className="flex items-center gap-1">
-                        <Ruler className={cn("text-muted-foreground", isCompact ? "h-3 w-3" : "h-4 w-4")} />
-                        <span>{property.sqft.toLocaleString()} sqft</span>
+                    <div className="flex items-center gap-1.5">
+                        <Ruler className="h-4 w-4" />
+                        <span className="font-medium"><span className="font-bold text-foreground">{property.sqft.toLocaleString()}</span> sqft</span>
                     </div>
                 </div>
-            </CardContent>
 
-            {!isCompact && (
-                <CardFooter className="p-4 pt-0 border-t bg-muted/50">
-                    <div className="flex items-center justify-between w-full text-sm">
-                        <span className="text-muted-foreground">Listed by {property.agent?.name || "Unknown"}</span>
-                        <span className="text-muted-foreground">
-                            {new Date(property.listed).toLocaleDateString()}
-                        </span>
-                    </div>
-                </CardFooter>
-            )}
+                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+                    {property.address}, {property.city}, {property.state} {property.zipCode}
+                </p>
+
+
+            </CardContent>
         </Card>
     )
 }

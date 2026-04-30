@@ -46,12 +46,22 @@ export class PortalWebhooksController {
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
-      budget: typeof payload.budget === 'number' ? payload.budget : (payload.budget as string | number | undefined),
-      location: payload.location || (payload.custom_fields?.['location'] as string | undefined),
-      propertyType: payload.property_type || (payload.custom_fields?.['property_type'] as string | undefined),
+      budget:
+        typeof payload.budget === 'number'
+          ? payload.budget
+          : (payload.budget as string | number | undefined),
+      location:
+        payload.location ||
+        (payload.custom_fields?.['location'] as string | undefined),
+      propertyType:
+        payload.property_type ||
+        (payload.custom_fields?.['property_type'] as string | undefined),
     };
 
-    const lead = await this.portalWebhooksService.process99acres(enrichedPayload, tenantId);
+    const lead = await this.portalWebhooksService.process99acres(
+      enrichedPayload,
+      tenantId,
+    );
     return { success: true, leadId: lead.id };
   }
 
@@ -69,12 +79,22 @@ export class PortalWebhooksController {
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
-      budget: typeof payload.budget === 'number' ? payload.budget : (payload.budget as string | number | undefined),
-      location: payload.location || (payload.custom_fields?.['location'] as string | undefined),
-      propertyType: payload.property_type || (payload.custom_fields?.['property_type'] as string | undefined),
+      budget:
+        typeof payload.budget === 'number'
+          ? payload.budget
+          : (payload.budget as string | number | undefined),
+      location:
+        payload.location ||
+        (payload.custom_fields?.['location'] as string | undefined),
+      propertyType:
+        payload.property_type ||
+        (payload.custom_fields?.['property_type'] as string | undefined),
     };
 
-    const lead = await this.portalWebhooksService.processMagicBricks(enrichedPayload, tenantId);
+    const lead = await this.portalWebhooksService.processMagicBricks(
+      enrichedPayload,
+      tenantId,
+    );
     return { success: true, leadId: lead.id };
   }
 
@@ -92,12 +112,22 @@ export class PortalWebhooksController {
       name: payload.name,
       email: payload.email,
       phone: payload.phone,
-      budget: typeof payload.budget === 'number' ? payload.budget : (payload.budget as string | number | undefined),
-      location: payload.location || (payload.custom_fields?.['location'] as string | undefined),
-      propertyType: payload.property_type || (payload.custom_fields?.['property_type'] as string | undefined),
+      budget:
+        typeof payload.budget === 'number'
+          ? payload.budget
+          : (payload.budget as string | number | undefined),
+      location:
+        payload.location ||
+        (payload.custom_fields?.['location'] as string | undefined),
+      propertyType:
+        payload.property_type ||
+        (payload.custom_fields?.['property_type'] as string | undefined),
     };
 
-    const lead = await this.portalWebhooksService.processHousing(enrichedPayload, tenantId);
+    const lead = await this.portalWebhooksService.processHousing(
+      enrichedPayload,
+      tenantId,
+    );
     return { success: true, leadId: lead.id };
   }
 }

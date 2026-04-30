@@ -41,7 +41,11 @@ export class TeamsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a team' })
-  update(@Param('id') id: string, @Body() updateTeamDto: UpdateTeamDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTeamDto: UpdateTeamDto,
+    @Request() req,
+  ) {
     return this.teamsService.update(id, updateTeamDto, req.user);
   }
 

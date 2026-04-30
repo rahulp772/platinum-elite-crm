@@ -97,7 +97,8 @@ export class AuditInterceptor implements NestInterceptor {
   }
 
   private getResourceIdFromUrl(url: string): string | undefined {
-    const uuidRegex = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+    const uuidRegex =
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
     const match = url.match(uuidRegex);
     return match ? match[0] : undefined;
   }

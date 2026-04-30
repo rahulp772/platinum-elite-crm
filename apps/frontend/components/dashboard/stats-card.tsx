@@ -30,22 +30,22 @@ export function StatsCard({
             transition={{ delay: index * 0.1, duration: 0.5 }}
         >
             <Card className="hover:shadow-md transition-shadow group overflow-hidden relative">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 md:px-6">
+                    <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                         {title}
                     </CardTitle>
                     <motion.div
                         whileHover={{ rotate: 15, scale: 1.2 }}
                         className="transition-colors"
                     >
-                        <Icon className={cn("h-5 w-5", iconColor)} />
+                        <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", iconColor)} />
                     </motion.div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4 md:px-6">
                     <motion.div 
                         initial={{ scale: 0.8 }}
                         animate={{ scale: 1 }}
-                        className="text-2xl font-bold tabular-nums"
+                        className="text-2xl sm:text-3xl font-bold tabular-nums"
                     >
                         {value}
                     </motion.div>

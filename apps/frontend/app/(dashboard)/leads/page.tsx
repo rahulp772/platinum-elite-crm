@@ -7,130 +7,48 @@ import { LeadFilters } from "@/components/leads/lead-filters"
 import { AddLeadDialog } from "@/components/leads/add-lead-dialog"
 import { EditLeadDialog } from "@/components/leads/edit-lead-dialog"
 import { BulkActionsDialog } from "@/components/leads/bulk-actions-dialog"
-import { LeadActionZone } from "@/components/leads/lead-action-zone"
 import { useLeads, useUpdateLead, useUsers } from "@/hooks/use-leads"
 import { Card } from "@/components/ui/card"
 import { LoaderCircle, Users, Trash2, MessageSquare, UserPlus, Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Lead, LeadStatus } from "@/types/lead"
 
-type ActionFilter = "all" | "overdue" | "today" | "new"
-
 export default function LeadsPage() {
     const router = useRouter()
-    const { data: leads, isLoading, isError } = useLeads()
     const { data: users } = useUsers()
-    const [filteredLeads, setFilteredLeads] = React.useState<Lead[]>([])
     const [searchQuery, setSearchQuery] = React.useState("")
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [sourceFilter, setSourceFilter] = React.useState("all")
     const [assignedToFilter, setAssignedToFilter] = React.useState("all")
-    const [propertyTypeFilter, setPropertyTypeFilter] = React.useState("all")
-    const [budgetMinFilter, setBudgetMinFilter] = React.useState<number | undefined>()
-    const [budgetMaxFilter, setBudgetMaxFilter] = React.useState<number | undefined>()
-    const [createdFromFilter, setCreatedFromFilter] = React.useState<Date | undefined>()
-    const [createdToFilter, setCreatedToFilter] = React.useState<Date | undefined>()
-    const [followUpFromFilter, setFollowUpFromFilter] = React.useState<Date | undefined>()
-    const [followUpToFilter, setFollowUpToFilter] = React.useState<Date | undefined>()
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null)
     const [selectedLeads, setSelectedLeads] = React.useState<Lead[]>([])
     const [bulkDialogOpen, setBulkDialogOpen] = React.useState(false)
-    const [actionFilter, setActionFilter] = React.useState<ActionFilter>("all")
+    const [page, setPage] = React.useState(1)
+    const [limit, setLimit] = React.useState(20)
 
-    // Apply filters
-    React.useEffect(() => {
-        if (!leads) return
+    const filters = React.useMemo(() => ({
+        page,
+        limit,
+        ...(searchQuery ? { search: searchQuery } : {}),
+        ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
+        ...(sourceFilter !== 'all' ? { source: sourceFilter } : {}),
+        ...(assignedToFilter !== 'all' ? { assignedToId: assignedToFilter } : {}),
+    }), [page, limit, searchQuery, statusFilter, sourceFilter, assignedToFilter])
 
-        let filtered = [...leads]
+    const { data: leadsData, isLoading, isError, refetch } = useLeads(filters, [page, limit, searchQuery, statusFilter, sourceFilter, assignedToFilter])
 
-        // Action filter (overdue/today/new)
-        if (actionFilter === "overdue") {
-            const now = new Date()
-            now.setHours(0, 0, 0, 0)
-            filtered = filtered.filter((lead) => lead.followUpAt && new Date(lead.followUpAt) < now)
-        } else if (actionFilter === "today") {
-            const now = new Date()
-            const end = new Date(now)
-            end.setHours(23, 59, 59, 999)
-            filtered = filtered.filter(
-                (lead) => lead.followUpAt && new Date(lead.followUpAt) >= now && new Date(lead.followUpAt) <= end
-            )
-        } else if (actionFilter === "new") {
-            filtered = filtered.filter((lead) => lead.status === "new")
-        } else if (statusFilter !== "all") {
-            filtered = filtered.filter((lead) => lead.status === statusFilter)
-        }
+    const leads = leadsData?.data || []
+    const metadata = leadsData?.metadata
 
-        // Search filter
-        if (searchQuery) {
-            const q = searchQuery.toLowerCase()
-            filtered = filtered.filter(
-                (lead) =>
-                    lead.name.toLowerCase().includes(q) ||
-                    lead.email.toLowerCase().includes(q) ||
-                    lead.phone.toLowerCase().includes(q)
-            )
-        }
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage)
+    }
 
-        // Source filter
-        if (sourceFilter !== "all") {
-            filtered = filtered.filter((lead) => lead.source === sourceFilter)
-        }
-
-        // Assigned To filter
-        if (assignedToFilter !== "all") {
-            filtered = filtered.filter((lead) => lead.assignedToId === assignedToFilter)
-        }
-
-        // Property Type filter
-        if (propertyTypeFilter !== "all") {
-            filtered = filtered.filter((lead) => lead.propertyType === propertyTypeFilter)
-        }
-
-        // Budget Range filter
-        if (budgetMinFilter !== undefined) {
-            filtered = filtered.filter((lead) => 
-                lead.budgetMin !== undefined && lead.budgetMin >= budgetMinFilter
-            )
-        }
-        if (budgetMaxFilter !== undefined) {
-            filtered = filtered.filter((lead) => 
-                lead.budgetMax !== undefined && lead.budgetMax <= budgetMaxFilter
-            )
-        }
-
-        // Created Date Range filter
-        if (createdFromFilter) {
-            filtered = filtered.filter((lead) => 
-                new Date(lead.createdAt) >= createdFromFilter
-            )
-        }
-        if (createdToFilter) {
-            filtered = filtered.filter((lead) => 
-                new Date(lead.createdAt) <= createdToFilter
-            )
-        }
-
-        // Follow-up Date Range filter
-        if (followUpFromFilter) {
-            filtered = filtered.filter((lead) => 
-                lead.followUpAt && new Date(lead.followUpAt) >= followUpFromFilter
-            )
-        }
-        if (followUpToFilter) {
-            filtered = filtered.filter((lead) => 
-                lead.followUpAt && new Date(lead.followUpAt) <= followUpToFilter
-            )
-        }
-
-        setFilteredLeads(filtered)
-    }, [
-        searchQuery, statusFilter, sourceFilter, assignedToFilter, 
-        propertyTypeFilter, budgetMinFilter, budgetMaxFilter,
-        createdFromFilter, createdToFilter, followUpFromFilter, followUpToFilter,
-        leads
-    ])
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit)
+        setPage(1)
+    }
 
     const handleEditLead = (lead: Lead) => {
         router.push(`/leads/${lead.id}`)
@@ -187,12 +105,6 @@ export default function LeadsPage() {
                 </div>
             </div>
 
-            {/* Action Zone */}
-            <LeadActionZone
-                onFilterChange={(filter) => setActionFilter(filter as ActionFilter)}
-                activeFilter={actionFilter}
-            />
-
             {/* Filters */}
             <Card className="p-6">
                 <LeadFilters
@@ -200,13 +112,6 @@ export default function LeadsPage() {
                     onStatusChange={setStatusFilter}
                     onSourceChange={setSourceFilter}
                     onAssignedToChange={setAssignedToFilter}
-                    onPropertyTypeChange={setPropertyTypeFilter}
-                    onBudgetMinChange={setBudgetMinFilter}
-                    onBudgetMaxChange={setBudgetMaxFilter}
-                    onCreatedFromChange={setCreatedFromFilter}
-                    onCreatedToChange={setCreatedToFilter}
-                    onFollowUpFromChange={setFollowUpFromFilter}
-                    onFollowUpToChange={setFollowUpToFilter}
                     users={users}
                 />
             </Card>
@@ -244,9 +149,12 @@ export default function LeadsPage() {
 
             {/* Table */}
             <LeadsTable 
-                data={filteredLeads} 
+                data={leads} 
                 onEdit={handleEditLead}
                 onSelectionChange={handleSelectionChange}
+                pagination={metadata || null}
+                onPageChange={handlePageChange}
+                onLimitChange={handleLimitChange}
             />
             
             {/* Edit Lead Dialog */}
@@ -262,6 +170,7 @@ export default function LeadsPage() {
                 onOpenChange={setBulkDialogOpen}
                 leads={selectedLeads}
                 onComplete={() => setSelectedLeads([])}
+                refetch={refetch}
             />
         </div>
     )

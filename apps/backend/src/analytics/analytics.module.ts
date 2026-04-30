@@ -11,7 +11,17 @@ import { Task } from '../tasks/entities/task.entity';
 import { LeadActivity } from '../leads/entities/lead-activity.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Property, Lead, Deal, User, Role, Task, LeadActivity])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Property,
+      Lead,
+      Deal,
+      User,
+      Role,
+      Task,
+      LeadActivity,
+    ]),
+  ],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],
 })

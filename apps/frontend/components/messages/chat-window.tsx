@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Phone, Video, MoreHorizontal, Send, Paperclip, Search, X, FileIcon, Download, Loader2, ArrowLeft } from "lucide-react"
+import { Phone, Video, MoreHorizontal, Send, Paperclip, Search, X, FileIcon, Download, Loader2, ArrowLeft, MessageSquare } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatTimeOnly, getUserTimezone, getDateLabel, formatDateOnly } from "@/lib/date-utils"
 import { chatApi } from "@/lib/api-chat"
@@ -185,7 +185,7 @@ export function ChatWindow({
 
     return (
         <div className="flex h-full overflow-hidden">
-            <div className="flex flex-col flex-1 min-w-0 bg-background">
+            <div className="flex flex-col flex-1 min-w-0 bg-background pb-14 md:pb-0">
                 {/* Chat Header */}
                 <div className="flex-none shrink-0 flex items-center justify-between px-4 md:px-6 py-4 border-b border-border/50 bg-card/50 backdrop-blur-md sticky top-0 z-20">
                     <div className="flex items-center gap-3">
@@ -251,12 +251,26 @@ export function ChatWindow({
                     </div>
 
                     <ScrollArea ref={scrollRef} className="h-full">
-                        <div className="flex flex-col gap-2 p-6 max-w-4xl mx-auto">
+                        <div className="flex flex-col gap-2 px-4 md:px-6 py-6 pb-20 md:pb-6 max-w-4xl mx-auto min-h-full">
                             {isLoading && conversation.messages.length === 0 ? (
-                                <div className="flex items-center justify-center py-12">
-                                    <div className="flex flex-col items-center gap-2">
+                                <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
+                                    <div className="flex flex-col items-center gap-3 bg-card/50 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-border/50">
                                         <div className="h-8 w-8 rounded-full border-2 border-realty-gold border-t-transparent animate-spin" />
-                                        <span className="text-xs font-medium text-muted-foreground">Loading messages...</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Loading messages...</span>
+                                    </div>
+                                </div>
+                            ) : conversation.messages.length === 0 ? (
+                                <div className="absolute inset-0 flex flex-col items-center justify-center text-muted-foreground space-y-5 pointer-events-none z-10 animate-in fade-in zoom-in-95 duration-500">
+                                    <div className="w-20 h-20 rounded-full bg-card border border-border/50 flex items-center justify-center shadow-lg">
+                                        <MessageSquare className="h-10 w-10 text-realty-gold/80" />
+                                    </div>
+                                    <div className="flex flex-col items-center gap-1.5 text-center px-4">
+                                        <h3 className="text-xl md:text-2xl font-bold text-foreground tracking-tight">
+                                            Say hello to <span className="text-transparent bg-clip-text bg-gradient-to-r from-realty-gold to-[#B8860B]">{participant?.name || 'them'}</span> 👋
+                                        </h3>
+                                        <p className="text-sm text-muted-foreground/80 max-w-[280px]">
+                                            Be the first to break the ice and kick off the conversation.
+                                        </p>
                                     </div>
                                 </div>
                             ) : (
@@ -323,8 +337,8 @@ export function ChatWindow({
                                                                 "transition-all duration-300",
                                                                 msg.content
                                                                     ? (isMe
-                                                                        ? "px-4 py-2.5 text-sm bg-gradient-to-br from-realty-gold to-[#B8860B] text-white rounded-2xl rounded-tr-sm shadow-sm hover:shadow-md hover:shadow-realty-gold/20"
-                                                                        : "px-4 py-2.5 text-sm bg-card border border-border/50 text-foreground rounded-2xl rounded-tl-sm shadow-sm hover:border-realty-gold/30")
+                                                                        ? "px-4 py-2.5 text-sm bg-card border border-border/50 text-foreground rounded-2xl rounded-tr-sm shadow-sm hover:border-realty-gold/30"
+                                                                        : "px-4 py-2.5 text-sm bg-gradient-to-br from-realty-gold to-[#B8860B] text-white rounded-2xl rounded-tl-sm shadow-sm hover:shadow-md hover:shadow-realty-gold/20")
                                                                     : "rounded-2xl overflow-hidden"
                                                             )}>
                                                                 {msg.content}
@@ -403,7 +417,7 @@ export function ChatWindow({
                 </div>
 
                 {/* Message Input */}
-                <div className="flex-none shrink-0 p-4 bg-card/30 backdrop-blur-xl border-t border-border/50">
+                <div className="flex-none shrink-0 p-4 bg-card/30 backdrop-blur-xl border-t border-border/50 md:relative fixed bottom-14 md:bottom-0 left-0 right-0 z-30 md:z-auto">
                     <div className="max-w-4xl mx-auto flex flex-col gap-3">
                         {/* Selected Files Preview */}
                         {selectedFiles.length > 0 && (

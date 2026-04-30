@@ -306,6 +306,10 @@ export default function MessagesPage() {
             try {
                 const newConv = await createConversation.mutateAsync(otherParticipant.id)
                 setSelectedId(newConv.id)
+                setConversations(prev => prev.map(c => 
+                    c.id === selectedId ? { ...c, id: newConv.id, isNewConversation: false } : c
+                ))
+                await new Promise(resolve => setTimeout(resolve, 100))
                 socket.emit('join_conversation', { conversationId: newConv.id })
                 socket.emit('send_message', {
                     conversationId: newConv.id,
@@ -314,6 +318,7 @@ export default function MessagesPage() {
                 })
             } catch (error) {
                 setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+                toast.error('Failed to send message. Please try again.')
             }
         } else {
             socket.emit('send_message', {
@@ -357,7 +362,7 @@ export default function MessagesPage() {
     const selectedConversation = conversations.find(c => c.id === selectedId)
 
     return (
-        <div className="h-[calc(100vh-64px)] -m-6 flex flex-col md:flex-row bg-background overflow-hidden relative">
+        <div className="h-[calc(100vh-120px)] md:h-[calc(100vh-64px)] -m-6 flex flex-col md:flex-row bg-background overflow-hidden relative">
             {/* Conversation List - shown on desktop or mobile list view */}
             <div className={cn(
                 "flex flex-col h-full border-r border-border/50 bg-card/30 backdrop-blur-xl w-80 min-w-[320px] relative z-20 overflow-hidden",

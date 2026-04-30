@@ -10,7 +10,12 @@ import {
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
-import { LeadStatus, LeadSource, LostReason, LeadTier } from '../enums/lead.enum';
+import {
+  LeadStatus,
+  LeadSource,
+  LostReason,
+  LeadTier,
+} from '../enums/lead.enum';
 import { LeadActivity } from './lead-activity.entity';
 
 @Entity('leads')
@@ -52,7 +57,18 @@ export class Lead {
 
   @Column({
     type: 'enum',
-    enum: ['1 BHK', '2 BHK', '3 BHK', '4 BHK', '5 BHK', 'Penthouse', 'Plot', 'Row House', 'Villa', 'Apartment'],
+    enum: [
+      '1 BHK',
+      '2 BHK',
+      '3 BHK',
+      '4 BHK',
+      '5 BHK',
+      'Penthouse',
+      'Plot',
+      'Row House',
+      'Villa',
+      'Apartment',
+    ],
     nullable: true,
   })
   propertyType: string;

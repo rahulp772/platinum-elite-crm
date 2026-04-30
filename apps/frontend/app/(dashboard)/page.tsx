@@ -59,18 +59,18 @@ export default function DashboardPage() {
             </div>
 
             {/* New Dashboard Banner */}
-            <div className="bg-gradient-to-r from-realty-gold/10 via-amber-500/5 to-transparent border border-realty-gold/20 rounded-lg p-4">
-                <div className="flex items-center justify-between">
+            <div className="bg-gradient-to-r from-realty-gold/10 via-amber-500/5 to-transparent border border-realty-gold/20 rounded-lg p-3 md:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-realty-gold/10 rounded-lg">
                             <Sparkles className="h-5 w-5 text-realty-gold" />
                         </div>
                         <div>
-                            <h3 className="font-semibold text-foreground">Try the New Dashboard</h3>
-                            <p className="text-sm text-muted-foreground">Customizable widgets, better insights, and lead response time tracking</p>
+                            <h3 className="font-semibold text-foreground text-sm md:text-base">Try the New Dashboard</h3>
+                            <p className="text-xs md:text-sm text-muted-foreground hidden sm:block">Customizable widgets, better insights, and lead response time tracking</p>
                         </div>
                     </div>
-                    <Button asChild className="bg-realty-gold hover:bg-realty-gold/90">
+                    <Button asChild className="bg-realty-gold hover:bg-realty-gold/90 text-sm h-9 sm:h-10">
                         <Link href="/dashboardv2">Try New Dashboard</Link>
                     </Button>
                 </div>

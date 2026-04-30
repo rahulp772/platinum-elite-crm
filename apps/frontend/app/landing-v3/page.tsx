@@ -68,7 +68,7 @@ const Navbar = () => {
             <Building2 className="h-6 w-6 text-slate-950" />
           </div>
           <span className="text-xl font-bold tracking-tight text-foreground">
-            Platinum<span className="text-[#D4AF37]">Elite</span>
+            MakeIt<span className="text-[#D4AF37]">CRM</span>
           </span>
         </Link>
 
@@ -584,7 +584,7 @@ const FinalCTA = () => {
             Ready to <span className="text-[#D4AF37]">grow</span> your business?
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10 relative z-10">
-            Join real estate professionals who trust Platinum Elite to manage their leads, deals, and team collaboration.
+            Join real estate professionals who trust MakeItCRM to manage their leads, deals, and team collaboration.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
             <Link href="/register">
@@ -614,7 +614,7 @@ const Footer = () => {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D4AF37]">
                 <Building2 className="h-5 w-5 text-slate-950" />
               </div>
-              <span className="text-lg font-bold text-foreground">PlatinumElite</span>
+              <span className="text-lg font-bold text-foreground">MakeItCRM</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
               The CRM built for real estate teams. Manage leads, deals, properties, and collaboration — all in one platform.
@@ -640,7 +640,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-muted-foreground text-xs">&copy; 2026 Platinum Elite CRM. All rights reserved.</p>
+          <p className="text-muted-foreground text-xs">&copy; 2026 MakeItCRM. All rights reserved.</p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Shield className="h-4 w-4 text-emerald-500" />
             <span>Secure & Compliant</span>

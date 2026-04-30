@@ -64,7 +64,7 @@ const testimonials = [
     {
         name: "Sarah Mitchell",
         role: "Broker Owner, Skyline Realty",
-        content: "Platinum Elite CRM transformed how we manage our team. We've increased close rates by 35% since implementing it.",
+        content: "MakeItCRM transformed how we manage our team. We've increased close rates by 35% since implementing it.",
     },
     {
         name: "James Chen",
@@ -88,7 +88,7 @@ export default function LandingPage() {
                         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-realty-gold to-realty-gold-dark">
                             <Building2 className="h-5 w-5 text-slate-950" />
                         </div>
-                        <span className="text-lg font-bold text-white">Platinum Elite</span>
+                        <span className="text-lg font-bold text-white">MakeItCRM</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <Link href="/login">
@@ -205,7 +205,7 @@ export default function LandingPage() {
                             Powering Real Estate Success
                         </h2>
                         <p className="mx-auto max-w-2xl text-slate-400">
-                            Join thousands of real estate professionals who trust Platinum Elite
+                            Join thousands of real estate professionals who trust MakeItCRM
                             to grow their business every day.
                         </p>
                     </div>
@@ -234,7 +234,7 @@ export default function LandingPage() {
                             Loved by Industry Leaders
                         </h2>
                         <p className="mx-auto max-w-2xl text-slate-400">
-                            See what real estate professionals are saying about Platinum Elite CRM.
+                            See what real estate professionals are saying about MakeItCRM.
                         </p>
                     </div>
                     <div className="grid gap-6 lg:grid-cols-3">
@@ -307,7 +307,7 @@ export default function LandingPage() {
                             <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-realty-gold to-realty-gold-dark">
                                 <Building2 className="h-5 w-5 text-slate-950" />
                             </div>
-                            <span className="text-lg font-bold text-white">Platinum Elite CRM</span>
+                            <span className="text-lg font-bold text-white">MakeItCRM</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm text-slate-400">
                             <Link href="/login" className="hover:text-white transition-colors">
@@ -323,7 +323,7 @@ export default function LandingPage() {
                         </div>
                     </div>
                     <div className="mt-8 pt-8 border-t border-white/10 text-center text-sm text-slate-500">
-                        &copy; {new Date().getFullYear()} Platinum Elite CRM. All rights reserved.
+                        &copy; {new Date().getFullYear()} MakeItCRM. All rights reserved.
                     </div>
                 </div>
             </footer>

@@ -43,12 +43,12 @@ const dropAnimation: DropAnimation = {
 }
 
 export function PipelineBoard() {
-    const { data: initialLeads, isLoading, isError } = useLeads()
-    const updateLead = useUpdateLead()
-    
+    const { data: leadsData, isLoading, isError } = useLeads()
+    const { mutate: updateLead } = useUpdateLead()
     const [leads, setLeads] = React.useState<any[]>([])
     const [activeLead, setActiveLead] = React.useState<any | null>(null)
     const [mounted, setMounted] = React.useState(false)
+    const initialLeads = leadsData?.data
 
     React.useEffect(() => {
         setMounted(true)
@@ -132,7 +132,7 @@ export function PipelineBoard() {
 
         if (activeLeadIndex !== -1) {
             const activeLeadData = leads[activeLeadIndex]
-            updateLead.mutate({ id: activeLeadData.id, status: activeLeadData.status })
+            updateLead({ id: activeLeadData.id, status: activeLeadData.status })
         }
 
         if (activeLeadIndex !== -1 && overLeadIndex !== -1) {

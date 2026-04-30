@@ -135,8 +135,8 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                         </div>
                         {!collapsed && (
                             <div className="flex flex-col">
-                                <span className="text-sm font-bold text-foreground tracking-tight">Bricks CRM</span>
-                                <span className="text-[10px] font-medium text-realty-gold uppercase tracking-[0.2em]">Platinum Elite</span>
+                                <span className="text-sm font-bold text-foreground tracking-tight">MakeItCRM</span>
+                                <span className="text-[10px] font-medium text-realty-gold uppercase tracking-[0.2em]">Real Estate Intelligence</span>
                             </div>
                         )}
                     </div>
@@ -162,7 +162,7 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
 
                 <nav className="flex-1 space-y-1 px-3 py-4 overflow-y-auto">
                     {!collapsed && (
-                        <p className="px-3 mb-2 text-[10px] font-semibold text-realty-gold uppercase tracking-wider">Menu</p>
+                        <p className="px-3 mb-2 text-[10px] font-semibold text-realty-gold uppercase tracking-wider">Navigation</p>
                     )}
                     {navItems.map((item) => {
                         const isActive = pathname === item.href

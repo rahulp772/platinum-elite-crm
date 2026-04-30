@@ -101,7 +101,12 @@ export class AuthService {
     });
 
     if (!users || users.length === 0) {
-      await this.auditService.logLoginFailed(email, ipAddress, userAgent, 'User not found');
+      await this.auditService.logLoginFailed(
+        email,
+        ipAddress,
+        userAgent,
+        'User not found',
+      );
       throw new UnauthorizedException('Invalid credentials');
     }
 
@@ -129,19 +134,27 @@ export class AuthService {
       }
       const foundUser = users.find((u) => u.tenantId === requestedTenantId);
       if (!foundUser) {
-        await this.auditService.logLoginFailed(email, ipAddress, userAgent, 'Invalid workspace');
+        await this.auditService.logLoginFailed(
+          email,
+          ipAddress,
+          userAgent,
+          'Invalid workspace',
+        );
         throw new UnauthorizedException('Invalid workspace for this user');
       }
       user = foundUser;
     }
 
     const maxAttempts = this.configService.get('MAX_LOGIN_ATTEMPTS') || 5;
-    const lockoutDuration = this.configService.get('LOCKOUT_DURATION_MINUTES') || 15;
+    const lockoutDuration =
+      this.configService.get('LOCKOUT_DURATION_MINUTES') || 15;
 
     if (user.failedLoginAttempts >= maxAttempts && user.lockedUntil) {
       const lockUntil = new Date(user.lockedUntil);
       if (lockUntil > new Date()) {
-        const remainingMinutes = Math.ceil((lockUntil.getTime() - Date.now()) / 60000);
+        const remainingMinutes = Math.ceil(
+          (lockUntil.getTime() - Date.now()) / 60000,
+        );
         await this.auditService.logLoginFailed(
           email,
           ipAddress,
@@ -179,7 +192,12 @@ export class AuthService {
           ? `Account locked after ${maxAttempts} failed attempts`
           : `Invalid password (attempt ${newAttempts}/${maxAttempts})`;
 
-      await this.auditService.logLoginFailed(email, ipAddress, userAgent, reason);
+      await this.auditService.logLoginFailed(
+        email,
+        ipAddress,
+        userAgent,
+        reason,
+      );
 
       if (newAttempts >= maxAttempts) {
         throw new UnauthorizedException(

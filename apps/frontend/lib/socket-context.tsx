@@ -18,12 +18,24 @@ let globalSocket: Socket | null = null
 let toastIds = new Set<string>()
 let toastIdsTimeout: Map<string, NodeJS.Timeout> = new Map()
 
+function getSocketUrl(): string {
+  if (typeof window === 'undefined') return 'http://localhost:3001'
+  
+  const hostname = window.location.hostname
+  const protocol = window.location.protocol
+  
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:3001'
+  }
+  
+  return `${protocol}//${hostname}:3001`
+}
+
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth()
+  const { user, isAuthLoading } = useAuth()
   const notifications = useNotifications()
   const router = useRouter()
   const [isConnected, setIsConnected] = React.useState(false)
-  const [mounted, setMounted] = React.useState(false)
 
   const userRef = React.useRef(user)
   const incrementUnreadRef = React.useRef(() => { })
@@ -39,31 +51,34 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
   }, [notifications])
 
   React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  React.useEffect(() => {
-    if (!user) return
-
-    if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission()
-    }
-  }, [user])
-
-  React.useEffect(() => {
-    if (!user || globalSocket?.connected) return
-
-    const getSocketUrl = () => {
-      return process.env.NEXT_PUBLIC_API_URL;
+    if (isAuthLoading) {
+      return
     }
 
-    console.log('[Socket] Creating socket connection...')
+    if (!user) {
+      if (globalSocket) {
+        globalSocket.disconnect()
+        globalSocket = null
+        setIsConnected(false)
+      }
+      return
+    }
 
-    const socket = io(getSocketUrl(), {
-      auth: { token: localStorage.getItem('token') },
+    if (globalSocket?.connected) {
+      return
+    }
+
+    const socketUrl = getSocketUrl()
+    console.log('[Socket] Connecting to:', socketUrl)
+
+    const socket = io(socketUrl, {
+      withCredentials: true,
       reconnection: true,
-      reconnectionAttempts: Infinity,
+      reconnectionAttempts: 3,
       reconnectionDelay: 1000,
+      transports: ['websocket', 'polling'],
+      timeout: 5000,
+      forceNew: true,
     })
 
     socket.on('connect', () => {
@@ -77,25 +92,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     })
 
     socket.on('connect_error', (err) => {
-      console.log('[Socket] Connection error:', err.message)
+      console.error('[Socket] Connection error:', err.message)
+      setIsConnected(false)
     })
 
     socket.on('new_message', (message: any) => {
-      console.log('[Socket] New message received:', message)
-
       const currentUserId = userRef.current?.id
-      console.log('[Socket] Current user ID:', currentUserId)
-      console.log('[Socket] Message sender ID:', message.senderId)
-
       const isOwnMessage = message.senderId === currentUserId
       if (isOwnMessage) {
-        console.log('[Socket] Ignoring own message')
         return
       }
 
       const messageId = message.id
       if (toastIds.has(messageId)) {
-        console.log('[Socket] Duplicate message ignored')
         return
       }
       toastIds.add(messageId)
@@ -105,8 +114,6 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       const senderName = message.sender?.name || 'Someone'
       const content = message.content || ''
       const truncated = content.length > 80 ? content.substring(0, 80) + '...' : content
-
-      console.log('[Socket] Showing toast for:', senderName, '-', truncated)
 
       toast(senderName, {
         description: truncated,
@@ -129,11 +136,12 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     globalSocket = socket
 
     return () => {
-      console.log('[Socket] Cleaning up socket')
       socket.disconnect()
-      globalSocket = null
+      if (globalSocket === socket) {
+        globalSocket = null
+      }
     }
-  }, [user, mounted, router])
+  }, [user, isAuthLoading, router])
 
   return (
     <SocketContext.Provider value={{ socket: globalSocket, isConnected }}>

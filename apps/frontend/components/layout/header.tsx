@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useRouter } from "next/navigation"
-import { Search, Plus, Users, Building2, Handshake, CheckSquare, X, MessageSquare } from "lucide-react"
+import { Search, Plus, Users, Building2, Handshake, CheckSquare, X, MessageSquare, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -129,28 +129,63 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
     return (
         <>
             <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
-                <div className="flex h-16 items-center gap-4 px-4 md:px-6">
-                    {/* Mobile Menu Button */}
-                    <button
-                        onClick={onMobileMenuToggle}
-                        className="md:hidden flex items-center justify-center h-10 w-10 rounded-lg hover:bg-accent"
-                        aria-label="Toggle menu"
-                    >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
+                <div className="flex h-16 items-center gap-2 px-3 md:px-6">
+                    {/* Logo - Hidden on desktop (lg+), visible on tablet and below */}
+                    <div className="hidden md:block lg:hidden flex items-center justify-center h-9 w-9 rounded-lg bg-gradient-to-br from-realty-gold/80 to-realty-gold shadow-lg shadow-realty-gold/20">
+                        <Building2 className="h-5 w-5 text-realty-navy" />
+                    </div>
 
-                    {/* Search */}
+                    {/* Search - Icon on mobile, full on desktop */}
                     <div className="flex-1" ref={searchContainerRef}>
-                        <div className="relative w-full max-w-md">
+                        {/* Mobile: Search icon expands to input */}
+                        <div className="md:hidden relative">
+                            {!isSearchOpen ? (
+                                <button
+                                    onClick={() => setIsSearchOpen(true)}
+                                    className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-accent"
+                                >
+                                    <Search className="h-5 w-5 text-muted-foreground" />
+                                </button>
+                            ) : (
+                                <div className="relative w-full">
+                                    <Input
+                                        ref={searchInputRef}
+                                        placeholder="Search..."
+                                        className="pl-9 pr-10 w-full bg-accent"
+                                        value={searchQuery}
+                                        onChange={(e) => {
+                                            setSearchQuery(e.target.value)
+                                            if (e.target.value.trim()) setIsSearchOpen(true)
+                                        }}
+                                        onBlur={() => !searchQuery && setIsSearchOpen(false)}
+                                        onFocus={() => searchQuery && setIsSearchOpen(true)}
+                                        autoFocus
+                                    />
+                                    <button
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                        onClick={() => {
+                                            setSearchQuery("")
+                                            setIsSearchOpen(false)
+                                        }}
+                                    >
+                                        <X className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Desktop: Always visible search bar */}
+                        <div className="hidden md:block relative w-full max-w-md">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 ref={searchInputRef}
                                 placeholder="Search or type ⌘K..."
                                 className="pl-9 pr-10 w-full"
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value)
+                                    if (e.target.value.trim()) setIsSearchOpen(true)
+                                }}
                                 onFocus={() => searchQuery.trim() && setIsSearchOpen(true)}
                             />
                             {searchQuery && (
@@ -164,7 +199,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                                     <X className="h-4 w-4" />
                                 </button>
                             )}
-                            <kbd className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
+                            <kbd className="pointer-events-none absolute right-10 top-1/2 -translate-y-1/2 hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 lg:flex">
                                 <span className="text-xs">⌘</span>K
                             </kbd>
                         </div>

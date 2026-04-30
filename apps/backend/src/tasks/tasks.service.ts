@@ -42,7 +42,10 @@ export class TasksService {
   private getBaseQuery(currentUser: User) {
     const isGlobalAdmin = currentUser.isSuperAdmin && !currentUser.tenantId;
     if (isGlobalAdmin) {
-      return this.taskRepository.createQueryBuilder('task').leftJoinAndSelect('task.assignedTo', 'assignedTo').leftJoinAndSelect('task.createdBy', 'createdBy');
+      return this.taskRepository
+        .createQueryBuilder('task')
+        .leftJoinAndSelect('task.assignedTo', 'assignedTo')
+        .leftJoinAndSelect('task.createdBy', 'createdBy');
     }
     const userWithRole = currentUser.role;
     const currentLevel = userWithRole?.level || 0;
@@ -77,7 +80,9 @@ export class TasksService {
         relations: ['role'],
       });
       if (!user) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+        throw new NotFoundException(
+          `User with ID ${assignedToId} not found in your tenant`,
+        );
       }
       assignedTo = user;
     }
@@ -119,23 +124,31 @@ export class TasksService {
     };
   }
 
-async count(currentUser: User, status?: string): Promise<{ total: number; overdue: number; today: number; tomorrow: number }> {
-    const now = new Date()
-    now.setHours(0, 0, 0, 0)
-    const endOfToday = new Date(now)
-    endOfToday.setHours(23, 59, 59, 999)
-    const tomorrowStart = new Date(now)
-    tomorrowStart.setDate(tomorrowStart.getDate() + 1)
-    tomorrowStart.setHours(0, 0, 0, 0)
-    const tomorrowEnd = new Date(tomorrowStart)
-    tomorrowEnd.setHours(23, 59, 59, 999)
+  async count(
+    currentUser: User,
+    status?: string,
+  ): Promise<{
+    total: number;
+    overdue: number;
+    today: number;
+    tomorrow: number;
+  }> {
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+    const endOfToday = new Date(now);
+    endOfToday.setHours(23, 59, 59, 999);
+    const tomorrowStart = new Date(now);
+    tomorrowStart.setDate(tomorrowStart.getDate() + 1);
+    tomorrowStart.setHours(0, 0, 0, 0);
+    const tomorrowEnd = new Date(tomorrowStart);
+    tomorrowEnd.setHours(23, 59, 59, 999);
 
     const overdue = await this.taskRepository
       .createQueryBuilder('task')
       .where('task.tenantId = :tenantId', { tenantId: currentUser.tenantId })
       .andWhere('task.dueDate < :now', { now })
       .andWhere('task.status = :status', { status: TaskStatus.TODO })
-      .getCount()
+      .getCount();
 
     const today = await this.taskRepository
       .createQueryBuilder('task')
@@ -143,7 +156,7 @@ async count(currentUser: User, status?: string): Promise<{ total: number; overdu
       .andWhere('task.dueDate >= :now', { now })
       .andWhere('task.dueDate <= :endOfToday', { endOfToday })
       .andWhere('task.status = :status', { status: TaskStatus.TODO })
-      .getCount()
+      .getCount();
 
     const tomorrowCount = await this.taskRepository
       .createQueryBuilder('task')
@@ -151,13 +164,13 @@ async count(currentUser: User, status?: string): Promise<{ total: number; overdu
       .andWhere('task.dueDate >= :tomorrowStart', { tomorrowStart })
       .andWhere('task.dueDate <= :tomorrowEnd', { tomorrowEnd })
       .andWhere('task.status = :status', { status: TaskStatus.TODO })
-      .getCount()
+      .getCount();
 
     const total = await this.taskRepository.count({
       where: { tenantId: currentUser.tenantId },
-    })
+    });
 
-    return { total, overdue, today, tomorrow: tomorrowCount }
+    return { total, overdue, today, tomorrow: tomorrowCount };
   }
 
   async findOne(id: string, currentUser: User) {
@@ -211,7 +224,9 @@ async count(currentUser: User, status?: string): Promise<{ total: number; overdu
         where: { id: assignedToId, tenantId: user.tenantId },
       });
       if (!assignedToUser) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+        throw new NotFoundException(
+          `User with ID ${assignedToId} not found in your tenant`,
+        );
       }
       task.assignedTo = assignedToUser;
     }

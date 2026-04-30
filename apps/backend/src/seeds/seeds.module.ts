@@ -15,19 +15,21 @@ import { Message } from '../chat/entities/message.entity';
 
 @Global()
 @Module({
-  imports: [TypeOrmModule.forFeature([
-    Tenant,
-    Role,
-    User,
-    AgentProfile,
-    Lead,
-    Property,
-    Deal,
-    Task,
-    Team,
-    Conversation,
-    Message
-  ])],
+  imports: [
+    TypeOrmModule.forFeature([
+      Tenant,
+      Role,
+      User,
+      AgentProfile,
+      Lead,
+      Property,
+      Deal,
+      Task,
+      Team,
+      Conversation,
+      Message,
+    ]),
+  ],
   providers: [SeedService],
   exports: [SeedService],
 })

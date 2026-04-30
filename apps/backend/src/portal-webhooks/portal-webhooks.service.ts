@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Lead } from '../leads/entities/lead.entity';
-import { LeadActivity, LeadActivityAction } from '../leads/entities/lead-activity.entity';
+import {
+  LeadActivity,
+  LeadActivityAction,
+} from '../leads/entities/lead-activity.entity';
 import { LeadStatus, LeadSource } from '../leads/enums/lead.enum';
 import { User } from '../users/entities/user.entity';
 import { Tenant } from '../tenants/entities/tenant.entity';
@@ -80,17 +83,20 @@ export class PortalWebhooksService {
       '3bhk': '3 BHK',
       '4bhk': '4 BHK',
       '5bhk': '5 BHK',
-      'flat': 'Apartment',
-      'apartment': 'Apartment',
-      'villa': 'Villa',
-      'penthouse': 'Penthouse',
-      'plot': 'Plot',
+      flat: 'Apartment',
+      apartment: 'Apartment',
+      villa: 'Villa',
+      penthouse: 'Penthouse',
+      plot: 'Plot',
       'row house': 'Row House',
     };
     return typeMap[propertyType.toLowerCase()] || propertyType;
   }
 
-  async process99acres(payload: PortalPayload, tenantId: string): Promise<Lead> {
+  async process99acres(
+    payload: PortalPayload,
+    tenantId: string,
+  ): Promise<Lead> {
     const phone = this.normalizePhone(payload.phone || '');
     const budget = this.parseBudget(payload.budget || 0);
     const defaultUser = await this.userRepository.findOne({
@@ -116,14 +122,21 @@ export class PortalWebhooksService {
     const savedLead = await this.leadRepository.save(lead);
 
     if (defaultUser) {
-      await this.logActivity(savedLead.id, defaultUser.id, LeadActivityAction.CREATED);
+      await this.logActivity(
+        savedLead.id,
+        defaultUser.id,
+        LeadActivityAction.CREATED,
+      );
     }
 
     this.logger.log(`99acres lead processed: ${savedLead.id}`);
     return savedLead;
   }
 
-  async processMagicBricks(payload: PortalPayload, tenantId: string): Promise<Lead> {
+  async processMagicBricks(
+    payload: PortalPayload,
+    tenantId: string,
+  ): Promise<Lead> {
     const phone = this.normalizePhone(payload.phone || '');
     const budget = this.parseBudget(payload.budget || 0);
     const defaultUser = await this.userRepository.findOne({
@@ -149,14 +162,21 @@ export class PortalWebhooksService {
     const savedLead = await this.leadRepository.save(lead);
 
     if (defaultUser) {
-      await this.logActivity(savedLead.id, defaultUser.id, LeadActivityAction.CREATED);
+      await this.logActivity(
+        savedLead.id,
+        defaultUser.id,
+        LeadActivityAction.CREATED,
+      );
     }
 
     this.logger.log(`MagicBricks lead processed: ${savedLead.id}`);
     return savedLead;
   }
 
-  async processHousing(payload: PortalPayload, tenantId: string): Promise<Lead> {
+  async processHousing(
+    payload: PortalPayload,
+    tenantId: string,
+  ): Promise<Lead> {
     const phone = this.normalizePhone(payload.phone || '');
     const budget = this.parseBudget(payload.budget || 0);
     const defaultUser = await this.userRepository.findOne({
@@ -182,14 +202,22 @@ export class PortalWebhooksService {
     const savedLead = await this.leadRepository.save(lead);
 
     if (defaultUser) {
-      await this.logActivity(savedLead.id, defaultUser.id, LeadActivityAction.CREATED);
+      await this.logActivity(
+        savedLead.id,
+        defaultUser.id,
+        LeadActivityAction.CREATED,
+      );
     }
 
     this.logger.log(`Housing.com lead processed: ${savedLead.id}`);
     return savedLead;
   }
 
-  private async logActivity(leadId: string, userId: string, action: LeadActivityAction) {
+  private async logActivity(
+    leadId: string,
+    userId: string,
+    action: LeadActivityAction,
+  ) {
     const activity = this.activityRepository.create({
       leadId,
       userId,

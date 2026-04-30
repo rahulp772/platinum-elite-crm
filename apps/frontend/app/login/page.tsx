@@ -83,32 +83,32 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-background">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-amber-600/10 blur-[150px]" />
-        <div className="absolute top-1/3 -left-20 w-80 h-80 rounded-full bg-blue-900/20 blur-[120px]" />
-        <div className="absolute bottom-20 right-1/4 w-72 h-72 rounded-full bg-amber-700/10 blur-[100px]" />
+        <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-realty-gold/10 dark:bg-amber-600/10 blur-[150px]" />
+        <div className="absolute top-1/3 -left-20 w-80 h-80 rounded-full bg-realty-navy/10 dark:bg-blue-900/20 blur-[120px]" />
+        <div className="absolute bottom-20 right-1/4 w-72 h-72 rounded-full bg-realty-gold/5 dark:bg-amber-700/10 blur-[100px]" />
       </div>
 
-      <Card className="w-full max-w-md relative z-10 border-slate-800/50 bg-slate-950/40 backdrop-blur-xl">
+      <Card className="w-full max-w-md relative z-10 border-border/50 bg-card/80 backdrop-blur-xl dark:bg-card/80">
         <CardHeader className="space-y-1 flex flex-col items-center">
-          <div className="p-3 rounded-xl bg-gradient-to-br from-realty-gold to-realty-gold-dark/80 mb-4 shadow-lg shadow-amber-900/20">
-            <Building2 className="h-8 w-8 text-slate-950" />
+          <div className="p-3 rounded-xl bg-gradient-to-br from-realty-gold to-realty-gold-dark mb-4 shadow-lg shadow-realty-gold/20">
+            <Building2 className="h-8 w-8 text-realty-navy" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-white">Platinum Elite CRM</CardTitle>
-          <CardDescription className="text-slate-400">
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">MakeItCRM</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Enter your credentials to access your dashboard
           </CardDescription>
         </CardHeader>
         <form method="POST" onSubmit={handleSubmit} autoComplete="off">
           <CardContent className="space-y-4">
             {error && (
-              <Alert variant="destructive" className="bg-red-950/20 border-red-900/50 text-red-400">
+              <Alert variant="destructive" className="bg-destructive/10 border-destructive/50 text-destructive">
                 <AlertCircle className="h-4 w-4" />
                 <AlertTitle>Error</AlertTitle>
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-slate-300">Email</Label>
+              <Label htmlFor="email" className="text-foreground">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -116,12 +116,12 @@ export default function LoginPage() {
                 placeholder="name@example.com"
                 required
                 autoComplete="off"
-                className="bg-slate-900/50 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-realty-gold/50"
+                className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-realty-gold/50"
               />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label htmlFor="password" title="password" className="text-slate-300">Password</Label>
+                <Label htmlFor="password" title="password" className="text-foreground">Password</Label>
                 <Link
                   href="/forgot-password"
                   className="text-xs text-realty-gold hover:text-realty-gold-light transition-colors"
@@ -135,14 +135,14 @@ export default function LoginPage() {
                 type="password"
                 required
                 autoComplete="off"
-                className="bg-slate-900/50 border-slate-800 text-white focus-visible:ring-realty-gold/50"
+                className="bg-background border-input text-foreground focus-visible:ring-realty-gold/50"
               />
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-realty-gold to-realty-gold-dark hover:from-realty-gold-light hover:to-realty-gold text-slate-950 font-semibold h-11"
+              className="w-full bg-gradient-to-r from-realty-gold to-realty-gold-dark hover:from-realty-gold-light hover:to-realty-gold text-realty-navy font-semibold h-11"
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -158,7 +158,7 @@ export default function LoginPage() {
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Try Demo Account
             </Button>
-            <div className="text-sm text-center text-slate-400">
+            <div className="text-sm text-center text-muted-foreground">
               Don&apos;t have an account?{" "}
               <Link
                 href="/register"

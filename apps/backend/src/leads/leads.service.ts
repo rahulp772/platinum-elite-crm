@@ -1,11 +1,32 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In, LessThan, MoreThan, LessThanOrEqual, Not, IsNull } from 'typeorm';
+import {
+  Repository,
+  In,
+  LessThan,
+  MoreThan,
+  LessThanOrEqual,
+  Not,
+  IsNull,
+  ILike,
+} from 'typeorm';
 import { Lead } from './entities/lead.entity';
-import { CreateLeadDto, UpdateLeadDto, LeadLookupDto } from './dto/create-lead.dto';
+import {
+  CreateLeadDto,
+  UpdateLeadDto,
+  LeadLookupDto,
+} from './dto/create-lead.dto';
 import { User } from '../users/entities/user.entity';
 import { AgentProfile } from '../users/entities/agent-profile.entity';
-import { LeadActivity, LeadActivityAction } from './entities/lead-activity.entity';
+import {
+  LeadActivity,
+  LeadActivityAction,
+} from './entities/lead-activity.entity';
 import { LeadStatus, LeadSource } from './enums/lead.enum';
 import { TeamsService } from '../teams/teams.service';
 import { LeadScoringService } from './services/lead-scoring.service';
@@ -60,12 +81,16 @@ export class LeadsService {
   }
 
   private async recalculateAgentClosingRate(agentId: string) {
-    const agentProfile = await this.agentProfileRepository.findOne({ where: { userId: agentId } });
+    const agentProfile = await this.agentProfileRepository.findOne({
+      where: { userId: agentId },
+    });
     if (!agentProfile) return;
 
     const [total, won] = await Promise.all([
       this.leadRepository.count({ where: { assignedToId: agentId } }),
-      this.leadRepository.count({ where: { assignedToId: agentId, status: LeadStatus.BOOKED } }),
+      this.leadRepository.count({
+        where: { assignedToId: agentId, status: LeadStatus.BOOKED },
+      }),
     ]);
 
     agentProfile.closingRate = total > 0 ? (won / total) * 100 : 0;
@@ -81,7 +106,14 @@ export class LeadsService {
     await this.agentProfileRepository.save(agentProfile);
   }
 
-  private async checkDuplicate(phone: string, tenantId: string): Promise<{ isDuplicate: boolean; existingLead?: Lead; isReInquiry?: boolean }> {
+  private async checkDuplicate(
+    phone: string,
+    tenantId: string,
+  ): Promise<{
+    isDuplicate: boolean;
+    existingLead?: Lead;
+    isReInquiry?: boolean;
+  }> {
     const existingLead = await this.leadRepository.findOne({
       where: { phone, tenantId },
     });
@@ -96,7 +128,8 @@ export class LeadsService {
 
     if (existingLead.status === LeadStatus.LOST && existingLead.lostAt) {
       const daysSinceLost = Math.floor(
-        (new Date().getTime() - new Date(existingLead.lostAt).getTime()) / (1000 * 60 * 60 * 24),
+        (new Date().getTime() - new Date(existingLead.lostAt).getTime()) /
+          (1000 * 60 * 60 * 24),
       );
       if (daysSinceLost >= COOLDOWN_DAYS) {
         return { isDuplicate: false, existingLead, isReInquiry: true };
@@ -107,12 +140,25 @@ export class LeadsService {
   }
 
   async create(createLeadDto: CreateLeadDto, currentUser: User) {
-    const { assignedToId, followUpAt, siteVisitScheduledAt, siteVisitDoneAt, ...leadData } = createLeadDto;
+    const {
+      assignedToId,
+      followUpAt,
+      siteVisitScheduledAt,
+      siteVisitDoneAt,
+      ...leadData
+    } = createLeadDto;
 
     const tenantId = currentUser.tenantId;
-    const checkResult = await this.checkDuplicate(createLeadDto.phone, tenantId);
+    const checkResult = await this.checkDuplicate(
+      createLeadDto.phone,
+      tenantId,
+    );
 
-    if (checkResult.isDuplicate && !checkResult.isReInquiry && checkResult.existingLead) {
+    if (
+      checkResult.isDuplicate &&
+      !checkResult.isReInquiry &&
+      checkResult.existingLead
+    ) {
       throw new BadRequestException({
         message: 'Lead with this phone number already exists',
         existingLead: {
@@ -129,7 +175,9 @@ export class LeadsService {
         where: { id: assignedToId, tenantId },
       });
       if (!user) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+        throw new NotFoundException(
+          `User with ID ${assignedToId} not found in your tenant`,
+        );
       }
       assignedToIdValue = user.id;
     }
@@ -140,7 +188,9 @@ export class LeadsService {
       assignedToId: assignedToIdValue,
       tenantId,
       followUpAt: followUpAt ? new Date(followUpAt) : null,
-      siteVisitScheduledAt: siteVisitScheduledAt ? new Date(siteVisitScheduledAt) : null,
+      siteVisitScheduledAt: siteVisitScheduledAt
+        ? new Date(siteVisitScheduledAt)
+        : null,
       siteVisitDoneAt: siteVisitDoneAt ? new Date(siteVisitDoneAt) : null,
       lastActivityAt: new Date(),
     });
@@ -158,7 +208,7 @@ export class LeadsService {
       }
     }
 
-const savedLead = await this.leadRepository.save(lead);
+    const savedLead = await this.leadRepository.save(lead);
 
     if (checkResult.isReInquiry && checkResult.existingLead) {
       await this.logActivity(
@@ -169,65 +219,131 @@ const savedLead = await this.leadRepository.save(lead);
         LeadStatus.NEW,
         `Re-inquiry after ${COOLDOWN_DAYS} days`,
       );
-      await this.leadRepository.update(checkResult.existingLead.id, { status: LeadStatus.NEW });
+      await this.leadRepository.update(checkResult.existingLead.id, {
+        status: LeadStatus.NEW,
+      });
     } else {
-      await this.logActivity(savedLead.id, currentUser.id, LeadActivityAction.CREATED, undefined, createLeadDto.status || LeadStatus.NEW);
+      await this.logActivity(
+        savedLead.id,
+        currentUser.id,
+        LeadActivityAction.CREATED,
+        undefined,
+        createLeadDto.status || LeadStatus.NEW,
+      );
     }
 
     return savedLead;
   }
 
-  async findAll(user: User) {
+  async findAll(
+    user: User,
+    options?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      status?: string;
+      source?: string;
+      assignedToId?: string;
+    },
+  ) {
     const { role, tenantId, isSuperAdmin } = user;
     const roleLevel = role?.level || 0;
     const currentUserId = user.id;
+    const {
+      page = 1,
+      limit = 20,
+      search,
+      status,
+      source,
+      assignedToId,
+    } = options || {};
 
     const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
 
-    if (isGlobalAdmin) {
-      return this.leadRepository.find({
-        relations: ['assignedTo'],
-        order: { createdAt: 'DESC' },
+    const buildWhereClause = (baseWhere: Record<string, unknown> = {}) => {
+      const where: Record<string, unknown> = { ...baseWhere };
+      if (status && status !== 'all') where.status = status;
+      if (source && source !== 'all') where.source = source;
+      if (assignedToId && assignedToId !== 'all')
+        where.assignedToId = assignedToId;
+      if (search) {
+        where.name = ILike(`%${search}%`);
+      }
+      return where;
+    };
+
+    const getBaseQuery = async () => {
+      const qb = this.leadRepository
+        .createQueryBuilder('lead')
+        .leftJoinAndSelect('lead.assignedTo', 'assignedTo')
+        .leftJoinAndSelect('assignedTo.role', 'role')
+        .orderBy('lead.createdAt', 'DESC');
+
+      if (isGlobalAdmin) {
+        return qb;
+      }
+
+      if (roleLevel >= 100) {
+        return qb.where('lead.tenantId = :tenantId', { tenantId });
+      }
+
+      if (roleLevel === 80 || roleLevel === 50) {
+        const teamMemberIds = await this.teamsService.getTeamLeadMembers(user);
+        if (teamMemberIds && teamMemberIds.length > 0) {
+          return qb.where(
+            '(lead.assignedToId = :currentUserId OR lead.assignedToId IN (:...teamMemberIds)) AND lead.tenantId = :tenantId',
+            { currentUserId, teamMemberIds, tenantId },
+          );
+        }
+        return qb.where(
+          'lead.assignedToId = :currentUserId AND lead.tenantId = :tenantId',
+          { currentUserId, tenantId },
+        );
+      }
+
+      return qb.where(
+        'lead.tenantId = :tenantId AND lead.assignedToId = :currentUserId',
+        { tenantId, currentUserId },
+      );
+    };
+
+    const baseQuery = await getBaseQuery();
+
+    let query = baseQuery.clone();
+
+    if (status && status !== 'all') {
+      query = query.andWhere('lead.status = :status', { status });
+    }
+    if (source && source !== 'all') {
+      query = query.andWhere('lead.source = :source', { source });
+    }
+    if (assignedToId && assignedToId !== 'all') {
+      query = query.andWhere('lead.assignedToId = :assignedToId', {
+        assignedToId,
       });
     }
-
-    if (roleLevel >= 100) {
-      return this.leadRepository.find({
-        where: { tenantId },
-        relations: ['assignedTo', 'assignedTo.role'],
-        order: { createdAt: 'DESC' },
-      });
+    if (search) {
+      query = query.andWhere(
+        '(lead.name ILIKE :search OR lead.email ILIKE :search OR lead.phone ILIKE :search)',
+        { search: `%${search}%` },
+      );
     }
 
-    if (roleLevel === 80) {
-      const teamMemberIds = await this.teamsService.getTeamLeadMembers(user);
-      return this.leadRepository.find({
-        where: [
-          { tenantId, assignedToId: currentUserId },
-          { tenantId, assignedToId: In(teamMemberIds) },
-        ],
-        relations: ['assignedTo', 'assignedTo.role'],
-        order: { createdAt: 'DESC' },
-      });
-    }
+    const total = await query.getCount();
+    const data = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
 
-    if (roleLevel === 50) {
-      const teamMemberIds = await this.teamsService.getTeamLeadMembers(user);
-      return this.leadRepository.find({
-        where: [
-          { tenantId, assignedToId: currentUserId },
-          { tenantId, assignedToId: In(teamMemberIds) },
-        ],
-        relations: ['assignedTo', 'assignedTo.role'],
-        order: { createdAt: 'DESC' },
-      });
-    }
-
-    return this.leadRepository.find({
-      where: { tenantId, assignedToId: currentUserId },
-      relations: ['assignedTo', 'assignedTo.role'],
-      order: { createdAt: 'DESC' },
-    });
+    return {
+      data,
+      metadata: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: string, user: User) {
@@ -248,7 +364,14 @@ const savedLead = await this.leadRepository.save(lead);
 
   async update(id: string, updateLeadDto: UpdateLeadDto, user: User) {
     const lead = await this.findOne(id, user);
-    const { assignedToId, followUpAt, siteVisitScheduledAt, siteVisitDoneAt, lostReason, ...leadData } = updateLeadDto;
+    const {
+      assignedToId,
+      followUpAt,
+      siteVisitScheduledAt,
+      siteVisitDoneAt,
+      lostReason,
+      ...leadData
+    } = updateLeadDto;
 
     const oldStatus = lead.status;
     const oldBudgetMin = lead.budgetMin;
@@ -261,10 +384,18 @@ const savedLead = await this.leadRepository.save(lead);
         where: { id: assignedToId, tenantId: user.tenantId },
       });
       if (!assignedToUser) {
-        throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+        throw new NotFoundException(
+          `User with ID ${assignedToId} not found in your tenant`,
+        );
       }
       lead.assignedTo = assignedToUser;
-      await this.logActivity(lead.id, user.id, LeadActivityAction.ASSIGNED, lead.assignedTo?.name, assignedToUser.name);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.ASSIGNED,
+        lead.assignedTo?.name,
+        assignedToUser.name,
+      );
     }
 
     Object.assign(lead, leadData);
@@ -272,24 +403,55 @@ const savedLead = await this.leadRepository.save(lead);
     const oldFollowUpAt = lead.followUpAt;
     if (followUpAt) {
       lead.followUpAt = new Date(followUpAt);
-      if (!oldFollowUpAt || oldFollowUpAt.getTime() !== new Date(followUpAt).getTime()) {
-        await this.logActivity(lead.id, user.id, LeadActivityAction.FOLLOWUP_SCHEDULED, 
-          oldFollowUpAt ? oldFollowUpAt.toISOString() : undefined, followUpAt);
+      if (
+        !oldFollowUpAt ||
+        oldFollowUpAt.getTime() !== new Date(followUpAt).getTime()
+      ) {
+        await this.logActivity(
+          lead.id,
+          user.id,
+          LeadActivityAction.FOLLOWUP_SCHEDULED,
+          oldFollowUpAt ? oldFollowUpAt.toISOString() : undefined,
+          followUpAt,
+        );
       }
     } else if (oldFollowUpAt && !followUpAt) {
-      await this.logActivity(lead.id, user.id, LeadActivityAction.FOLLOWUP_SCHEDULED, 
-        oldFollowUpAt.toISOString(), undefined);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.FOLLOWUP_SCHEDULED,
+        oldFollowUpAt.toISOString(),
+        undefined,
+      );
     }
     if (siteVisitScheduledAt) {
       lead.siteVisitScheduledAt = new Date(siteVisitScheduledAt);
-      await this.logActivity(lead.id, user.id, LeadActivityAction.SITE_VISIT_SCHEDULED, undefined, siteVisitScheduledAt);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.SITE_VISIT_SCHEDULED,
+        undefined,
+        siteVisitScheduledAt,
+      );
     }
     if (siteVisitDoneAt) {
       lead.siteVisitDoneAt = new Date(siteVisitDoneAt);
-      await this.logActivity(lead.id, user.id, LeadActivityAction.SITE_VISIT_DONE, undefined, siteVisitDoneAt);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.SITE_VISIT_DONE,
+        undefined,
+        siteVisitDoneAt,
+      );
     }
     if (leadData.status && leadData.status !== oldStatus) {
-      await this.logActivity(lead.id, user.id, LeadActivityAction.STATUS_CHANGED, oldStatus, leadData.status);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.STATUS_CHANGED,
+        oldStatus,
+        leadData.status,
+      );
 
       if (leadData.status === LeadStatus.LOST) {
         lead.lostAt = new Date();
@@ -306,13 +468,31 @@ const savedLead = await this.leadRepository.save(lead);
     const savedLead = await this.leadRepository.save(lead);
 
     if (leadData.budgetMin && leadData.budgetMin !== oldBudgetMin) {
-      await this.logActivity(lead.id, user.id, LeadActivityAction.BUDGET_UPDATED, String(oldBudgetMin), String(leadData.budgetMin));
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.BUDGET_UPDATED,
+        String(oldBudgetMin),
+        String(leadData.budgetMin),
+      );
     }
     if (leadData.budgetMax && leadData.budgetMax !== oldBudgetMax) {
-      await this.logActivity(lead.id, user.id, LeadActivityAction.BUDGET_UPDATED, String(oldBudgetMax), String(leadData.budgetMax));
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.BUDGET_UPDATED,
+        String(oldBudgetMax),
+        String(leadData.budgetMax),
+      );
     }
     if (leadData.source && leadData.source !== oldSource) {
-      await this.logActivity(lead.id, user.id, LeadActivityAction.SOURCE_UPDATED, oldSource, leadData.source);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.SOURCE_UPDATED,
+        oldSource,
+        leadData.source,
+      );
     }
 
     return savedLead;
@@ -363,7 +543,9 @@ const savedLead = await this.leadRepository.save(lead);
       where: { id: assignedToId, tenantId: user.tenantId },
     });
     if (!assignedToUser) {
-      throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+      throw new NotFoundException(
+        `User with ID ${assignedToId} not found in your tenant`,
+      );
     }
 
     const leads = await this.leadRepository.find({
@@ -374,7 +556,13 @@ const savedLead = await this.leadRepository.save(lead);
       const oldAssigned = lead.assignedToId;
       lead.assignedTo = assignedToUser;
       await this.leadRepository.save(lead);
-      await this.logActivity(lead.id, user.id, LeadActivityAction.ASSIGNED, oldAssigned, assignedToId);
+      await this.logActivity(
+        lead.id,
+        user.id,
+        LeadActivityAction.ASSIGNED,
+        oldAssigned,
+        assignedToId,
+      );
     }
 
     return { message: `${leads.length} leads assigned` };
@@ -431,7 +619,9 @@ const savedLead = await this.leadRepository.save(lead);
 
   async reassign(leadId: string, assignedToId: string, user: User) {
     if (!user.role || user.role.level < 80) {
-      throw new ForbiddenException('Only managers and admins can reassign leads');
+      throw new ForbiddenException(
+        'Only managers and admins can reassign leads',
+      );
     }
 
     const lead = await this.findOne(leadId, user);
@@ -441,7 +631,9 @@ const savedLead = await this.leadRepository.save(lead);
       where: { id: assignedToId, tenantId: user.tenantId },
     });
     if (!newAssignedUser) {
-      throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+      throw new NotFoundException(
+        `User with ID ${assignedToId} not found in your tenant`,
+      );
     }
 
     lead.assignedTo = newAssignedUser;
@@ -458,9 +650,14 @@ const savedLead = await this.leadRepository.save(lead);
     return { message: 'Lead reassigned successfully' };
   }
 
-  async logLeadActivity(leadId: string, action: string, description: string | undefined, user: User) {
+  async logLeadActivity(
+    leadId: string,
+    action: string,
+    description: string | undefined,
+    user: User,
+  ) {
     const lead = await this.findOne(leadId, user);
-    
+
     const activity = this.activityRepository.create({
       leadId: lead.id,
       userId: user.id,

@@ -1,15 +1,26 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Deal } from './entities/deal.entity';
-import { DealActivity, DealActivityAction } from './entities/deal-activity.entity';
+import {
+  DealActivity,
+  DealActivityAction,
+} from './entities/deal-activity.entity';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { User } from '../users/entities/user.entity';
 import { Property } from '../properties/entities/property.entity';
 import { DealStage, DealPriority } from './enums/deal.enum';
 
-const ACTIVE_STAGES = [DealStage.LEAD, DealStage.NEGOTIATION, DealStage.UNDER_CONTRACT];
+const ACTIVE_STAGES = [
+  DealStage.LEAD,
+  DealStage.NEGOTIATION,
+  DealStage.UNDER_CONTRACT,
+];
 
 @Injectable()
 export class DealsService {
@@ -50,7 +61,9 @@ export class DealsService {
         where: { id: propertyId, tenantId: user.tenantId },
       });
       if (!foundProperty) {
-        throw new NotFoundException(`Property with ID ${propertyId} not found in your tenant`);
+        throw new NotFoundException(
+          `Property with ID ${propertyId} not found in your tenant`,
+        );
       }
       property = foundProperty;
     }
@@ -62,7 +75,7 @@ export class DealsService {
       tenantId: user.tenantId,
     });
     const savedDeal = await this.dealRepository.save(deal);
-    
+
     await this.logActivity(
       savedDeal.id,
       user.id,
@@ -114,9 +127,11 @@ export class DealsService {
         where: { id: propertyId, tenantId: user.tenantId },
       });
       if (!foundProperty) {
-        throw new NotFoundException(`Property with ID ${propertyId} not found in your tenant`);
+        throw new NotFoundException(
+          `Property with ID ${propertyId} not found in your tenant`,
+        );
       }
-      
+
       if (propertyId !== oldPropertyId) {
         await this.logActivity(
           deal.id,
@@ -162,7 +177,10 @@ export class DealsService {
       );
     }
 
-    if (dealData.expectedCloseDate && oldExpectedClose !== dealData.expectedCloseDate) {
+    if (
+      dealData.expectedCloseDate &&
+      oldExpectedClose !== dealData.expectedCloseDate
+    ) {
       await this.logActivity(
         deal.id,
         user.id,
@@ -193,15 +211,21 @@ export class DealsService {
 
   async reassign(dealId: string, assignedToId: string, user: User) {
     if (!user.role || user.role.level < 80) {
-      throw new ForbiddenException('Only managers and admins can reassign deals');
+      throw new ForbiddenException(
+        'Only managers and admins can reassign deals',
+      );
     }
 
     const deal = await this.findOne(dealId, user);
     const oldAgentId = deal.agent.id;
 
-    const newAgent = await this.propertyRepository.manager.findOne(User, { where: { id: assignedToId, tenantId: user.tenantId } });
+    const newAgent = await this.propertyRepository.manager.findOne(User, {
+      where: { id: assignedToId, tenantId: user.tenantId },
+    });
     if (!newAgent) {
-      throw new NotFoundException(`User with ID ${assignedToId} not found in your tenant`);
+      throw new NotFoundException(
+        `User with ID ${assignedToId} not found in your tenant`,
+      );
     }
 
     deal.agent = newAgent;

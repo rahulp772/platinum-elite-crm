@@ -10,9 +10,18 @@ import {
   Request,
   Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { LeadsService } from './leads.service';
-import { CreateLeadDto, UpdateLeadDto, LeadLookupDto } from './dto/create-lead.dto';
+import {
+  CreateLeadDto,
+  UpdateLeadDto,
+  LeadLookupDto,
+} from './dto/create-lead.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { LeadAiEngineService } from './services/lead-ai-engine.service';
 
@@ -33,9 +42,30 @@ export class LeadsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all leads' })
-  findAll(@Request() req) {
-    return this.leadsService.findAll(req.user);
+  @ApiOperation({ summary: 'Get all leads with pagination' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
+  @ApiQuery({ name: 'search', type: String, required: false })
+  @ApiQuery({ name: 'status', type: String, required: false })
+  @ApiQuery({ name: 'source', type: String, required: false })
+  @ApiQuery({ name: 'assignedToId', type: String, required: false })
+  findAll(
+    @Request() req,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('source') source?: string,
+    @Query('assignedToId') assignedToId?: string,
+  ) {
+    return this.leadsService.findAll(req.user, {
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 20,
+      search,
+      status,
+      source,
+      assignedToId,
+    });
   }
 
   @Get('my')
@@ -91,7 +121,11 @@ export class LeadsController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update a lead' })
-  update(@Param('id') id: string, @Body() updateLeadDto: UpdateLeadDto, @Request() req) {
+  update(
+    @Param('id') id: string,
+    @Body() updateLeadDto: UpdateLeadDto,
+    @Request() req,
+  ) {
     return this.leadsService.update(id, updateLeadDto, req.user);
   }
 
@@ -103,19 +137,39 @@ export class LeadsController {
 
   @Post('bulk-assign')
   @ApiOperation({ summary: 'Bulk assign leads to a user' })
-  bulkAssign(@Body() body: { leadIds: string[]; assignedToId: string }, @Request() req) {
-    return this.leadsService.bulkAssign(body.leadIds, body.assignedToId, req.user);
+  bulkAssign(
+    @Body() body: { leadIds: string[]; assignedToId: string },
+    @Request() req,
+  ) {
+    return this.leadsService.bulkAssign(
+      body.leadIds,
+      body.assignedToId,
+      req.user,
+    );
   }
 
   @Post(':id/reassign')
   @ApiOperation({ summary: 'Reassign lead to another user' })
-  reassign(@Param('id') id: string, @Body() body: { assignedToId: string }, @Request() req) {
+  reassign(
+    @Param('id') id: string,
+    @Body() body: { assignedToId: string },
+    @Request() req,
+  ) {
     return this.leadsService.reassign(id, body.assignedToId, req.user);
   }
 
   @Post(':id/log-activity')
   @ApiOperation({ summary: 'Log activity for lead' })
-  logActivity(@Param('id') id: string, @Body() body: { action: string; description?: string }, @Request() req) {
-    return this.leadsService.logLeadActivity(id, body.action, body.description, req.user);
+  logActivity(
+    @Param('id') id: string,
+    @Body() body: { action: string; description?: string },
+    @Request() req,
+  ) {
+    return this.leadsService.logLeadActivity(
+      id,
+      body.action,
+      body.description,
+      req.user,
+    );
   }
 }

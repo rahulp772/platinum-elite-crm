@@ -1,5 +1,5 @@
 {
-  "name": "platinum-elite-crm",
+  "name": "makeitcrm",
   "private": true,
   "scripts": {
     "start": "turbo run start",

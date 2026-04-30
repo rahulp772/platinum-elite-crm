@@ -20,8 +20,9 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { useCreateProperty } from "@/hooks/use-properties"
+import { createProperty } from "@/app/actions/properties"
 import { PropertyStatus, PropertyType } from "@/types/property"
+import { toast } from "sonner"
 
 interface AddPropertyDialogProps {
     open: boolean
@@ -29,8 +30,8 @@ interface AddPropertyDialogProps {
 }
 
 export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps) {
-    const createProperty = useCreateProperty()
-    
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         const formData = new FormData(e.currentTarget)
@@ -48,15 +49,20 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
             type: formData.get('type') as PropertyType,
             status: formData.get('status') as PropertyStatus,
             description: formData.get('description') as string,
-            images: ["https://images.unsplash.com/photo-1600585154340-be6199f7a096?q=80&w=2070&auto=format&fit=crop"], // Placeholder
-            features: ["Modern Kitchen", "Hardwood Floors"], // Placeholder
+            images: ["https://images.unsplash.com/photo-1600585154340-be6199f7a096?q=80&w=2070&auto=format&fit=crop"],
+            features: ["Modern Kitchen", "Hardwood Floors"],
         }
 
         try {
-            await createProperty.mutateAsync(propertyData)
+            setIsSubmitting(true)
+            await createProperty(propertyData)
+            toast.success("Property created successfully")
             onOpenChange(false)
         } catch (error) {
             console.error("Failed to create property:", error)
+            toast.error("Failed to create property. Please try again.")
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -157,8 +163,8 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
                         <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={createProperty.isPending}>
-                            {createProperty.isPending ? "Adding..." : "Add Property"}
+                        <Button type="submit" disabled={isSubmitting}>
+                            {isSubmitting ? "Adding..." : "Add Property"}
                         </Button>
                     </DialogFooter>
                 </form>

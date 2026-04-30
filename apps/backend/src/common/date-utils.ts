@@ -11,8 +11,12 @@ export const dateUtils = {
         const parsed = new Date(date);
         return isNaN(parsed.getTime()) ? null : parsed;
       }
-      
-      const utcString = date.includes('T') ? (date.endsWith('Z') ? date : date + 'Z') : date;
+
+      const utcString = date.includes('T')
+        ? date.endsWith('Z')
+          ? date
+          : date + 'Z'
+        : date;
       const parsedDate = new Date(utcString);
       return isNaN(parsedDate.getTime()) ? null : parsedDate;
     }
@@ -28,7 +32,7 @@ export const dateUtils = {
   toLocalDateTimeInput(isoDate: Date | string | null | undefined): string {
     const utcDate = dateUtils.toUTC(isoDate);
     if (!utcDate) return '';
-    
+
     return utcDate.toISOString().slice(0, 16);
   },
 
@@ -101,5 +105,5 @@ export const dateUtils = {
     if (diffDays < 7) return `${diffDays}d ago`;
 
     return utcDate.toLocaleDateString();
-  }
+  },
 };

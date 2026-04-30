@@ -262,11 +262,21 @@ export function createColumns(onEdit?: (lead: Lead) => void): ColumnDef<Lead>[] 
     },
 ]}
 
+interface PaginationMetadata {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+}
+
 interface LeadsTableProps {
     data: Lead[]
     onEdit?: (lead: Lead) => void
     onSelectionChange?: (selectedLeads: Lead[]) => void
     onRowClick?: (lead: Lead) => void
+    pagination?: PaginationMetadata | null
+    onPageChange?: (page: number) => void
+    onLimitChange?: (limit: number) => void
 }
 
 function getCellClass(index: number, total: number): string {
@@ -289,7 +299,7 @@ function getHeaderClass(index: number, total: number): string {
     return "bg-muted/30 px-4 py-3 h-12 text-sm font-semibold align-middle"
 }
 
-export function LeadsTable({ data, onEdit, onSelectionChange }: LeadsTableProps) {
+export function LeadsTable({ data, onEdit, onSelectionChange, pagination, onPageChange, onLimitChange }: LeadsTableProps) {
     const [sorting, setSorting] = React.useState<SortingState>([])
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
     const [rowSelection, setRowSelection] = React.useState<Record<string, boolean>>({})
@@ -329,6 +339,11 @@ export function LeadsTable({ data, onEdit, onSelectionChange }: LeadsTableProps)
         getRowId: (row) => row.id,
         enableRowSelection: true,
         state: { sorting, columnFilters, rowSelection },
+        initialState: {
+            pagination: {
+                pageSize: pagination?.limit || 20,
+            },
+        },
     })
 
     const headerCount = table.getAllColumns().length
@@ -393,95 +408,184 @@ export function LeadsTable({ data, onEdit, onSelectionChange }: LeadsTableProps)
             <div className="flex items-center justify-between px-2 py-4 border-t bg-muted/5">
                 <div className="flex items-center gap-6">
                     <div className="text-sm text-muted-foreground font-medium">
-                        {(() => {
-                            const total = table.getFilteredRowModel().rows.length
-                            const pageSize = table.getState().pagination.pageSize
-                            const pageIndex = table.getState().pagination.pageIndex
-                            const start = total === 0 ? 0 : pageIndex * pageSize + 1
-                            const end = Math.min(pageIndex * pageSize + pageSize, total)
-                            return (
-                                <>
-                                    Showing <span className="text-foreground font-semibold">{start}</span> to{" "}
-                                    <span className="text-foreground font-semibold">{end}</span> of{" "}
-                                    <span className="text-foreground font-semibold">{total}</span> leads
-                                </>
-                            )
-                        })()}
+                        {pagination ? (
+                            <>
+                                Showing <span className="text-foreground font-semibold">
+                                    {(pagination.page - 1) * pagination.limit + 1}
+                                </span> to{" "}
+                                <span className="text-foreground font-semibold">
+                                    {Math.min(pagination.page * pagination.limit, pagination.total)}
+                                </span> of{" "}
+                                <span className="text-foreground font-semibold">{pagination.total}</span> leads
+                            </>
+                        ) : (
+                            (() => {
+                                const total = table.getFilteredRowModel().rows.length
+                                const pageSize = table.getState().pagination.pageSize
+                                const pageIndex = table.getState().pagination.pageIndex
+                                const start = total === 0 ? 0 : pageIndex * pageSize + 1
+                                const end = Math.min(pageIndex * pageSize + pageSize, total)
+                                return (
+                                    <>
+                                        Showing <span className="text-foreground font-semibold">{start}</span> to{" "}
+                                        <span className="text-foreground font-semibold">{end}</span> of{" "}
+                                        <span className="text-foreground font-semibold">{total}</span> leads
+                                    </>
+                                )
+                            })()
+                        )}
                     </div>
-                    <div className="flex items-center gap-2">
-                        <p className="text-sm text-muted-foreground font-medium">Rows per page</p>
-                        <Select
-                            value={`${table.getState().pagination.pageSize}`}
-                            onValueChange={(value) => {
-                                table.setPageSize(Number(value))
-                            }}
+                    {pagination ? (
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm text-muted-foreground font-medium">Rows per page</p>
+                            <Select
+                                value={`${pagination.limit}`}
+                                onValueChange={(value) => onLimitChange?.(Number(value))}
+                            >
+                                <SelectTrigger className="h-8 w-[70px] bg-background">
+                                    <SelectValue placeholder={pagination.limit} />
+                                </SelectTrigger>
+                                <SelectContent side="top" className="bg-background border-border">
+                                    {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+                                        <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
+                                            {pageSize}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                            <p className="text-sm text-muted-foreground font-medium">Rows per page</p>
+                            <Select
+                                value={`${table.getState().pagination.pageSize}`}
+                                onValueChange={(value) => {
+                                    table.setPageSize(Number(value))
+                                }}
+                            >
+                                <SelectTrigger className="h-8 w-[70px] bg-background">
+                                    <SelectValue placeholder={table.getState().pagination.pageSize} />
+                                </SelectTrigger>
+                                <SelectContent side="top" className="bg-background border-border">
+                                    {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+                                        <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
+                                            {pageSize}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    )}
+                </div>
+                {pagination ? (
+                    <div className="flex items-center space-x-2">
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => onPageChange?.(pagination.page - 1)}
+                            disabled={pagination.page <= 1}
+                            className="h-8 px-3"
                         >
-                            <SelectTrigger className="h-8 w-[70px] bg-background">
-                                <SelectValue placeholder={table.getState().pagination.pageSize} />
-                            </SelectTrigger>
-                            <SelectContent side="top" className="bg-background border-border">
-                                {[10, 20, 30, 40, 50, 100].map((pageSize) => (
-                                    <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
-                                        {pageSize}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="flex items-center space-x-2">
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => table.previousPage()} 
-                        disabled={!table.getCanPreviousPage()} 
-                        className="h-8 px-3"
-                    >
-                        Previous
-                    </Button>
-                    <div className="flex items-center gap-1">
-                        {(() => {
-                            const totalPages = table.getPageCount()
-                            const currentPage = table.getState().pagination.pageIndex + 1
-                            
-                            const getVisiblePages = (current: number, total: number) => {
-                                if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
-                                if (current <= 3) return [1, 2, 3, 4, "...", total]
-                                if (current >= total - 2) return [1, "...", total - 3, total - 2, total - 1, total]
-                                return [1, "...", current - 1, current, current + 1, "...", total]
-                            }
+                            Previous
+                        </Button>
+                        <div className="flex items-center gap-1">
+                            {(() => {
+                                const currentPage = pagination.page
+                                const totalPages = pagination.totalPages
+                                
+                                const getVisiblePages = (current: number, total: number) => {
+                                    if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+                                    if (current <= 3) return [1, 2, 3, 4, "...", total]
+                                    if (current >= total - 2) return [1, "...", total - 3, total - 2, total - 1, total]
+                                    return [1, "...", current - 1, current, current + 1, "...", total]
+                                }
 
-                            return getVisiblePages(currentPage, totalPages).map((page, i) => (
-                                <React.Fragment key={i}>
-                                    {page === "..." ? (
-                                        <span className="px-2 text-muted-foreground text-sm">...</span>
-                                    ) : (
-                                        <Button
-                                            variant={currentPage === page ? "default" : "ghost"}
-                                            size="sm"
-                                            onClick={() => table.setPageIndex((page as number) - 1)}
-                                            className={cn(
-                                                "h-8 w-8 p-0 text-xs font-semibold",
-                                                currentPage === page ? "bg-realty-gold text-primary-foreground hover:bg-realty-gold/90" : "hover:bg-realty-gold/10 hover:text-realty-gold"
-                                            )}
-                                        >
-                                            {page}
-                                        </Button>
-                                    )}
-                                </React.Fragment>
-                            ))
-                        })()}
+                                return getVisiblePages(currentPage, totalPages).map((page, i) => (
+                                    <React.Fragment key={i}>
+                                        {page === "..." ? (
+                                            <span className="px-2 text-muted-foreground text-sm">...</span>
+                                        ) : (
+                                            <Button
+                                                variant={currentPage === page ? "default" : "ghost"}
+                                                size="sm"
+                                                onClick={() => onPageChange?.(page as number)}
+                                                className={cn(
+                                                    "h-8 w-8 p-0 text-xs font-semibold",
+                                                    currentPage === page ? "bg-realty-gold text-primary-foreground hover:bg-realty-gold/90" : "hover:bg-realty-gold/10 hover:text-realty-gold"
+                                                )}
+                                            >
+                                                {page}
+                                            </Button>
+                                        )}
+                                    </React.Fragment>
+                                ))
+                            })()}
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => onPageChange?.(pagination.page + 1)}
+                            disabled={pagination.page >= pagination.totalPages}
+                            className="h-8 px-3"
+                        >
+                            Next
+                        </Button>
                     </div>
-                    <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => table.nextPage()} 
-                        disabled={!table.getCanNextPage()} 
-                        className="h-8 px-3"
-                    >
-                        Next
-                    </Button>
-                </div>
+                ) : (
+                    <div className="flex items-center space-x-2">
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => table.previousPage()} 
+                            disabled={!table.getCanPreviousPage()} 
+                            className="h-8 px-3"
+                        >
+                            Previous
+                        </Button>
+                        <div className="flex items-center gap-1">
+                            {(() => {
+                                const totalPages = table.getPageCount()
+                                const currentPage = table.getState().pagination.pageIndex + 1
+                                
+                                const getVisiblePages = (current: number, total: number) => {
+                                    if (total <= 5) return Array.from({ length: total }, (_, i) => i + 1)
+                                    if (current <= 3) return [1, 2, 3, 4, "...", total]
+                                    if (current >= total - 2) return [1, "...", total - 3, total - 2, total - 1, total]
+                                    return [1, "...", current - 1, current, current + 1, "...", total]
+                                }
+
+                                return getVisiblePages(currentPage, totalPages).map((page, i) => (
+                                    <React.Fragment key={i}>
+                                        {page === "..." ? (
+                                            <span className="px-2 text-muted-foreground text-sm">...</span>
+                                        ) : (
+                                            <Button
+                                                variant={currentPage === page ? "default" : "ghost"}
+                                                size="sm"
+                                                onClick={() => table.setPageIndex((page as number) - 1)}
+                                                className={cn(
+                                                    "h-8 w-8 p-0 text-xs font-semibold",
+                                                    currentPage === page ? "bg-realty-gold text-primary-foreground hover:bg-realty-gold/90" : "hover:bg-realty-gold/10 hover:text-realty-gold"
+                                                )}
+                                            >
+                                                {page}
+                                            </Button>
+                                        )}
+                                    </React.Fragment>
+                                ))
+                            })()}
+                        </div>
+                        <Button 
+                            variant="outline" 
+                            size="sm" 
+                            onClick={() => table.nextPage()} 
+                            disabled={!table.getCanNextPage()} 
+                            className="h-8 px-3"
+                        >
+                            Next
+                        </Button>
+                    </div>
+                )}
             </div>
         </div>
     )

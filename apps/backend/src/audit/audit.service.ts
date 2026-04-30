@@ -49,7 +49,11 @@ export class AuditService {
     return this.auditRepository.save(auditLog);
   }
 
-  async logLoginSuccess(user: User, ipAddress?: string, userAgent?: string): Promise<void> {
+  async logLoginSuccess(
+    user: User,
+    ipAddress?: string,
+    userAgent?: string,
+  ): Promise<void> {
     await this.log({
       userId: user.id,
       tenantId: user.tenantId,
@@ -95,7 +99,9 @@ export class AuditService {
     });
   }
 
-  async query(query: AuditLogQuery): Promise<{ data: AuditLog[]; total: number }> {
+  async query(
+    query: AuditLogQuery,
+  ): Promise<{ data: AuditLog[]; total: number }> {
     if (!this.isEnabled()) {
       return { data: [], total: 0 };
     }

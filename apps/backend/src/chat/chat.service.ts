@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, Not, IsNull } from 'typeorm';
 import { Conversation } from './entities/conversation.entity';
@@ -41,29 +45,36 @@ export class ChatService {
 
   async getConversations(user: User): Promise<ConversationWithDetails[]> {
     const userId = user.id;
-    const tenantId = user.isSuperAdmin ? null : user.tenantId;
+    const userTenantId = user.tenantId;
 
-    const allUsers = await this.userRepository
-      .createQueryBuilder('user')
-      .where('user.id != :userId', { userId })
-      .andWhere(tenantId ? 'user.tenantId = :tenantId' : 'user.tenantId IS NULL', { tenantId: tenantId || undefined })
-      .getMany();
+    let userFilter: any = {};
+    if (!user.isSuperAdmin) {
+      userFilter = { tenantId: userTenantId };
+    }
 
-    const userConversations = await this.conversationRepository
-      .createQueryBuilder('conv')
-      .innerJoin('conv.participants', 'participant', 'participant.id = :userId', { userId })
-      .leftJoinAndSelect('conv.participants', 'allParticipants')
-      .where(tenantId ? 'conv.tenantId = :tenantId' : 'conv.tenantId IS NULL', { tenantId: tenantId || undefined })
-      .orderBy('conv.updatedAt', 'DESC')
-      .getMany();
+    const allUsers = await this.userRepository.find({
+      where: { ...userFilter, id: Not(userId) },
+    });
 
-    const convMap = new Map(userConversations.map(c => [c.id, c]));
+    let convFilter: any = {};
+    if (!user.isSuperAdmin) {
+      convFilter = { tenantId: userTenantId };
+    }
+
+    const userConversations = await this.conversationRepository.find({
+      where: convFilter,
+      relations: ['participants'],
+    });
+
+    const userConversationsWithCurrentUser = userConversations.filter((conv) =>
+      conv.participants.some((p) => p.id === userId),
+    );
 
     const results: ConversationWithDetails[] = [];
-    
+
     for (const u of allUsers) {
-      const existingConv = userConversations.find(conv => 
-        conv.participants.some(p => p.id === u.id)
+      const existingConv = userConversationsWithCurrentUser.find((conv) =>
+        conv.participants.some((p) => p.id === u.id),
       );
 
       if (existingConv) {
@@ -73,14 +84,16 @@ export class ChatService {
           take: 1,
         });
 
-        const lastMessage = messages[0] ? {
-          id: messages[0].id,
-          content: messages[0].content,
-          senderId: messages[0].senderId,
-          timestamp: messages[0].timestamp,
-          read: messages[0].read,
-          attachments: messages[0].attachments,
-        } : undefined;
+        const lastMessage = messages[0]
+          ? {
+              id: messages[0].id,
+              content: messages[0].content,
+              senderId: messages[0].senderId,
+              timestamp: messages[0].timestamp,
+              read: messages[0].read,
+              attachments: messages[0].attachments,
+            }
+          : undefined;
 
         const unreadCount = await this.messageRepository.count({
           where: {
@@ -119,7 +132,12 @@ export class ChatService {
     return results;
   }
 
-  async getMessages(conversationId: string, user: User, page: number = 1, limit: number = 50): Promise<PaginatedMessages> {
+  async getMessages(
+    conversationId: string,
+    user: User,
+    page: number = 1,
+    limit: number = 50,
+  ): Promise<PaginatedMessages> {
     const conversation = await this.conversationRepository.findOne({
       where: { id: conversationId },
       relations: ['participants'],
@@ -129,13 +147,18 @@ export class ChatService {
       throw new NotFoundException('Conversation not found');
     }
 
-    const isParticipant = conversation.participants.some(p => p.id === user.id);
+    const isParticipant = conversation.participants.some(
+      (p) => p.id === user.id,
+    );
     if (!isParticipant && !user.isSuperAdmin) {
-      throw new ForbiddenException('You are not a participant in this conversation');
+      throw new ForbiddenException(
+        'You are not a participant in this conversation',
+      );
     }
 
     const userId = user.id;
-    const tenantId = user.isSuperAdmin ? null : user.tenantId;
+    const conversationTenantId = conversation.tenantId;
+    const userTenantId = user.isSuperAdmin ? null : user.tenantId;
 
     let query = this.messageRepository
       .createQueryBuilder('message')
@@ -143,8 +166,11 @@ export class ChatService {
       .where('message.conversationId = :conversationId', { conversationId });
 
     if (!user.isSuperAdmin) {
-      if (tenantId) {
-        query = query.andWhere('message.tenantId = :tenantId', { tenantId });
+      if (conversationTenantId) {
+        query = query.andWhere(
+          '(message.tenantId = :tenantId OR message.tenantId IS NULL)',
+          { tenantId: conversationTenantId },
+        );
       } else {
         query = query.andWhere('message.tenantId IS NULL');
       }
@@ -159,15 +185,17 @@ export class ChatService {
       .getMany();
 
     return {
-      messages: messages.map(msg => ({
+      messages: messages.map((msg) => ({
         id: msg.id,
         content: msg.content,
         senderId: msg.senderId,
-        sender: msg.sender ? {
-          id: msg.sender.id,
-          name: msg.sender.name,
-          avatar: (msg.sender as any).avatar,
-        } : undefined,
+        sender: msg.sender
+          ? {
+              id: msg.sender.id,
+              name: msg.sender.name,
+              avatar: (msg.sender as any).avatar,
+            }
+          : undefined,
         conversationId: conversationId,
         timestamp: msg.timestamp,
         read: msg.read,
@@ -180,34 +208,49 @@ export class ChatService {
     };
   }
 
-  async sendMessage(conversationId: string, content: string | undefined, sender: User, attachments?: any[]) {
+  async sendMessage(
+    conversationId: string,
+    content: string | undefined,
+    sender: User,
+    attachments?: any[],
+  ) {
     const conversation = await this.conversationRepository.findOne({
       where: { id: conversationId },
       relations: ['participants'],
     });
 
     if (!conversation) {
-      throw new NotFoundException(`Conversation with ID ${conversationId} not found`);
+      throw new NotFoundException(
+        `Conversation with ID ${conversationId} not found`,
+      );
     }
 
-    const isParticipant = conversation.participants.some(p => p.id === sender.id);
+    const isParticipant = conversation.participants.some(
+      (p) => p.id === sender.id,
+    );
     if (!isParticipant && !sender.isSuperAdmin) {
-      throw new ForbiddenException('You are not a participant in this conversation');
+      throw new ForbiddenException(
+        'You are not a participant in this conversation',
+      );
     }
+
+    const messageTenantId = conversation.tenantId;
 
     const message = this.messageRepository.create({
       content: content || '',
       senderId: sender.id,
       sender: sender,
       conversationId: conversationId,
-      tenantId: sender.tenantId,
+      tenantId: messageTenantId,
       attachments: attachments,
     });
 
-    await this.conversationRepository.update(conversationId, { updatedAt: new Date() });
-    
+    await this.conversationRepository.update(conversationId, {
+      updatedAt: new Date(),
+    });
+
     const savedMessage = await this.messageRepository.save(message);
-    
+
     return {
       id: savedMessage.id,
       content: savedMessage.content,
@@ -221,7 +264,7 @@ export class ChatService {
       timestamp: savedMessage.timestamp,
       read: savedMessage.read,
       attachments: savedMessage.attachments,
-      participants: conversation.participants.map(p => ({
+      participants: conversation.participants.map((p) => ({
         id: p.id,
         name: p.name,
       })),
@@ -230,32 +273,46 @@ export class ChatService {
 
   async createConversation(participantIds: string[], user: User) {
     const userId = user.id;
-    const tenantId = user.isSuperAdmin ? null : user.tenantId;
+    const userTenantId = user.tenantId;
     const allParticipantIds = [userId, ...participantIds];
 
-    if (tenantId) {
+    if (userTenantId) {
       const existingConversation = await this.conversationRepository
         .createQueryBuilder('conv')
-        .innerJoin('conv.participants', 'participant', 'participant.id IN (:...participantIds)', { 
-          participantIds: allParticipantIds 
-        })
-        .where('conv.tenantId = :tenantId', { tenantId })
+        .innerJoin(
+          'conv.participants',
+          'participant',
+          'participant.id IN (:...participantIds)',
+          {
+            participantIds: allParticipantIds,
+          },
+        )
+        .where('conv.tenantId = :tenantId', { tenantId: userTenantId })
         .groupBy('conv.id')
-        .having('COUNT(participant.id) = :count', { count: allParticipantIds.length })
+        .having('COUNT(participant.id) = :count', {
+          count: allParticipantIds.length,
+        })
         .getOne();
 
       if (existingConversation) {
         return this.getConversationWithParticipants(existingConversation.id);
       }
-    } else if (!user.isSuperAdmin) {
+    } else {
       const existingConversation = await this.conversationRepository
         .createQueryBuilder('conv')
-        .innerJoin('conv.participants', 'participant', 'participant.id IN (:...participantIds)', { 
-          participantIds: allParticipantIds 
-        })
+        .innerJoin(
+          'conv.participants',
+          'participant',
+          'participant.id IN (:...participantIds)',
+          {
+            participantIds: allParticipantIds,
+          },
+        )
         .where('conv.tenantId IS NULL')
         .groupBy('conv.id')
-        .having('COUNT(participant.id) = :count', { count: allParticipantIds.length })
+        .having('COUNT(participant.id) = :count', {
+          count: allParticipantIds.length,
+        })
         .getOne();
 
       if (existingConversation) {
@@ -263,7 +320,10 @@ export class ChatService {
       }
     }
 
-    const participants = await this.userRepository.findByIds([userId, ...participantIds]);
+    const participants = await this.userRepository.findByIds([
+      userId,
+      ...participantIds,
+    ]);
 
     if (participants.length !== allParticipantIds.length) {
       throw new NotFoundException('One or more participants not found');
@@ -273,7 +333,7 @@ export class ChatService {
       participants,
       tenantId: user.tenantId,
     });
-    
+
     const saved = await this.conversationRepository.save(conversation);
     return this.getConversationWithParticipants(saved.id);
   }
@@ -294,18 +354,20 @@ export class ChatService {
       take: 1,
     });
 
-    const lastMessage = messages[0] ? {
-      id: messages[0].id,
-      content: messages[0].content,
-      senderId: messages[0].senderId,
-      timestamp: messages[0].timestamp,
-      read: messages[0].read,
-      attachments: messages[0].attachments,
-    } : undefined;
+    const lastMessage = messages[0]
+      ? {
+          id: messages[0].id,
+          content: messages[0].content,
+          senderId: messages[0].senderId,
+          timestamp: messages[0].timestamp,
+          read: messages[0].read,
+          attachments: messages[0].attachments,
+        }
+      : undefined;
 
     return {
       id: conversation.id,
-      participants: conversation.participants.map(p => ({
+      participants: conversation.participants.map((p) => ({
         id: p.id,
         name: p.name,
         email: p.email,

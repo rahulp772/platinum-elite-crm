@@ -6,6 +6,8 @@ import { useDeals } from "@/hooks/use-deals"
 import { Button } from "@/components/ui/button"
 import { Plus, LoaderCircle } from "lucide-react"
 
+export const dynamic = 'force-dynamic'
+
 export default function DealsPage() {
     const { data: deals, isLoading, isError } = useDeals()
 

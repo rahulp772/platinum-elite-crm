@@ -1,4 +1,4 @@
-# SOC 2 Compliance TODO - Platinum Elite CRM
+# SOC 2 Compliance TODO - MakeItCRM
 
 > Last Updated: 2026-04-25
 > Target: SOC 2 Type II (after implementing all items)

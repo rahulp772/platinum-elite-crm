@@ -22,11 +22,13 @@ export class LeadAssignmentService {
    */
   async assignAgent(lead: Lead): Promise<string | null> {
     if (!lead.tenantId) {
-      this.logger.warn(`Cannot assign lead ${lead.id} because it has no tenantId`);
+      this.logger.warn(
+        `Cannot assign lead ${lead.id} because it has no tenantId`,
+      );
       return null;
     }
 
-    let agents = await this.userRepository.find({
+    const agents = await this.userRepository.find({
       where: { tenantId: lead.tenantId },
       relations: ['role', 'agentProfile'],
     });
@@ -51,7 +53,9 @@ export class LeadAssignmentService {
     const eligibleAgents = this.filterEligibleAgents(agentsWithProfiles, lead);
 
     if (eligibleAgents.length === 0) {
-      return agentsWithProfiles[Math.floor(Math.random() * agentsWithProfiles.length)].id;
+      return agentsWithProfiles[
+        Math.floor(Math.random() * agentsWithProfiles.length)
+      ].id;
     }
 
     let selectedAgent: User | null = null;
@@ -65,7 +69,8 @@ export class LeadAssignmentService {
     }
 
     if (!selectedAgent) {
-      selectedAgent = eligibleAgents[Math.floor(Math.random() * eligibleAgents.length)];
+      selectedAgent =
+        eligibleAgents[Math.floor(Math.random() * eligibleAgents.length)];
     }
 
     return selectedAgent.id;
@@ -84,7 +89,8 @@ export class LeadAssignmentService {
         if (!match) return false;
       }
       if (profile.budgetSpecializations?.length) {
-        const budgetMid = ((lead.budgetMin || 0) + (lead.budgetMax || lead.budgetMin || 0)) / 2;
+        const budgetMid =
+          ((lead.budgetMin || 0) + (lead.budgetMax || lead.budgetMin || 0)) / 2;
         const match = profile.budgetSpecializations.some((range) => {
           const [min, max] = range.split('-').map(Number);
           return budgetMid >= min && budgetMid <= max;
@@ -106,7 +112,7 @@ export class LeadAssignmentService {
 
       const closingRate = Number(profile.closingRate) || 0;
       const availabilityScore = 1 / ((profile.activeLeadCount || 0) + 1);
-      const score = (closingRate * 0.6) + (availabilityScore * 40);
+      const score = closingRate * 0.6 + availabilityScore * 40;
 
       if (score > bestScore) {
         bestScore = score;
@@ -137,7 +143,9 @@ export class LeadAssignmentService {
 
   private getJuniorAgent(agents: User[]): User | null {
     // Look for 'junior' experience level
-    const juniors = agents.filter((a) => a.agentProfile?.experienceLevel === 'junior');
+    const juniors = agents.filter(
+      (a) => a.agentProfile?.experienceLevel === 'junior',
+    );
     if (juniors.length > 0) {
       return this.getBalancedAgent(juniors);
     }
