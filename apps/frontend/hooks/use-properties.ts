@@ -2,11 +2,35 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Property } from "@/types/property"
 
-export function useProperties() {
+export interface PropertiesFilters {
+    page?: number
+    limit?: number
+    search?: string
+    status?: string
+    type?: string
+    sortBy?: string
+}
+
+interface PaginatedResponse<T> {
+    data: T[]
+    metadata: {
+        page: number
+        limit: number
+        total: number
+        totalPages: number
+    }
+}
+
+export function useProperties(filters?: PropertiesFilters) {
     return useQuery({
-        queryKey: ["properties"],
+        queryKey: ["properties", filters],
         queryFn: async () => {
-            const { data } = await api.get<Property[]>("/properties")
+            const params = Object.fromEntries(
+                Object.entries(filters || {}).filter(([, v]) => v !== undefined && v !== "")
+            )
+            const { data } = await api.get<PaginatedResponse<Property>>("/properties", {
+                params,
+            })
             return data
         },
     })

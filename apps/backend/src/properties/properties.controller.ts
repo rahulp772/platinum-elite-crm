@@ -8,8 +8,9 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { PropertiesService } from './properties.service';
 import { CreatePropertyDto } from './dto/create-property.dto';
 import { UpdatePropertyDto } from './dto/update-property.dto';
@@ -29,9 +30,30 @@ export class PropertiesController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all property listings' })
-  findAll(@Request() req) {
-    return this.propertiesService.findAll(req.user);
+  @ApiOperation({ summary: 'Get all property listings with pagination' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
+  @ApiQuery({ name: 'search', type: String, required: false })
+  @ApiQuery({ name: 'status', type: String, required: false })
+  @ApiQuery({ name: 'type', type: String, required: false })
+  @ApiQuery({ name: 'sortBy', type: String, required: false })
+  findAll(
+    @Request() req,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('status') status?: string,
+    @Query('type') type?: string,
+    @Query('sortBy') sortBy?: string,
+  ) {
+    return this.propertiesService.findAll(req.user, {
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 20,
+      search,
+      status,
+      type,
+      sortBy,
+    });
   }
 
   @Get(':id/related')

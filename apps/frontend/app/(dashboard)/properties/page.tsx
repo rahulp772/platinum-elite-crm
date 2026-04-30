@@ -4,14 +4,20 @@ import * as React from "react"
 import { PropertyCard } from "@/components/properties/property-card"
 import { PropertyFilters } from "@/components/properties/property-filters"
 import { AddPropertyDialog } from "@/components/properties/add-property-dialog"
-import { useProperties } from "@/hooks/use-properties"
+import { useProperties, PropertiesFilters } from "@/hooks/use-properties"
 import { Button } from "@/components/ui/button"
 import { LayoutGrid, List, LoaderCircle, Plus } from "lucide-react"
-import { Property } from "@/types/property"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 export default function PropertiesPage() {
-    const { data: properties, isLoading, isError } = useProperties()
-    const [filteredProperties, setFilteredProperties] = React.useState<Property[]>([])
+    const [page, setPage] = React.useState(1)
+    const [limit, setLimit] = React.useState(20)
     const [searchQuery, setSearchQuery] = React.useState("")
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [typeFilter, setTypeFilter] = React.useState("all")
@@ -19,52 +25,27 @@ export default function PropertiesPage() {
     const [view, setView] = React.useState<"grid" | "list">("grid")
     const [isAddOpen, setIsAddOpen] = React.useState(false)
 
-    // Apply filters and sorting
-    React.useEffect(() => {
-        if (!properties) return
+    const filters = React.useMemo<PropertiesFilters>(() => ({
+        page,
+        limit,
+        search: searchQuery || undefined,
+        status: statusFilter !== "all" ? statusFilter : undefined,
+        type: typeFilter !== "all" ? typeFilter : undefined,
+        sortBy,
+    }), [page, limit, searchQuery, statusFilter, typeFilter, sortBy])
 
-        let filtered = [...properties]
+    const { data: propertiesData, isLoading, isError } = useProperties(filters)
+    const properties = propertiesData?.data || []
+    const metadata = propertiesData?.metadata
 
-        // Search filter
-        if (searchQuery) {
-            filtered = filtered.filter(
-                (property) =>
-                    property.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    property.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                    property.city.toLowerCase().includes(searchQuery.toLowerCase())
-            )
-        }
+    const handlePageChange = (newPage: number) => {
+        setPage(newPage)
+    }
 
-        // Status filter
-        if (statusFilter !== "all") {
-            filtered = filtered.filter((property) => property.status === statusFilter)
-        }
-
-        // Type filter
-        if (typeFilter !== "all") {
-            filtered = filtered.filter((property) => property.type === typeFilter)
-        }
-
-        // Sorting
-        filtered.sort((a, b) => {
-            switch (sortBy) {
-                case "newest":
-                    return new Date(b.listed).getTime() - new Date(a.listed).getTime()
-                case "oldest":
-                    return new Date(a.listed).getTime() - new Date(b.listed).getTime()
-                case "price_asc":
-                    return a.price - b.price
-                case "price_desc":
-                    return b.price - a.price
-                case "views":
-                    return b.views - a.views
-                default:
-                    return 0
-            }
-        })
-
-        setFilteredProperties(filtered)
-    }, [searchQuery, statusFilter, typeFilter, sortBy, properties])
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit)
+        setPage(1)
+    }
 
     if (isLoading) {
         return (
@@ -129,20 +110,32 @@ export default function PropertiesPage() {
             />
 
             {/* Results Count */}
-            <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">
-                    {filteredProperties.length} {filteredProperties.length === 1 ? "property" : "properties"} found
-                </p>
-            </div>
+            {metadata && (
+                <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">
+                        Showing{" "}
+                        <span className="text-foreground font-semibold">
+                            {(metadata.page - 1) * metadata.limit + 1}
+                        </span>
+                        {" - "}
+                        <span className="text-foreground font-semibold">
+                            {Math.min(metadata.page * metadata.limit, metadata.total)}
+                        </span>
+                        {" of "}
+                        <span className="text-foreground font-semibold">{metadata.total}</span>{" "}
+                        properties
+                    </p>
+                </div>
+            )}
 
             {/* Content */}
-            {filteredProperties.length > 0 ? (
+            {properties.length > 0 ? (
                 <div className={
                     view === "grid"
                         ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
                         : "flex flex-col gap-4"
                 }>
-                    {filteredProperties.map((property) => (
+                    {properties.map((property) => (
                         <PropertyCard
                             key={property.id}
                             property={property}
@@ -160,6 +153,89 @@ export default function PropertiesPage() {
                         <p className="text-sm text-muted-foreground">Try adjusting your filters or start by adding a new listing.</p>
                     </div>
                     <Button variant="outline" onClick={() => setIsAddOpen(true)}>Add Property</Button>
+                </div>
+            )}
+
+            {/* Pagination */}
+            {metadata && metadata.totalPages > 1 && (
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="text-sm text-muted-foreground">Rows per page</span>
+                        <Select
+                            value={`${limit}`}
+                            onValueChange={(value) => handleLimitChange(Number(value))}
+                        >
+                            <SelectTrigger className="h-8 w-[70px]">
+                                <SelectValue placeholder={`${limit}`} />
+                            </SelectTrigger>
+                            <SelectContent side="top">
+                                {[10, 20, 30, 40, 50, 100].map((size) => (
+                                    <SelectItem key={size} value={`${size}`}>
+                                        {size}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+                    <div className="flex items-center gap-1">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(page - 1)}
+                            disabled={page <= 1}
+                        >
+                            Previous
+                        </Button>
+                        {(() => {
+                            const totalPages = metadata.totalPages
+                            const currentPage = page
+                            const pages: (number | string)[] = []
+
+                            if (totalPages <= 7) {
+                                for (let i = 1; i <= totalPages; i++) pages.push(i)
+                            } else {
+                                if (currentPage <= 3) {
+                                    for (let i = 1; i <= 4; i++) pages.push(i)
+                                    pages.push("...")
+                                    pages.push(totalPages)
+                                } else if (currentPage >= totalPages - 2) {
+                                    pages.push(1)
+                                    pages.push("...")
+                                    for (let i = totalPages - 3; i <= totalPages; i++) pages.push(i)
+                                } else {
+                                    pages.push(1)
+                                    pages.push("...")
+                                    for (let i = currentPage - 1; i <= currentPage + 1; i++) pages.push(i)
+                                    pages.push("...")
+                                    pages.push(totalPages)
+                                }
+                            }
+
+                            return pages.map((p, idx) =>
+                                p === "..." ? (
+                                    <span key={`ellipsis-${idx}`} className="px-2">...</span>
+                                ) : (
+                                    <Button
+                                        key={p}
+                                        variant={page === p ? "secondary" : "ghost"}
+                                        size="sm"
+                                        className="w-9"
+                                        onClick={() => handlePageChange(p as number)}
+                                    >
+                                        {p}
+                                    </Button>
+                                )
+                            )
+                        })()}
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(page + 1)}
+                            disabled={page >= metadata.totalPages}
+                        >
+                            Next
+                        </Button>
+                    </div>
                 </div>
             )}
 

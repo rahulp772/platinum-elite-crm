@@ -124,6 +124,7 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                                         src={propertyImages[0]}
                                         alt={property.title}
                                         fill
+                                        sizes="128px"
                                         className="object-cover transition-transform duration-500 group-hover:scale-110"
                                     />
                                 ) : (
@@ -243,6 +244,7 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                             src={propertyImages[0]}
                             alt={property.title}
                             fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
                         />
                     ) : (
