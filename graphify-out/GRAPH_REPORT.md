@@ -1,12 +1,12 @@
-# Graph Report - platinum-elite-crm  (2026-05-01)
+# Graph Report - platinum-elite-crm  (2026-05-02)
 
 ## Corpus Check
-- 303 files · ~273,390 words
+- 303 files · ~273,570 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 995 nodes · 1046 edges · 97 communities detected
-- Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 181 edges (avg confidence: 0.8)
+- 995 nodes · 1047 edges · 97 communities detected
+- Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 182 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -690,9 +690,9 @@ Nodes (1): User
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `GET()` connect `Community 1` to `Community 0`, `Community 3`, `Community 4`, `Community 12`, `Community 28`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
+  _High betweenness centrality (0.058) - this node is a cross-community bridge._
 - **Why does `toISOString()` connect `Community 2` to `Community 8`, `Community 1`, `Community 3`?**
-  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **Why does `getAuthHeaders()` connect `Community 4` to `Community 1`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **Are the 23 inferred relationships involving `GET()` (e.g. with `.getDashboardStats()` and `.getTeamPerformance()`) actually correct?**
