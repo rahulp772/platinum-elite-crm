@@ -31,7 +31,9 @@ interface JwtPayload {
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.CORS_ORIGINS?.split(',').map(o => o.trim()) || 'http://localhost:3000',
+    origin:
+      process.env.CORS_ORIGINS?.split(',').map((o) => o.trim()) ||
+      'http://localhost:3000',
     credentials: true,
   },
 })

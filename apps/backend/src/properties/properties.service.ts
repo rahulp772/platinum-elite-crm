@@ -38,12 +38,7 @@ export class PropertiesService {
     const query = this.propertyRepository
       .createQueryBuilder('property')
       .leftJoin('property.agent', 'agent')
-      .select([
-        'property',
-        'agent.id',
-        'agent.name',
-        'agent.email',
-      ]);
+      .select(['property', 'agent.id', 'agent.name', 'agent.email']);
 
     if (!isGlobalAdmin) {
       query.where('property.tenantId = :tenantId', { tenantId: user.tenantId });
@@ -52,7 +47,7 @@ export class PropertiesService {
     if (search) {
       query.andWhere(
         '(property.title ILIKE :search OR property.address ILIKE :search OR property.city ILIKE :search)',
-        { search: `%${search}%` }
+        { search: `%${search}%` },
       );
     }
 

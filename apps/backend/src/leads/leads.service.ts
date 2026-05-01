@@ -86,12 +86,12 @@ export class LeadsService {
     });
     if (!agentProfile) return;
 
-    const [total, won] = await Promise.all([
-      this.leadRepository.count({ where: { assignedToId: agentId } }),
-      this.leadRepository.count({
-        where: { assignedToId: agentId, status: LeadStatus.BOOKED },
-      }),
-    ]);
+    const total = await this.leadRepository.count({
+      where: { assignedToId: agentId },
+    });
+    const won = await this.leadRepository.count({
+      where: { assignedToId: agentId, status: LeadStatus.BOOKED },
+    });
 
     agentProfile.closingRate = total > 0 ? (won / total) * 100 : 0;
     await this.agentProfileRepository.save(agentProfile);

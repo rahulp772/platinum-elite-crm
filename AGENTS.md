@@ -205,12 +205,77 @@ Each domain (Leads, Properties, etc.) is encapsulated in its own module containi
 - **Dynamic Permissions**: `@RequirePermissions()` decorator and `PermissionsGuard` for endpoint protection.
 - **Tenant Isolation**: All services filter by `tenantId` (except Superadmin).
 - **Validation**: Global `ValidationPipe` with `whitelist: true` to strip unknown properties.
+- **Rate Limiting**: `@nestjs/throttler` configured globally via `APP_GUARD`. Default: 100 req/min.
+- **Input Sanitization**: `SanitizePipe` automatically removes HTML tags and SQL keywords from request bodies.
+
+### Response Transformation Pattern
+All API responses are wrapped by `TransformInterceptor`:
+
+```typescript
+// Single object response
+{ data: { id: '123', ... }, success: true }
+
+// Paginated response
+{ data: [...], metadata: { page: 1, limit: 20, total: 100 }, success: true }
+```
+
+**Frontend Handling**: The API interceptor unwraps responses based on presence of `success` and `metadata` fields.
+
+### Global Module Pattern
+Reusable services are exposed globally via `@Global()` modules:
+
+```typescript
+// src/common/common.module.ts
+@Global()
+@Module({
+  imports: [TypeOrmModule.forFeature([LeadActivity, DealActivity])],
+  providers: [ActivityLoggerService],
+  exports: [ActivityLoggerService],
+})
+export class CommonModule {}
+```
+
+Services like `ActivityLoggerService` can be injected anywhere without explicit imports.
 
 ### Database Patterns
 - **TypeORM**: Used for object-relational mapping.
 - **Tenant Filtering**: Services accept `User` and filter data based on `user.tenantId`.
 - **Strict Null Checks**: Services handle `null` results from the database to prevent runtime errors.
 - **Aggregations**: `AnalyticsService` uses TypeORM Query Builder for complex dashboard metrics.
+
+### Caching Pattern
+For expensive operations like analytics, use `@nestjs/cache-manager`:
+
+```typescript
+// analytics.module.ts
+import { CacheModule } from '@nestjs/cache-manager';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+@Module({
+  imports: [
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        ttl: configService.get<number>('CACHE_TTL', 300),
+        max: configService.get<number>('CACHE_MAX', 100),
+      }),
+      inject: [ConfigService],
+    }),
+  ],
+})
+export class AnalyticsModule {}
+
+// analytics.service.ts
+async getDashboardStats(user: User) {
+  const cacheKey = `dashboard:${user.id}:${user.tenantId}`;
+  const cached = await this.cacheManager.get(cacheKey);
+  if (cached) return cached;
+
+  const result = await this.computeStats(user);
+  await this.cacheManager.set(cacheKey, result, 300); // 5 min TTL
+  return result;
+}
+```
 
 ---
 
@@ -233,6 +298,14 @@ Each domain (Leads, Properties, etc.) is encapsulated in its own module containi
 5.  **Error Handling**:
     - Centralized exception handling via NestJS built-in filters (Backend).
     - Global interceptors for API error handling (Frontend).
+6.  **Performance**:
+    - Avoid N+1 queries - use batch queries or in-memory grouping.
+    - Add pagination to all list endpoints using `skip/take`.
+    - Cache expensive operations using `@nestjs/cache-manager`.
+7.  **Security**:
+    - Rate limiting configured via `ThrottlerModule`.
+    - Global guards applied via `APP_GUARD` in app.module.
+    - Input sanitization via `SanitizePipe` for all POST/PUT/PATCH requests.
 
 ---
 

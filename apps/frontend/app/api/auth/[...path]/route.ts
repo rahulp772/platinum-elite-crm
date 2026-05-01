@@ -36,12 +36,13 @@ export async function GET(
 
     const data = await response.json()
 
-    // If login successful, set cookie
-    if (path === 'login' && response.ok && data.access_token) {
-      const response = NextResponse.json(data)
+    // If login successful, set cookie - handle wrapped format
+    const loginData = data.data?.access_token ? data.data : data
+    if (path === 'login' && response.ok && loginData.access_token) {
+      const response = NextResponse.json(loginData)
       
       // Set HTTP-only cookie
-      response.cookies.set('token', data.access_token, {
+      response.cookies.set('token', loginData.access_token, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -50,7 +51,7 @@ export async function GET(
       })
 
       // Set user cookie (accessible to client)
-      response.cookies.set('user', JSON.stringify(data.user), {
+      response.cookies.set('user', JSON.stringify(loginData.user), {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -58,8 +59,8 @@ export async function GET(
         maxAge: 60 * 60 * 24 * 7, // 7 days
       })
 
-      if (data.tenantId) {
-        response.cookies.set('tenantId', data.tenantId, {
+      if (loginData.user?.tenantId) {
+        response.cookies.set('tenantId', loginData.user.tenantId, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',

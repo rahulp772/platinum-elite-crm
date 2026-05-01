@@ -8,8 +8,14 @@ import {
   Delete,
   UseGuards,
   Request,
+  Query,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiBearerAuth,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { DealsService } from './deals.service';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
@@ -29,9 +35,24 @@ export class DealsController {
   }
 
   @Get()
-  @ApiOperation({ summary: 'Get all deals' })
-  findAll(@Request() req) {
-    return this.dealsService.findAll(req.user);
+  @ApiOperation({ summary: 'Get all deals with pagination' })
+  @ApiQuery({ name: 'page', type: Number, required: false })
+  @ApiQuery({ name: 'limit', type: Number, required: false })
+  @ApiQuery({ name: 'search', type: String, required: false })
+  @ApiQuery({ name: 'stage', type: String, required: false })
+  findAll(
+    @Request() req,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('search') search?: string,
+    @Query('stage') stage?: string,
+  ) {
+    return this.dealsService.findAll(req.user, {
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 20,
+      search,
+      stage,
+    });
   }
 
   @Get(':id')

@@ -87,13 +87,54 @@ export class DealsService {
     return savedDeal;
   }
 
-  async findAll(user: User) {
+  async findAll(
+    user: User,
+    options?: {
+      page?: number;
+      limit?: number;
+      search?: string;
+      stage?: string;
+    },
+  ) {
+    const { page = 1, limit = 20, search, stage } = options || {};
     const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
-    const where = isGlobalAdmin ? {} : { tenantId: user.tenantId };
-    return this.dealRepository.find({
-      where,
-      relations: ['agent', 'property'],
-    });
+
+    const query = this.dealRepository
+      .createQueryBuilder('deal')
+      .leftJoinAndSelect('deal.agent', 'agent')
+      .leftJoinAndSelect('deal.property', 'property');
+
+    if (!isGlobalAdmin) {
+      query.where('deal.tenantId = :tenantId', { tenantId: user.tenantId });
+    }
+
+    if (search) {
+      query.andWhere(
+        '(deal.title ILIKE :search OR property.address ILIKE :search)',
+        { search: `%${search}%` },
+      );
+    }
+
+    if (stage && stage !== 'all') {
+      query.andWhere('deal.stage = :stage', { stage });
+    }
+
+    const total = await query.getCount();
+    const data = await query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .orderBy('deal.createdAt', 'DESC')
+      .getMany();
+
+    return {
+      data,
+      metadata: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: string, user: User) {

@@ -87,10 +87,12 @@ export async function POST(
     const data = await response.json()
 
     // Handle login or register - set cookies
-    if ((path === 'login' || path === 'register') && response.ok && data.access_token) {
-      const nextResponse = NextResponse.json(data)
+    // Check both wrapped and unwrapped formats
+    const loginData = data.data?.access_token ? data.data : data
+    if ((path === 'login' || path === 'register') && response.ok && loginData.access_token) {
+      const nextResponse = NextResponse.json(loginData)
       
-      nextResponse.cookies.set('token', data.access_token, {
+      nextResponse.cookies.set('token', loginData.access_token, {
         httpOnly: false, // Must be false so socket.io client can read it
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -98,7 +100,7 @@ export async function POST(
         maxAge: 60 * 60 * 24,
       })
 
-      nextResponse.cookies.set('user', JSON.stringify(data.user), {
+      nextResponse.cookies.set('user', JSON.stringify(loginData.user), {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'strict',
@@ -106,8 +108,8 @@ export async function POST(
         maxAge: 60 * 60 * 24 * 7,
       })
 
-      if (data.tenantId) {
-        nextResponse.cookies.set('tenantId', data.tenantId, {
+      if (loginData.user?.tenantId) {
+        nextResponse.cookies.set('tenantId', loginData.user.tenantId, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',

@@ -47,7 +47,7 @@ export class ChatService {
     const userId = user.id;
     const userTenantId = user.tenantId;
 
-    let userFilter: any = {};
+    let userFilter: Record<string, unknown> = {};
     if (!user.isSuperAdmin) {
       userFilter = { tenantId: userTenantId };
     }
@@ -56,7 +56,7 @@ export class ChatService {
       where: { ...userFilter, id: Not(userId) },
     });
 
-    let convFilter: any = {};
+    let convFilter: Record<string, unknown> = {};
     if (!user.isSuperAdmin) {
       convFilter = { tenantId: userTenantId };
     }
@@ -70,6 +70,69 @@ export class ChatService {
       conv.participants.some((p) => p.id === userId),
     );
 
+    const conversationIds = userConversationsWithCurrentUser.map((c) => c.id);
+
+    const lastMessages: Record<
+      string,
+      {
+        id: string;
+        content: string;
+        senderId: string;
+        timestamp: Date;
+        read: boolean;
+        attachments?: unknown;
+      }
+    > = {};
+    const unreadCounts: Record<string, number> = {};
+
+    if (conversationIds.length > 0) {
+      const allMessages = await this.messageRepository
+        .createQueryBuilder('message')
+        .where('message.conversationId IN (:...conversationIds)', {
+          conversationIds,
+        })
+        .orderBy('message.conversationId', 'ASC')
+        .addOrderBy('message.timestamp', 'DESC')
+        .getMany();
+
+      const lastMessagePerConv = new Map<string, typeof allMessages[0]>();
+      for (const msg of allMessages) {
+        if (!lastMessagePerConv.has(msg.conversationId)) {
+          lastMessagePerConv.set(msg.conversationId, msg);
+        }
+      }
+
+      for (const [convId, msg] of lastMessagePerConv) {
+        lastMessages[convId] = {
+          id: msg.id,
+          content: msg.content,
+          senderId: msg.senderId,
+          timestamp: msg.timestamp,
+          read: msg.read,
+          attachments: msg.attachments,
+        };
+      }
+
+      const unreadResults = await this.messageRepository
+        .createQueryBuilder('message')
+        .select('message.conversationId', 'conversationId')
+        .addSelect('COUNT(*)', 'count')
+        .where('message.conversationId IN (:...conversationIds)', {
+          conversationIds,
+        })
+        .andWhere('message.senderId != :userId', { userId })
+        .andWhere('message.read = false')
+        .groupBy('message.conversationId')
+        .getRawMany();
+
+      for (const result of unreadResults) {
+        unreadCounts[result.message_conversationId] = parseInt(
+          result.count,
+          10,
+        );
+      }
+    }
+
     const results: ConversationWithDetails[] = [];
 
     for (const u of allUsers) {
@@ -78,36 +141,11 @@ export class ChatService {
       );
 
       if (existingConv) {
-        const messages = await this.messageRepository.find({
-          where: { conversationId: existingConv.id },
-          order: { timestamp: 'DESC' },
-          take: 1,
-        });
-
-        const lastMessage = messages[0]
-          ? {
-              id: messages[0].id,
-              content: messages[0].content,
-              senderId: messages[0].senderId,
-              timestamp: messages[0].timestamp,
-              read: messages[0].read,
-              attachments: messages[0].attachments,
-            }
-          : undefined;
-
-        const unreadCount = await this.messageRepository.count({
-          where: {
-            conversationId: existingConv.id,
-            senderId: Not(userId),
-            read: false,
-          },
-        });
-
         results.push({
           id: existingConv.id,
           participants: existingConv.participants,
-          lastMessage,
-          unreadCount,
+          lastMessage: lastMessages[existingConv.id] || undefined,
+          unreadCount: unreadCounts[existingConv.id] || 0,
           createdAt: existingConv.createdAt,
           updatedAt: existingConv.updatedAt,
         });

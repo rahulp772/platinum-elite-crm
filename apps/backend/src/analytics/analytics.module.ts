@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { CacheModule } from '@nestjs/cache-manager';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AnalyticsService } from './analytics.service';
 import { AnalyticsController } from './analytics.controller';
 import { Property } from '../properties/entities/property.entity';
@@ -21,6 +23,14 @@ import { LeadActivity } from '../leads/entities/lead-activity.entity';
       Task,
       LeadActivity,
     ]),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        ttl: configService.get<number>('CACHE_TTL', 300),
+        max: configService.get<number>('CACHE_MAX', 100),
+      }),
+      inject: [ConfigService],
+    }),
   ],
   controllers: [AnalyticsController],
   providers: [AnalyticsService],

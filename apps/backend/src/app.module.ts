@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
+import { CommonModule } from './common/common.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { RolesModule } from './roles/roles.module';
@@ -24,8 +27,27 @@ import { AuditModule } from './audit/audit.module';
 
 @Module({
   imports: [
+    CommonModule,
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+    ThrottlerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'default',
+            ttl: configService.get<number>('THROTTLE_TTL', 60000),
+            limit: configService.get<number>('THROTTLE_LIMIT', 100),
+          },
+          {
+            name: 'short',
+            ttl: configService.get<number>('THROTTLE_SHORT_TTL', 1000),
+            limit: configService.get<number>('THROTTLE_SHORT_LIMIT', 10),
+          },
+        ],
+      }),
+      inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
     ServeStaticModule.forRoot({
@@ -64,6 +86,12 @@ import { AuditModule } from './audit/audit.module';
     PortalWebhooksModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
 })
-export class AppModule { }
+export class AppModule {}

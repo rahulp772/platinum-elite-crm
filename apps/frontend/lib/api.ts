@@ -45,9 +45,30 @@ api.interceptors.request.use(
   }
 )
 
-// Response interceptor for handling 401 errors
+// Response interceptor for handling response transformation
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    // Unwrap { data, success } format from backend
+    if (response.data && typeof response.data === 'object') {
+      // Check if it's wrapped format (has success field)
+      if ('success' in response.data && 'data' in response.data) {
+        // If response has metadata, it's paginated - keep data as array
+        if ('metadata' in response.data) {
+          return {
+            ...response,
+            data: response.data.data,
+            metadata: response.data.metadata,
+          }
+        }
+        // Single object response - unwrap the data
+        return {
+          ...response,
+          data: response.data.data,
+        }
+      }
+    }
+    return response
+  },
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {

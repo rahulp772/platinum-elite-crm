@@ -1,11 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import {
-  Repository,
-  SelectQueryBuilder,
-  ObjectLiteral,
-  MoreThanOrEqual,
-} from 'typeorm';
+import { Inject } from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
+import { Repository, SelectQueryBuilder, ObjectLiteral } from 'typeorm';
 import { Property } from '../properties/entities/property.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { Deal } from '../deals/entities/deal.entity';
@@ -16,6 +14,9 @@ import { LeadActivity } from '../leads/entities/lead-activity.entity';
 
 @Injectable()
 export class AnalyticsService {
+  private readonly logger = new Logger(AnalyticsService.name);
+  private readonly CACHE_TTL = 300; // 5 minutes
+
   constructor(
     @InjectRepository(Property)
     private propertyRepository: Repository<Property>,
@@ -31,6 +32,8 @@ export class AnalyticsService {
     private taskRepository: Repository<Task>,
     @InjectRepository(LeadActivity)
     private leadActivityRepository: Repository<LeadActivity>,
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
   ) {}
 
   private getRoleLevel(user: User): number {
@@ -62,6 +65,13 @@ export class AnalyticsService {
   }
 
   async getDashboardStats(user: User) {
+    const cacheKey = `dashboard:${user.id}:${user.tenantId}:${user.isSuperAdmin}`;
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      this.logger.debug(`Cache hit for dashboard: ${cacheKey}`);
+      return cached as ReturnType<typeof this.getDashboardStats>;
+    }
+
     const roleLevel = this.getRoleLevel(user);
 
     const propQuery = this.propertyRepository.createQueryBuilder('property');
@@ -89,15 +99,20 @@ export class AnalyticsService {
       .andWhere('deal.stage = :stage', { stage: 'closed' })
       .getRawOne();
 
-    return {
+    const result = {
       overview: {
         totalProperties,
         totalLeads,
         totalDeals,
-        totalRevenue: parseFloat(revenue?.total || '0'),
+        totalRevenue: parseFloat(
+          ((revenue as Record<string, unknown>)?.total as string) || '0',
+        ),
       },
       dealsByStage,
     };
+
+    await this.cacheManager.set(cacheKey, result, this.CACHE_TTL);
+    return result;
   }
 
   async getLeadStats(user: User) {
@@ -288,6 +303,13 @@ export class AnalyticsService {
   }
 
   async getTeamPerformance(user: User) {
+    const cacheKey = `team-performance:${user.id}:${user.tenantId}`;
+    const cached = await this.cacheManager.get(cacheKey);
+    if (cached) {
+      this.logger.debug(`Cache hit for team-performance: ${cacheKey}`);
+      return cached as ReturnType<typeof this.getTeamPerformance>;
+    }
+
     const roleLevel = this.getRoleLevel(user);
 
     const usersQuery = this.userRepository
@@ -340,7 +362,9 @@ export class AnalyticsService {
       });
     }
 
-    return agents.sort((a, b) => b.revenue - a.revenue);
+    const result = agents.sort((a, b) => b.revenue - a.revenue);
+    await this.cacheManager.set(cacheKey, result, this.CACHE_TTL);
+    return result;
   }
 
   async getRevenueTrend(user: User) {
