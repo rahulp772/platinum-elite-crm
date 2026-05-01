@@ -1,12 +1,12 @@
 # Graph Report - platinum-elite-crm  (2026-05-01)
 
 ## Corpus Check
-- 302 files · ~272,237 words
+- 303 files · ~272,911 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 987 nodes · 1034 edges · 97 communities detected
-- Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 176 edges (avg confidence: 0.8)
+- 995 nodes · 1046 edges · 97 communities detected
+- Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 181 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
@@ -40,20 +40,20 @@
 - [[_COMMUNITY_Community 28|Community 28]]
 - [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
-- [[_COMMUNITY_Community 32|Community 32]]
+- [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 33|Community 33]]
-- [[_COMMUNITY_Community 36|Community 36]]
-- [[_COMMUNITY_Community 37|Community 37]]
+- [[_COMMUNITY_Community 34|Community 34]]
 - [[_COMMUNITY_Community 38|Community 38]]
-- [[_COMMUNITY_Community 41|Community 41]]
-- [[_COMMUNITY_Community 42|Community 42]]
+- [[_COMMUNITY_Community 39|Community 39]]
+- [[_COMMUNITY_Community 40|Community 40]]
 - [[_COMMUNITY_Community 43|Community 43]]
 - [[_COMMUNITY_Community 44|Community 44]]
 - [[_COMMUNITY_Community 45|Community 45]]
 - [[_COMMUNITY_Community 46|Community 46]]
 - [[_COMMUNITY_Community 47|Community 47]]
 - [[_COMMUNITY_Community 48|Community 48]]
-- [[_COMMUNITY_Community 50|Community 50]]
+- [[_COMMUNITY_Community 49|Community 49]]
+- [[_COMMUNITY_Community 51|Community 51]]
 - [[_COMMUNITY_Community 56|Community 56]]
 - [[_COMMUNITY_Community 57|Community 57]]
 - [[_COMMUNITY_Community 58|Community 58]]
@@ -121,8 +121,6 @@
 10. `DealsService` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `handleDownloadTemplate()` --calls--> `GET()`  [INFERRED]
-  apps\frontend\app\(dashboard)\leads\import\page.tsx → apps\frontend\app\api\v1\[...path]\route.ts
 - `handleFileUpload()` --calls--> `POST()`  [INFERRED]
   apps\frontend\app\(dashboard)\leads\import\page.tsx → apps\frontend\app\api\v1\[...path]\route.ts
 - `handleStartImport()` --calls--> `POST()`  [INFERRED]
@@ -130,6 +128,8 @@
 - `PipelinePage()` --calls--> `useAuth()`  [INFERRED]
   apps\frontend\app\(dashboard)\pipeline\page.tsx → apps\frontend\lib\auth-context.tsx
 - `createDeal()` --calls--> `getAuthHeaders()`  [INFERRED]
+  apps\frontend\app\actions\deals.ts → apps\frontend\lib\auth.ts
+- `updateDeal()` --calls--> `getAuthHeaders()`  [INFERRED]
   apps\frontend\app\actions\deals.ts → apps\frontend\lib\auth.ts
 
 ## Communities
@@ -139,28 +139,28 @@ Cohesion: 0.09
 Nodes (12): ActivityLoggerService, AuditService, createDemoTenants(), deleteDemoTenants(), main(), refreshDemoTenants(), seedDemoData(), showStatus() (+4 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.08
-Nodes (29): handleSubmit(), handleSubmit(), authFetch(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), getCurrentUser() (+21 more)
+Cohesion: 0.07
+Nodes (30): handleSubmit(), handleSubmit(), authFetch(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), getCurrentUser() (+22 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.06
-Nodes (9): AuthService, ChatGateway, ChatService, JwtStrategy, handleDemoLogin(), handleDownloadTemplate(), handleSubmit(), handleTenantSelect() (+1 more)
-
-### Community 3 - "Community 3"
 Cohesion: 0.07
 Nodes (26): AllExceptionsFilter, formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel(), getUserTimezone() (+18 more)
 
+### Community 3 - "Community 3"
+Cohesion: 0.06
+Nodes (8): AuthService, ChatGateway, ChatService, JwtStrategy, handleDemoLogin(), handleSubmit(), handleTenantSelect(), UsersService
+
 ### Community 4 - "Community 4"
-Cohesion: 0.09
-Nodes (25): handleSubmit(), parseBudget(), handleSubmit(), getAuthHeaders(), createDeal(), deleteDeal(), reassignDeal(), updateDeal() (+17 more)
+Cohesion: 0.08
+Nodes (26): handleSubmit(), parseBudget(), handleSubmit(), getAuthHeaders(), createDeal(), deleteDeal(), reassignDeal(), updateDeal() (+18 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.09
 Nodes (3): DealsService, PropertiesService, TasksController
 
 ### Community 6 - "Community 6"
-Cohesion: 0.09
-Nodes (11): getUserFromCookie(), isLoggedIn(), useAuth(), getCookie(), isAuthenticated(), AuthGuard(), HasPermission(), MobileBottomBar() (+3 more)
+Cohesion: 0.08
+Nodes (12): getUserFromCookie(), isLoggedIn(), useAuth(), getCookie(), isAuthenticated(), AuthGuard(), HasPermission(), MobileBottomBar() (+4 more)
 
 ### Community 7 - "Community 7"
 Cohesion: 0.12
@@ -239,74 +239,74 @@ Cohesion: 0.29
 Nodes (2): handleKeyDown(), handleSend()
 
 ### Community 27 - "Community 27"
-Cohesion: 0.29
-Nodes (1): AuditInterceptor
+Cohesion: 0.39
+Nodes (6): MobileChartWrapper(), useChartAnimation(), useIsDesktop(), useIsMobile(), useIsTablet(), useMediaQuery()
 
 ### Community 28 - "Community 28"
 Cohesion: 0.29
-Nodes (1): AuthController
+Nodes (1): AuditInterceptor
 
 ### Community 29 - "Community 29"
-Cohesion: 0.33
-Nodes (3): SanitizePipe, sanitizeObject(), sanitizeString()
+Cohesion: 0.29
+Nodes (1): AuthController
 
 ### Community 30 - "Community 30"
 Cohesion: 0.33
+Nodes (3): SanitizePipe, sanitizeObject(), sanitizeString()
+
+### Community 31 - "Community 31"
+Cohesion: 0.33
 Nodes (2): handleLimitChange(), handlePageChange()
 
-### Community 32 - "Community 32"
+### Community 33 - "Community 33"
 Cohesion: 0.29
 Nodes (2): DealsPage(), useDeals()
 
-### Community 33 - "Community 33"
+### Community 34 - "Community 34"
 Cohesion: 0.33
 Nodes (1): PortalWebhooksController
 
-### Community 36 - "Community 36"
+### Community 38 - "Community 38"
 Cohesion: 0.4
 Nodes (4): AttachmentDto, CreateConversationDto, GetMessagesQueryDto, SendMessageDto
 
-### Community 37 - "Community 37"
+### Community 39 - "Community 39"
 Cohesion: 0.4
 Nodes (1): TenantsController
 
-### Community 38 - "Community 38"
+### Community 40 - "Community 40"
 Cohesion: 0.4
 Nodes (1): TenantsService
 
-### Community 41 - "Community 41"
-Cohesion: 0.7
-Nodes (4): useIsDesktop(), useIsMobile(), useIsTablet(), useMediaQuery()
-
-### Community 42 - "Community 42"
+### Community 43 - "Community 43"
 Cohesion: 0.5
 Nodes (1): AppController
 
-### Community 43 - "Community 43"
+### Community 44 - "Community 44"
 Cohesion: 0.5
 Nodes (1): PermissionsGuard
 
-### Community 44 - "Community 44"
+### Community 45 - "Community 45"
 Cohesion: 0.5
 Nodes (1): RolesGuard
 
-### Community 45 - "Community 45"
+### Community 46 - "Community 46"
 Cohesion: 0.67
 Nodes (1): CustomThrottlerGuard
 
-### Community 46 - "Community 46"
+### Community 47 - "Community 47"
 Cohesion: 0.5
 Nodes (3): CreateLeadDto, LeadLookupDto, UpdateLeadDto
 
-### Community 47 - "Community 47"
+### Community 48 - "Community 48"
 Cohesion: 0.5
 Nodes (1): SearchController
 
-### Community 48 - "Community 48"
+### Community 49 - "Community 49"
 Cohesion: 0.5
 Nodes (1): SearchService
 
-### Community 50 - "Community 50"
+### Community 51 - "Community 51"
 Cohesion: 0.83
 Nodes (3): getQueryClient(), makeQueryClient(), QueryProvider()
 
@@ -555,31 +555,31 @@ Nodes (1): User
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 26`** (8 nodes): `chat-window.tsx`, `getOtherParticipant()`, `handleFileSelect()`, `handleKeyDown()`, `handleScroll()`, `handleSend()`, `openImageInGallery()`, `removeFile()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 27`** (7 nodes): `audit.interceptor.ts`, `AuditInterceptor`, `.constructor()`, `.getResourceFromUrl()`, `.getResourceIdFromUrl()`, `.intercept()`, `SetAuditAction()`
+- **Thin community `Community 28`** (7 nodes): `audit.interceptor.ts`, `AuditInterceptor`, `.constructor()`, `.getResourceFromUrl()`, `.getResourceIdFromUrl()`, `.intercept()`, `SetAuditAction()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 28`** (7 nodes): `auth.controller.ts`, `AuthController`, `.constructor()`, `.getProfile()`, `.login()`, `.methodNotAllowed()`, `.register()`
+- **Thin community `Community 29`** (7 nodes): `auth.controller.ts`, `AuthController`, `.constructor()`, `.getProfile()`, `.login()`, `.methodNotAllowed()`, `.register()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 30`** (7 nodes): `page.tsx`, `page.tsx`, `handleBulkAction()`, `handleEditLead()`, `handleLimitChange()`, `handlePageChange()`, `handleSelectionChange()`
+- **Thin community `Community 31`** (7 nodes): `page.tsx`, `page.tsx`, `handleBulkAction()`, `handleEditLead()`, `handleLimitChange()`, `handlePageChange()`, `handleSelectionChange()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 32`** (7 nodes): `page.tsx`, `use-deals.ts`, `DealsPage()`, `useCreateDeal()`, `useDeals()`, `useUpdateDeal()`, `useUpdateDealStage()`
+- **Thin community `Community 33`** (7 nodes): `page.tsx`, `use-deals.ts`, `DealsPage()`, `useCreateDeal()`, `useDeals()`, `useUpdateDeal()`, `useUpdateDealStage()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 33`** (6 nodes): `portal-webhooks.controller.ts`, `PortalWebhooksController`, `.constructor()`, `.process99acres()`, `.processHousing()`, `.processMagicBricks()`
+- **Thin community `Community 34`** (6 nodes): `portal-webhooks.controller.ts`, `PortalWebhooksController`, `.constructor()`, `.process99acres()`, `.processHousing()`, `.processMagicBricks()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 37`** (5 nodes): `tenants.controller.ts`, `TenantsController`, `.constructor()`, `.findAll()`, `.findOne()`
+- **Thin community `Community 39`** (5 nodes): `tenants.controller.ts`, `TenantsController`, `.constructor()`, `.findAll()`, `.findOne()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 38`** (5 nodes): `tenants.service.ts`, `TenantsService`, `.constructor()`, `.findAll()`, `.findOne()`
+- **Thin community `Community 40`** (5 nodes): `tenants.service.ts`, `TenantsService`, `.constructor()`, `.findAll()`, `.findOne()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 42`** (4 nodes): `AppController`, `.constructor()`, `.getHello()`, `app.controller.ts`
+- **Thin community `Community 43`** (4 nodes): `AppController`, `.constructor()`, `.getHello()`, `app.controller.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 43`** (4 nodes): `permissions.guard.ts`, `PermissionsGuard`, `.canActivate()`, `.constructor()`
+- **Thin community `Community 44`** (4 nodes): `permissions.guard.ts`, `PermissionsGuard`, `.canActivate()`, `.constructor()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 44`** (4 nodes): `roles.guard.ts`, `RolesGuard`, `.canActivate()`, `.constructor()`
+- **Thin community `Community 45`** (4 nodes): `roles.guard.ts`, `RolesGuard`, `.canActivate()`, `.constructor()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 45`** (4 nodes): `throttle.guard.ts`, `CustomThrottlerGuard`, `.canActivate()`, `.shouldSkip()`
+- **Thin community `Community 46`** (4 nodes): `throttle.guard.ts`, `CustomThrottlerGuard`, `.canActivate()`, `.shouldSkip()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 47`** (4 nodes): `search.controller.ts`, `SearchController`, `.constructor()`, `.globalSearch()`
+- **Thin community `Community 48`** (4 nodes): `search.controller.ts`, `SearchController`, `.constructor()`, `.globalSearch()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Community 48`** (4 nodes): `search.service.ts`, `SearchService`, `.constructor()`, `.globalSearch()`
+- **Thin community `Community 49`** (4 nodes): `search.service.ts`, `SearchService`, `.constructor()`, `.globalSearch()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 56`** (4 nodes): `leads-table.tsx`, `formatBudgetRange()`, `formatINR()`, `getVisiblePages()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -689,12 +689,12 @@ Nodes (1): User
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 4`, `Community 12`, `Community 27`?**
-  _High betweenness centrality (0.056) - this node is a cross-community bridge._
-- **Why does `toISOString()` connect `Community 3` to `Community 8`, `Community 1`, `Community 2`?**
+- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 3`, `Community 4`, `Community 12`, `Community 28`?**
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
+- **Why does `toISOString()` connect `Community 2` to `Community 8`, `Community 1`, `Community 3`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Why does `getAuthHeaders()` connect `Community 4` to `Community 1`?**
-  _High betweenness centrality (0.018) - this node is a cross-community bridge._
+  _High betweenness centrality (0.019) - this node is a cross-community bridge._
 - **Are the 23 inferred relationships involving `GET()` (e.g. with `.getDashboardStats()` and `.getTeamPerformance()`) actually correct?**
   _`GET()` has 23 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 21 inferred relationships involving `getAuthHeaders()` (e.g. with `createDeal()` and `updateDeal()`) actually correct?**
