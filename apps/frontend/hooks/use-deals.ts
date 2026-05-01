@@ -2,11 +2,21 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Deal, DealStage } from "@/types/deal"
 
+interface PaginatedResponse<T> {
+    data: T[]
+    metadata: {
+        page: number
+        limit: number
+        total: number
+        totalPages: number
+    }
+}
+
 export function useDeals() {
     return useQuery({
         queryKey: ["deals"],
         queryFn: async () => {
-            const { data } = await api.get<Deal[]>("/deals")
+            const { data } = await api.get<PaginatedResponse<Deal>>("/deals")
             return data
         },
     })

@@ -3,15 +3,21 @@
 import * as React from "react"
 import { KanbanBoard } from "@/components/deals/kanban-board"
 import { useDeals } from "@/hooks/use-deals"
+import { Deal } from "@/types/deal"
 import { Button } from "@/components/ui/button"
 import { Plus, LoaderCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
 export default function DealsPage() {
-    const { data: deals, isLoading, isError } = useDeals()
+    const { data: dealsResponse, isLoading, isError } = useDeals()
 
-    const totalPipeline = deals?.reduce((acc, deal) => acc + Number(deal.value), 0) || 0
+    const deals: Deal[] = dealsResponse && 'data' in dealsResponse 
+        ? dealsResponse.data 
+        : Array.isArray(dealsResponse) 
+            ? dealsResponse 
+            : []
+    const totalPipeline = deals.reduce((acc, deal) => acc + Number(deal.value), 0)
     const formattedPipeline = new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
@@ -62,7 +68,7 @@ export default function DealsPage() {
 
             {/* Kanban Board */}
             <div className="flex-1 min-h-0">
-                <KanbanBoard initialDeals={deals || []} />
+                <KanbanBoard initialDeals={deals} />
             </div>
         </div>
     )
