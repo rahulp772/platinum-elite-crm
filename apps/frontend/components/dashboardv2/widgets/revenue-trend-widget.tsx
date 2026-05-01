@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { Loader2 } from "lucide-react"
 import { PeriodType } from "../period-selector"
+import { useChartAnimation } from "@/components/ui/mobile-chart-wrapper"
 
 interface RevenueTrendWidgetProps {
   period: PeriodType
@@ -18,6 +19,7 @@ interface RevenueData {
 }
 
 export function RevenueTrendWidget({ period }: RevenueTrendWidgetProps) {
+  const isAnimationActive = useChartAnimation()
   const { data, isLoading } = useQuery<RevenueData[]>({
     queryKey: ['analytics-revenue', period],
     queryFn: async () => {
@@ -95,6 +97,7 @@ export function RevenueTrendWidget({ period }: RevenueTrendWidgetProps) {
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
                   strokeWidth={2}
+                  isAnimationActive={isAnimationActive}
                 />
               </AreaChart>
             </ResponsiveContainer>

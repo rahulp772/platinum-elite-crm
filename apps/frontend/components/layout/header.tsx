@@ -129,53 +129,20 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
     return (
         <>
             <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-md">
-                <div className="flex h-16 items-center gap-2 px-3 md:px-6">
-                    {/* Logo - Hidden on desktop (lg+), visible on tablet and below */}
-                    <div className="hidden md:block lg:hidden flex items-center justify-center h-9 w-9 rounded-lg bg-gradient-to-br from-realty-gold/80 to-realty-gold shadow-lg shadow-realty-gold/20">
+                <div className="flex h-16 items-center justify-between gap-2 px-3 md:px-6">
+                    {/* Logo - Left side on mobile */}
+                    <div className="md:hidden flex items-center justify-center h-9 w-9 rounded-lg bg-realty-gold shrink-0">
                         <Building2 className="h-5 w-5 text-realty-navy" />
                     </div>
 
-                    {/* Search - Icon on mobile, full on desktop */}
-                    <div className="flex-1" ref={searchContainerRef}>
-                        {/* Mobile: Search icon expands to input */}
-                        <div className="md:hidden relative">
-                            {!isSearchOpen ? (
-                                <button
-                                    onClick={() => setIsSearchOpen(true)}
-                                    className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-accent"
-                                >
-                                    <Search className="h-5 w-5 text-muted-foreground" />
-                                </button>
-                            ) : (
-                                <div className="relative w-full">
-                                    <Input
-                                        ref={searchInputRef}
-                                        placeholder="Search..."
-                                        className="pl-9 pr-10 w-full bg-accent"
-                                        value={searchQuery}
-                                        onChange={(e) => {
-                                            setSearchQuery(e.target.value)
-                                            if (e.target.value.trim()) setIsSearchOpen(true)
-                                        }}
-                                        onBlur={() => !searchQuery && setIsSearchOpen(false)}
-                                        onFocus={() => searchQuery && setIsSearchOpen(true)}
-                                        autoFocus
-                                    />
-                                    <button
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                                        onClick={() => {
-                                            setSearchQuery("")
-                                            setIsSearchOpen(false)
-                                        }}
-                                    >
-                                        <X className="h-4 w-4" />
-                                    </button>
-                                </div>
-                            )}
-                        </div>
+                    {/* Logo - Tablet/MD but hidden on LG */}
+                    <div className="hidden md:block lg:hidden flex items-center justify-center h-9 w-9 rounded-lg bg-gradient-to-br from-realty-gold/80 to-realty-gold shadow-lg shadow-realty-gold/20 shrink-0">
+                        <Building2 className="h-5 w-5 text-realty-navy" />
+                    </div>
 
-                        {/* Desktop: Always visible search bar */}
-                        <div className="hidden md:block relative w-full max-w-md">
+                    {/* Desktop Search - Full bar */}
+                    <div className="hidden md:block flex-1" ref={searchContainerRef}>
+                        <div className="relative w-full max-w-md">
                             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                                 ref={searchInputRef}
@@ -255,6 +222,46 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
 
                     {/* Actions */}
                     <div className="flex items-center gap-2">
+                        {/* Mobile: Search Icon - Right side, next to Quick Add */}
+                        <div className="md:hidden">
+                            {!isSearchOpen ? (
+                                <button
+                                    onClick={() => setIsSearchOpen(true)}
+                                    className="flex items-center justify-center h-9 w-9 rounded-lg hover:bg-accent"
+                                >
+                                    <Search className="h-5 w-5 text-muted-foreground" />
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-2">
+                                    <div className="relative w-[200px] sm:w-[250px]">
+                                        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                                        <Input
+                                            ref={searchInputRef}
+                                            placeholder="Search..."
+                                            className="pl-9 pr-10 w-full bg-accent"
+                                            value={searchQuery}
+                                            onChange={(e) => {
+                                                setSearchQuery(e.target.value)
+                                                if (e.target.value.trim()) setIsSearchOpen(true)
+                                            }}
+                                            onBlur={() => !searchQuery && setIsSearchOpen(false)}
+                                            onFocus={() => searchQuery && setIsSearchOpen(true)}
+                                            autoFocus
+                                        />
+                                        <button
+                                            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                            onClick={() => {
+                                                setSearchQuery("")
+                                                setIsSearchOpen(false)
+                                            }}
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Quick Add */}
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>

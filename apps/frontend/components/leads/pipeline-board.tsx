@@ -22,6 +22,15 @@ import { Loader2, AlertCircle } from "lucide-react"
 import { LeadStatus } from "@/types/lead"
 import { LeadPipelineColumn } from "./lead-pipeline-column"
 import { LeadPipelineCard } from "./lead-pipeline-card"
+import { useIsMobile } from "@/lib/hooks/use-media-query"
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
 
 const PIPELINE_STAGES: { id: LeadStatus; title: string; color: string }[] = [
     { id: "new", title: "New", color: "bg-realty-navy/10 border-realty-navy/20" },
@@ -48,6 +57,8 @@ export function PipelineBoard() {
     const [leads, setLeads] = React.useState<any[]>([])
     const [activeLead, setActiveLead] = React.useState<any | null>(null)
     const [mounted, setMounted] = React.useState(false)
+    const [selectedLeadForMove, setSelectedLeadForMove] = React.useState<any | null>(null)
+    const isMobile = useIsMobile()
     const initialLeads = leadsData?.data
 
     React.useEffect(() => {
@@ -63,13 +74,29 @@ export function PipelineBoard() {
     const sensors = useSensors(
         useSensor(PointerSensor, {
             activationConstraint: {
-                distance: 5,
+                distance: isMobile ? 15 : 5,
             },
         }),
         useSensor(KeyboardSensor, {
             coordinateGetter: sortableKeyboardCoordinates,
         })
     )
+
+    const handleLeadTap = (lead: any) => {
+        if (isMobile) {
+            setSelectedLeadForMove(lead)
+        }
+    }
+
+    const handleMoveToStage = (stage: LeadStatus) => {
+        if (selectedLeadForMove) {
+            setLeads(prev => prev.map(l => 
+                l.id === selectedLeadForMove.id ? { ...l, status: stage } : l
+            ))
+            updateLead({ id: selectedLeadForMove.id, status: stage })
+            setSelectedLeadForMove(null)
+        }
+    }
 
     const columns = React.useMemo(() => {
         const cols = new Map<string, any[]>()
@@ -160,31 +187,58 @@ export function PipelineBoard() {
     if (!mounted) return null
 
     return (
-        <DndContext
-            sensors={sensors}
-            collisionDetection={closestCorners}
-            onDragStart={onDragStart}
-            onDragOver={onDragOver}
-            onDragEnd={onDragEnd}
-        >
-            <div className="flex bg-background h-[calc(100vh-14rem)] overflow-x-auto pb-4 gap-4 items-start px-1">
-                {PIPELINE_STAGES.map((stage) => (
-                    <LeadPipelineColumn
-                        key={stage.id}
-                        id={stage.id}
-                        title={stage.title}
-                        color={stage.color}
-                        leads={columns.get(stage.id) || []}
-                    />
-                ))}
-            </div>
+        <>
+            <DndContext
+                sensors={sensors}
+                collisionDetection={closestCorners}
+                onDragStart={onDragStart}
+                onDragOver={onDragOver}
+                onDragEnd={onDragEnd}
+            >
+                <div className="flex bg-background h-[calc(100vh-14rem)] overflow-x-auto pb-4 gap-4 items-start px-1">
+                    {PIPELINE_STAGES.map((stage) => (
+                        <LeadPipelineColumn
+                            key={stage.id}
+                            id={stage.id}
+                            title={stage.title}
+                            color={stage.color}
+                            leads={columns.get(stage.id) || []}
+                            onLeadTap={handleLeadTap}
+                        />
+                    ))}
+                </div>
 
-            {createPortal(
-                <DragOverlay dropAnimation={dropAnimation}>
-                    {activeLead && <LeadPipelineCard lead={activeLead} />}
-                </DragOverlay>,
-                document.body
-            )}
-        </DndContext>
+                {createPortal(
+                    <DragOverlay dropAnimation={dropAnimation}>
+                        {activeLead && <LeadPipelineCard lead={activeLead} />}
+                    </DragOverlay>,
+                    document.body
+                )}
+            </DndContext>
+
+            {/* Mobile Move Dialog */}
+            <Dialog open={!!selectedLeadForMove} onOpenChange={() => setSelectedLeadForMove(null)}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Move Lead</DialogTitle>
+                        <DialogDescription>
+                            Select a stage to move "{selectedLeadForMove?.name}"
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="grid grid-cols-2 gap-2 py-4">
+                        {PIPELINE_STAGES.map((stage) => (
+                            <Button
+                                key={stage.id}
+                                variant={selectedLeadForMove?.status === stage.id ? "default" : "outline"}
+                                className={selectedLeadForMove?.status === stage.id ? "bg-realty-gold hover:bg-realty-gold/90" : ""}
+                                onClick={() => handleMoveToStage(stage.id)}
+                            >
+                                {stage.title}
+                            </Button>
+                        ))}
+                    </div>
+                </DialogContent>
+            </Dialog>
+        </>
     )
 }

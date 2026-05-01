@@ -72,6 +72,11 @@ export class AuthService {
       });
       if (role) {
         (userResponse as any).permissions = role.permissions;
+        (userResponse as any).role = {
+          id: role.id,
+          name: role.name,
+          level: role.level,
+        };
       }
     }
 
@@ -239,6 +244,11 @@ export class AuthService {
       });
       if (role) {
         (userResponse as any).permissions = role.permissions;
+        (userResponse as any).role = {
+          id: role.id,
+          name: role.name,
+          level: role.level,
+        };
       }
     }
 

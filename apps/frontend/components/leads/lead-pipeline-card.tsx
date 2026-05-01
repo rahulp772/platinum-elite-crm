@@ -11,9 +11,10 @@ import { cn } from "@/lib/utils"
 
 interface LeadPipelineCardProps {
     lead: any
+    onTap?: (lead: any) => void
 }
 
-export function LeadPipelineCard({ lead }: LeadPipelineCardProps) {
+export function LeadPipelineCard({ lead, onTap }: LeadPipelineCardProps) {
     const {
         setNodeRef,
         attributes,
@@ -50,8 +51,14 @@ export function LeadPipelineCard({ lead }: LeadPipelineCardProps) {
             {...attributes}
             {...listeners}
             className={cn("group", isDragging && "opacity-50")}
+            onClick={(e) => {
+                if (onTap) {
+                    e.preventDefault()
+                    onTap(lead)
+                }
+            }}
         >
-            <Card className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow">
+            <Card className={onTap ? "cursor-pointer hover:shadow-md transition-shadow" : "cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"}>
                 <CardContent className="p-4 space-y-3">
                     {/* Header */}
                     <div className="flex items-start justify-between gap-2">

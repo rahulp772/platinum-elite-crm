@@ -11,9 +11,10 @@ interface LeadPipelineColumnProps {
     title: string
     color: string
     leads: any[]
+    onLeadTap?: (lead: any) => void
 }
 
-export function LeadPipelineColumn({ id, title, color, leads }: LeadPipelineColumnProps) {
+export function LeadPipelineColumn({ id, title, color, leads, onLeadTap }: LeadPipelineColumnProps) {
     const { setNodeRef } = useDroppable({
         id,
     })
@@ -49,7 +50,7 @@ export function LeadPipelineColumn({ id, title, color, leads }: LeadPipelineColu
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-[150px] p-1">
                 <SortableContext items={leads.map((d) => d.id)} strategy={verticalListSortingStrategy}>
                     {leads.map((lead) => (
-                        <LeadPipelineCard key={lead.id} lead={lead} />
+                        <LeadPipelineCard key={lead.id} lead={lead} onTap={onLeadTap} />
                     ))}
                 </SortableContext>
             </div>

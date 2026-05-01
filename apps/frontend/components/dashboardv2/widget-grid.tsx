@@ -49,6 +49,8 @@ interface WidgetGridProps {
   onSizeChange: (widgetId: string, size: WidgetSize) => void
 }
 
+// Widget components - Next.js automatically code-splits each file
+// This is sufficient for most cases - each widget loads independently
 const WIDGET_COMPONENTS: Record<string, React.FC<{ period: PeriodType }>> = {
   'stats-overview': StatsOverviewWidget,
   'stats-response-time': StatsResponseTimeWidget,

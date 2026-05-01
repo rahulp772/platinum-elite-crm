@@ -56,30 +56,18 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
     ), [unreadMessages])
 
     // When in mobile mode, just render the content - layout handles the Sheet wrapper
-    if (isMobile) {
-        return (
-            <SidebarContent 
-                navItems={navItems} 
-                collapsed={collapsed} 
-                setCollapsed={setCollapsed} 
-                pathname={pathname}
-                user={user}
-                logout={logout}
-                onMobileClose={onMobileClose}
-            />
-        )
-    }
-
+    // Note: We pass isMobile to disable expensive effects
     return (
         <TooltipProvider delayDuration={0}>
             <SidebarContent 
                 navItems={navItems} 
-                collapsed={collapsed} 
+                collapsed={isMobile ? false : collapsed} 
                 setCollapsed={setCollapsed} 
                 pathname={pathname}
                 user={user}
                 logout={logout}
                 onMobileClose={onMobileClose}
+                isMobile={isMobile}
             />
         </TooltipProvider>
     )
@@ -93,22 +81,30 @@ interface SidebarContentProps {
     user: any
     logout: () => void
     onMobileClose?: () => void
+    isMobile?: boolean
 }
 
-function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, logout, onMobileClose }: SidebarContentProps) {
+function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, logout, onMobileClose, isMobile = false }: SidebarContentProps) {
     return (
         <div
             className={cn(
-                "relative flex h-full flex-col transition-all duration-300 ease-in-out overflow-hidden",
+                "relative flex h-full flex-col overflow-hidden",
+                !isMobile && "transition-all duration-300 ease-in-out",
                 "bg-card border-r border-border",
-                collapsed ? "w-20" : "w-72"
+                collapsed && !isMobile ? "w-20" : "w-72"
             )}
         >
-            <div className="absolute inset-0 bg-gradient-to-br from-realty-navy/40 via-background to-background" />
-            <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-realty-gold/5 blur-[100px] animate-pulse" />
-            <div className="absolute -left-20 top-1/3 h-80 w-80 rounded-full bg-realty-navy-light/10 blur-[120px]" />
-            <div className="absolute right-0 bottom-20 h-60 w-60 rounded-full bg-realty-gold/10 blur-[80px]" />
-            <div className="absolute inset-0 backdrop-blur-3xl bg-background/20" />
+            {/* Simplified background for mobile to avoid frame drops */}
+            {!isMobile && (
+                <>
+                    <div className="absolute inset-0 bg-gradient-to-br from-realty-navy/40 via-background to-background" />
+                    <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-realty-gold/5 blur-[100px] animate-pulse" />
+                    <div className="absolute -left-20 top-1/3 h-80 w-80 rounded-full bg-realty-navy-light/10 blur-[120px]" />
+                    <div className="absolute right-0 bottom-20 h-60 w-60 rounded-full bg-realty-gold/10 blur-[80px]" />
+                    <div className="absolute inset-0 backdrop-blur-3xl bg-background/20" />
+                </>
+            )}
+            {isMobile && <div className="absolute inset-0 bg-card" />}
 
             <div className="relative z-10 flex flex-col h-full overflow-hidden">
                 <div className="relative">
@@ -128,10 +124,16 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                         collapsed && "justify-center px-4"
                     )}>
                         <div className="relative">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-realty-gold/80 to-realty-gold shadow-lg shadow-realty-gold/20">
+                            <div className={cn(
+                                "flex h-10 w-10 items-center justify-center rounded-xl",
+                                isMobile ? "bg-realty-gold" : "bg-gradient-to-br from-realty-gold/80 to-realty-gold shadow-lg shadow-realty-gold/20"
+                            )}>
                                 <Building2 className="h-5 w-5 text-realty-navy" />
                             </div>
-                            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-realty-gold-light animate-pulse" />
+                            <div className={cn(
+                                "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-realty-gold-light",
+                                !isMobile && "animate-pulse"
+                            )} />
                         </div>
                         {!collapsed && (
                             <div className="flex flex-col">
@@ -143,8 +145,9 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                 </div>
 
                 <div className={cn(
-                    "flex items-center gap-3 p-4 mx-3 mt-4 rounded-2xl bg-accent/30 backdrop-blur-xl border border-border shadow-sm",
-                    collapsed && "justify-center mx-2 p-3"
+                    "flex items-center gap-3 p-4 mx-3 mt-4 rounded-2xl bg-accent/30 border border-border shadow-sm",
+                    !isMobile && "backdrop-blur-xl",
+                    collapsed && !isMobile && "justify-center mx-2 p-3"
                 )}>
                     <Avatar className={cn("ring-2 ring-primary/10 ring-offset-2 ring-offset-background", collapsed ? "h-10 w-10" : "h-11 w-11")}>
                         <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
@@ -154,8 +157,8 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                     </Avatar>
                     {!collapsed && (
                         <div className="flex-1 min-w-0">
-                            <h2 className="text-sm font-semibold text-foreground truncate">{user?.name || "Indica Watson"}</h2>
-                            <p className="text-xs text-muted-foreground truncate capitalize">{user?.role?.name || user?.role?.toString() || "Executive Partner"}</p>
+                            <h2 className="text-sm font-semibold text-foreground truncate">{user?.name}</h2>
+                            <p className="text-xs text-muted-foreground truncate capitalize">{user?.role?.name}</p>
                         </div>
                     )}
                 </div>

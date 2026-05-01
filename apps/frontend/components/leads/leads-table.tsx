@@ -405,39 +405,29 @@ export function LeadsTable({ data, onEdit, onSelectionChange, pagination, onPage
                     </Table>
                 </div>
             </Card>
-            <div className="flex items-center justify-between px-2 py-4 border-t bg-muted/5">
-                <div className="flex items-center gap-6">
-                    <div className="text-sm text-muted-foreground font-medium">
-                        {pagination ? (
-                            <>
-                                Showing <span className="text-foreground font-semibold">
-                                    {(pagination.page - 1) * pagination.limit + 1}
-                                </span> to{" "}
-                                <span className="text-foreground font-semibold">
-                                    {Math.min(pagination.page * pagination.limit, pagination.total)}
-                                </span> of{" "}
-                                <span className="text-foreground font-semibold">{pagination.total}</span> leads
-                            </>
-                        ) : (
-                            (() => {
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-2 py-4 border-t bg-muted/5">
+                <div className="text-sm text-muted-foreground font-medium">
+                    {pagination ? (
+                        <span>
+                            {(pagination.page - 1) * pagination.limit + 1}-{Math.min(pagination.page * pagination.limit, pagination.total)} of {pagination.total}
+                        </span>
+                    ) : (
+                        <span>
+                            {(() => {
                                 const total = table.getFilteredRowModel().rows.length
                                 const pageSize = table.getState().pagination.pageSize
                                 const pageIndex = table.getState().pagination.pageIndex
                                 const start = total === 0 ? 0 : pageIndex * pageSize + 1
                                 const end = Math.min(pageIndex * pageSize + pageSize, total)
-                                return (
-                                    <>
-                                        Showing <span className="text-foreground font-semibold">{start}</span> to{" "}
-                                        <span className="text-foreground font-semibold">{end}</span> of{" "}
-                                        <span className="text-foreground font-semibold">{total}</span> leads
-                                    </>
-                                )
-                            })()
-                        )}
-                    </div>
+                                return `${start}-${end} of ${total}`
+                            })()}
+                        </span>
+                    )}
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-4">
                     {pagination ? (
                         <div className="flex items-center gap-2">
-                            <p className="text-sm text-muted-foreground font-medium">Rows per page</p>
+                            <p className="text-sm text-muted-foreground font-medium hidden sm:inline">Rows per page</p>
                             <Select
                                 value={`${pagination.limit}`}
                                 onValueChange={(value) => onLimitChange?.(Number(value))}

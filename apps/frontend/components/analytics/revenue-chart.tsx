@@ -4,12 +4,14 @@ import * as React from "react"
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MonthlyRevenue } from "@/types/analytics"
+import { useChartAnimation } from "@/components/ui/mobile-chart-wrapper"
 
 interface RevenueChartProps {
     data: MonthlyRevenue[]
 }
 
 export function RevenueChart({ data }: RevenueChartProps) {
+    const isAnimationActive = useChartAnimation()
     return (
         <Card className="col-span-4">
             <CardHeader>
@@ -56,6 +58,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                                 fillOpacity={1}
                                 fill="url(#colorRevenue)"
                                 strokeWidth={2}
+                                isAnimationActive={isAnimationActive}
                             />
                         </AreaChart>
                     </ResponsiveContainer>

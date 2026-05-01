@@ -259,42 +259,42 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                 )}
                 
                 {/* Photo Count Badge */}
-                <div className="absolute top-4 right-4 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white text-xs font-medium">
-                    <Camera className="h-3.5 w-3.5" />
+                <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white text-[10px] sm:text-xs font-medium">
+                    <Camera className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     <span>{propertyImages?.length || 0}</span>
                 </div>
 
             </div>
 
             {/* Details Section */}
-            <CardContent className={cn("p-5 pt-4 space-y-3", isCompact ? "p-3" : "")}>
+            <CardContent className={cn("p-3 sm:p-4 md:p-5 pt-3 sm:pt-4 space-y-2 sm:space-y-3", isCompact ? "p-2 sm:p-3" : "")}>
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <div className={cn(
                             "w-2 h-2 rounded-full",
                             property.status === 'available' ? "bg-realty-gold" : "bg-muted-foreground/30"
                         )} />
-                        <span className="text-sm font-semibold text-realty-gold capitalize">
+                        <span className="text-xs sm:text-sm font-semibold text-realty-gold capitalize">
                             For {property.status === 'available' ? 'sale' : property.status.replace('_', ' ')}
                         </span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2">
                         <Button
                             variant="outline"
                             size="icon"
-                            className="h-9 w-9 rounded-full border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+                            className="h-8 w-8 sm:h-9 sm:w-9 rounded-full border-border text-muted-foreground hover:bg-accent hover:text-foreground"
                             onClick={(e) => {
                                 e.stopPropagation()
                                 // Handle map click
                             }}
                         >
-                            <Map className="h-4 w-4" />
+                            <Map className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                         <Button
                             variant="outline"
                             size="icon"
                             className={cn(
-                                "h-9 w-9 rounded-full border-border transition-colors",
+                                "h-8 w-8 sm:h-9 sm:w-9 rounded-full border-border transition-colors",
                                 property.favorited ? "text-realty-gold bg-realty-gold/10 border-realty-gold/20" : "text-muted-foreground hover:bg-accent hover:text-foreground"
                             )}
                             onClick={(e) => {
@@ -302,37 +302,37 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                                 toggleFavorite.mutate(property.id)
                             }}
                         >
-                            <Heart className={cn("h-4 w-4", property.favorited && "fill-current")} />
+                            <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         </Button>
                     </div>
                 </div>
 
                 <div>
-                    <h3 className={cn("font-bold text-foreground tabular-nums tracking-tight", isCompact ? "text-lg" : "text-2xl")}>
+                    <h3 className={cn("font-bold text-foreground tabular-nums tracking-tight", isCompact ? "text-base sm:text-lg" : "text-lg sm:text-xl md:text-2xl")}>
                         {formattedPrice}
                     </h3>
                 </div>
 
-                <div className="flex items-center gap-4 text-muted-foreground text-sm">
+                <div className="flex items-center gap-2 sm:gap-4 text-muted-foreground text-xs sm:text-sm">
                     {property.bedrooms && (
-                        <div className="flex items-center gap-1.5">
-                            <Bed className="h-4 w-4" />
+                        <div className="flex items-center gap-1">
+                            <Bed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             <span className="font-medium"><span className="font-bold text-foreground">{property.bedrooms}</span> bed</span>
                         </div>
                     )}
                     {property.bathrooms && (
-                        <div className="flex items-center gap-1.5">
-                            <Bath className="h-4 w-4" />
+                        <div className="flex items-center gap-1">
+                            <Bath className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             <span className="font-medium"><span className="font-bold text-foreground">{property.bathrooms}</span> bath</span>
                         </div>
                     )}
-                    <div className="flex items-center gap-1.5">
-                        <Ruler className="h-4 w-4" />
+                    <div className="flex items-center gap-1">
+                        <Ruler className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         <span className="font-medium"><span className="font-bold text-foreground">{property.sqft.toLocaleString()}</span> sqft</span>
                     </div>
                 </div>
 
-                <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">
+                <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-2">
                     {property.address}, {property.city}, {property.state} {property.zipCode}
                 </p>
 

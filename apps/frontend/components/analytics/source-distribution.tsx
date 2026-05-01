@@ -4,12 +4,14 @@ import * as React from "react"
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip, Legend } from "recharts"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DealSource } from "@/types/analytics"
+import { useChartAnimation } from "@/components/ui/mobile-chart-wrapper"
 
 interface SourceDistributionProps {
     data: DealSource[]
 }
 
 export function SourceDistribution({ data }: SourceDistributionProps) {
+    const isAnimationActive = useChartAnimation()
     return (
         <Card className="col-span-2">
             <CardHeader>
@@ -27,6 +29,7 @@ export function SourceDistribution({ data }: SourceDistributionProps) {
                                 outerRadius={100}
                                 paddingAngle={5}
                                 dataKey="value"
+                                isAnimationActive={isAnimationActive}
                             >
                                 {data.map((entry, index) => (
                                     <Cell key={`cell-${index}`} fill={entry.color} strokeWidth={0} />

@@ -11,9 +11,10 @@ import { cn } from "@/lib/utils"
 
 interface DealCardProps {
     deal: Deal
+    onTap?: (deal: Deal) => void
 }
 
-export function DealCard({ deal }: DealCardProps) {
+export function DealCard({ deal, onTap }: DealCardProps) {
     const {
         setNodeRef,
         attributes,
@@ -47,8 +48,15 @@ export function DealCard({ deal }: DealCardProps) {
             {...attributes}
             {...listeners}
             className={cn("group", isDragging && "opacity-50")}
+            onClick={(e) => {
+                if (onTap) {
+                    // Prevent drag from triggering tap
+                    e.preventDefault()
+                    onTap(deal)
+                }
+            }}
         >
-            <Card className="cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow">
+            <Card className={onTap ? "cursor-pointer hover:shadow-md transition-shadow" : "cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow"}>
                 <CardContent className="p-4 space-y-3">
                     {/* Header */}
                     <div className="flex items-start justify-between gap-2">

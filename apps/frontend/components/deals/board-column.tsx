@@ -10,9 +10,10 @@ import { cn } from "@/lib/utils"
 interface BoardColumnProps {
     id: DealStage
     deals: Deal[]
+    onDealTap?: (deal: Deal) => void
 }
 
-export function BoardColumn({ id, deals }: BoardColumnProps) {
+export function BoardColumn({ id, deals, onDealTap }: BoardColumnProps) {
     const { setNodeRef } = useDroppable({
         id,
     })
@@ -46,7 +47,7 @@ export function BoardColumn({ id, deals }: BoardColumnProps) {
             <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-[150px] p-1">
                 <SortableContext items={deals.map((d) => d.id)} strategy={verticalListSortingStrategy}>
                     {deals.map((deal) => (
-                        <DealCard key={deal.id} deal={deal} />
+                        <DealCard key={deal.id} deal={deal} onTap={onDealTap} />
                     ))}
                 </SortableContext>
             </div>
