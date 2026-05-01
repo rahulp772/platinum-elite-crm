@@ -346,6 +346,12 @@ export function LeadsTable({ data, onEdit, onSelectionChange, pagination, onPage
         },
     })
 
+    React.useEffect(() => {
+        if (pagination?.limit) {
+            table.setPageSize(pagination.limit)
+        }
+    }, [pagination?.limit, table])
+
     const headerCount = table.getAllColumns().length
 
     return (
@@ -436,7 +442,7 @@ export function LeadsTable({ data, onEdit, onSelectionChange, pagination, onPage
                                     <SelectValue placeholder={pagination.limit} />
                                 </SelectTrigger>
                                 <SelectContent side="top" className="bg-background border-border">
-                                    {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+                                    {[10, 12, 20, 30, 50, 100].map((pageSize) => (
                                         <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
                                             {pageSize}
                                         </SelectItem>
@@ -446,7 +452,7 @@ export function LeadsTable({ data, onEdit, onSelectionChange, pagination, onPage
                         </div>
                     ) : (
                         <div className="flex items-center gap-2">
-                            <p className="text-sm text-muted-foreground font-medium">Rows per page</p>
+                            <p className="text-sm text-muted-foreground font-medium hidden sm:inline">Rows per page</p>
                             <Select
                                 value={`${table.getState().pagination.pageSize}`}
                                 onValueChange={(value) => {
@@ -457,7 +463,7 @@ export function LeadsTable({ data, onEdit, onSelectionChange, pagination, onPage
                                     <SelectValue placeholder={table.getState().pagination.pageSize} />
                                 </SelectTrigger>
                                 <SelectContent side="top" className="bg-background border-border">
-                                    {[10, 20, 30, 40, 50, 100].map((pageSize) => (
+                                    {[10, 12, 20, 30, 50, 100].map((pageSize) => (
                                         <SelectItem key={pageSize} value={`${pageSize}`} className="cursor-pointer">
                                             {pageSize}
                                         </SelectItem>

@@ -14,6 +14,35 @@ import { Button } from "@/components/ui/button"
 import { Lead, LeadStatus } from "@/types/lead"
 import { cn } from "@/lib/utils"
 
+interface LeadsTableSectionProps {
+    data: Lead[]
+    onEdit: (lead: Lead) => void
+    onSelectionChange: (selectedLeads: Lead[]) => void
+    pagination: { page: number; limit: number; total: number; totalPages: number } | null
+    onPageChange: (page: number) => void
+    onLimitChange: (limit: number) => void
+}
+
+const LeadsTableSection = React.memo(function LeadsTableSection({
+    data,
+    onEdit,
+    onSelectionChange,
+    pagination,
+    onPageChange,
+    onLimitChange,
+}: LeadsTableSectionProps) {
+    return (
+        <LeadsTable
+            data={data}
+            onEdit={onEdit}
+            onSelectionChange={onSelectionChange}
+            pagination={pagination}
+            onPageChange={onPageChange}
+            onLimitChange={onLimitChange}
+        />
+    )
+})
+
 export default function LeadsPage() {
     const router = useRouter()
     const { data: users } = useUsers()
@@ -26,7 +55,7 @@ export default function LeadsPage() {
     const [selectedLeads, setSelectedLeads] = React.useState<Lead[]>([])
     const [bulkDialogOpen, setBulkDialogOpen] = React.useState(false)
     const [page, setPage] = React.useState(1)
-    const [limit, setLimit] = React.useState(20)
+    const [limit, setLimit] = React.useState(10)
     const [filtersOpen, setFiltersOpen] = React.useState(false)
 
     const filters = React.useMemo(() => ({
@@ -48,6 +77,7 @@ export default function LeadsPage() {
     }
 
     const handleLimitChange = (newLimit: number) => {
+        console.log('Limit changed to:', newLimit)
         setLimit(newLimit)
         setPage(1)
     }
@@ -157,7 +187,7 @@ export default function LeadsPage() {
             )}
 
             {/* Table */}
-            <LeadsTable
+            <LeadsTableSection
                 data={leads}
                 onEdit={handleEditLead}
                 onSelectionChange={handleSelectionChange}

@@ -86,25 +86,25 @@ interface PropertyCardProps {
     variant?: PropertyCardVariant
 }
 
-export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "grid" }: PropertyCardProps) {
+function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "grid" }: PropertyCardProps) {
     const router = useRouter()
     const toggleFavorite = useToggleFavorite()
     
-    const handleClick = () => {
+const handleClick = () => {
         if (onClick) {
             onClick(property)
         } else {
             router.push(`/properties/${property.id}`)
         }
     }
-    
-    const formattedPrice = new Intl.NumberFormat("en-US", {
+
+    const formattedPrice = React.useMemo(() => new Intl.NumberFormat("en-US", {
         style: "currency",
         currency: "USD",
         minimumFractionDigits: 0,
-}).format(property.price)
+    }).format(property.price), [property.price])
 
-    const propertyImages = parsePropertyImages(property.images)
+    const propertyImages = React.useMemo(() => parsePropertyImages(property.images), [property.images])
     const isCompact = variant === "compact"
     const isList = variant === "list"
 
@@ -246,6 +246,7 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            loading="lazy"
                         />
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-muted">
@@ -341,3 +342,11 @@ export function PropertyCard({ property, onFavoriteToggle, onClick, variant = "g
         </Card>
     )
 }
+
+export const PropertyCard = React.memo(PropertyCardInner, (prevProps, nextProps) => {
+    return prevProps.property.id === nextProps.property.id &&
+           prevProps.property.price === nextProps.property.price &&
+           prevProps.property.status === nextProps.property.status &&
+           prevProps.property.favorited === nextProps.property.favorited &&
+           prevProps.variant === nextProps.variant
+})

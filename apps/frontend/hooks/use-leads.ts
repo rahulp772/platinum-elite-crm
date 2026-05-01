@@ -29,6 +29,7 @@ export function useLeads(filters?: LeadsFilters, queryKeyDeps?: unknown[]) {
             return data
         },
         staleTime: 0,
+        placeholderData: (previousData) => previousData,
     })
 }
 

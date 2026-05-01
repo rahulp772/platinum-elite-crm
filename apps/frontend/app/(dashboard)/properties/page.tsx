@@ -6,7 +6,9 @@ import { PropertyFilters } from "@/components/properties/property-filters"
 import { AddPropertyDialog } from "@/components/properties/add-property-dialog"
 import { useProperties, PropertiesFilters } from "@/hooks/use-properties"
 import { Button } from "@/components/ui/button"
-import { LayoutGrid, List, LoaderCircle, Plus } from "lucide-react"
+import { LayoutGrid, List, LoaderCircle, Plus, Filter } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { useVirtualizer } from "@tanstack/react-virtual"
 import {
     Select,
     SelectContent,
@@ -17,13 +19,14 @@ import {
 
 export default function PropertiesPage() {
     const [page, setPage] = React.useState(1)
-    const [limit, setLimit] = React.useState(20)
+    const [limit, setLimit] = React.useState(10)
     const [searchQuery, setSearchQuery] = React.useState("")
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [typeFilter, setTypeFilter] = React.useState("all")
     const [sortBy, setSortBy] = React.useState("newest")
     const [view, setView] = React.useState<"grid" | "list">("grid")
     const [isAddOpen, setIsAddOpen] = React.useState(false)
+    const [filtersOpen, setFiltersOpen] = React.useState(false)
 
     const filters = React.useMemo<PropertiesFilters>(() => ({
         page,
@@ -34,7 +37,7 @@ export default function PropertiesPage() {
         sortBy,
     }), [page, limit, searchQuery, statusFilter, typeFilter, sortBy])
 
-    const { data: propertiesData, isLoading, isError } = useProperties(filters)
+const { data: propertiesData, isLoading, isError } = useProperties(filters)
     const properties = propertiesData?.data || []
     const metadata = propertiesData?.metadata
 
@@ -75,7 +78,15 @@ export default function PropertiesPage() {
                         Manage and track all real estate listings
                     </p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        className="md:hidden"
+                        onClick={() => setFiltersOpen(!filtersOpen)}
+                    >
+                        <Filter className="h-4 w-4" />
+                    </Button>
                     <div className="flex items-center border rounded-lg p-1 bg-muted/50">
                         <Button
                             variant={view === "grid" ? "secondary" : "ghost"}
@@ -158,9 +169,9 @@ export default function PropertiesPage() {
 
             {/* Pagination */}
             {metadata && metadata.totalPages > 1 && (
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <span className="text-sm text-muted-foreground">Rows per page</span>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div className="flex items-center gap-2 order-2 sm:order-1">
+                        <span className="text-sm text-muted-foreground hidden sm:inline">Rows per page</span>
                         <Select
                             value={`${limit}`}
                             onValueChange={(value) => handleLimitChange(Number(value))}
@@ -169,7 +180,7 @@ export default function PropertiesPage() {
                                 <SelectValue placeholder={`${limit}`} />
                             </SelectTrigger>
                             <SelectContent side="top">
-                                {[10, 20, 30, 40, 50, 100].map((size) => (
+                                {[10, 12, 20, 30, 50, 100].map((size) => (
                                     <SelectItem key={size} value={`${size}`}>
                                         {size}
                                     </SelectItem>
@@ -177,14 +188,16 @@ export default function PropertiesPage() {
                             </SelectContent>
                         </Select>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 order-1 sm:order-2">
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => handlePageChange(page - 1)}
                             disabled={page <= 1}
+                            className="text-xs px-2 sm:px-3"
                         >
-                            Previous
+                            <span className="hidden sm:inline">Previous</span>
+                            <span className="sm:hidden">Prev</span>
                         </Button>
                         {(() => {
                             const totalPages = metadata.totalPages
@@ -213,13 +226,13 @@ export default function PropertiesPage() {
 
                             return pages.map((p, idx) =>
                                 p === "..." ? (
-                                    <span key={`ellipsis-${idx}`} className="px-2">...</span>
+                                    <span key={`ellipsis-${idx}`} className="px-1 sm:px-2 text-xs">...</span>
                                 ) : (
                                     <Button
                                         key={p}
                                         variant={page === p ? "secondary" : "ghost"}
                                         size="sm"
-                                        className="w-9"
+                                        className="w-8 h-8 text-xs"
                                         onClick={() => handlePageChange(p as number)}
                                     >
                                         {p}
@@ -232,8 +245,10 @@ export default function PropertiesPage() {
                             size="sm"
                             onClick={() => handlePageChange(page + 1)}
                             disabled={page >= metadata.totalPages}
+                            className="text-xs px-2 sm:px-3"
                         >
-                            Next
+                            <span className="hidden sm:inline">Next</span>
+                            <span className="sm:hidden">Next</span>
                         </Button>
                     </div>
                 </div>

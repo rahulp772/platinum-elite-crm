@@ -17211,8 +17211,8 @@
       "source_file": "apps\\frontend\\components\\leads\\pipeline-board.tsx",
       "source_location": "L96",
       "weight": 1.0,
-      "_src": "pipeline_board_handlemovetostage",
-      "_tgt": "leads_updatelead",
+      "_src": "leads_updatelead",
+      "_tgt": "pipeline_board_handlemovetostage",
       "source": "leads_updatelead",
       "target": "pipeline_board_handlemovetostage"
     },
