@@ -125,7 +125,7 @@ const handleClick = () => {
                                         alt={property.title}
                                         fill
                                         sizes="128px"
-                                        className="object-cover transition-transform duration-500 group-hover:scale-110"
+                                        className="object-cover desktop-hover-scale"
                                     />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center bg-muted">
@@ -137,7 +137,8 @@ const handleClick = () => {
                                     <span className="text-muted-foreground text-[10px]">No Image</span>
                                 </div>
                             )}
-                            <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-lg bg-black/40 backdrop-blur-md text-white text-[10px] font-medium flex items-center gap-1">
+                            {/* badge: solid bg instead of backdrop-blur-md — blur multiplied across every list row saturates GPU */}
+                            <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-lg bg-black/60 text-white text-[10px] font-medium flex items-center gap-1">
                                 <Camera className="h-2.5 w-2.5" />
                                 <span>{propertyImages?.length || 0}</span>
                             </div>
@@ -231,7 +232,7 @@ const handleClick = () => {
     return (
         <Card
             className={cn(
-                "group overflow-hidden hover:shadow-xl transition-all cursor-pointer rounded-[2rem] border border-border bg-card",
+                "group overflow-hidden hover:shadow-xl transition-shadow cursor-pointer rounded-2xl border border-border bg-card",
                 isCompact ? "text-sm" : ""
             )}
             onClick={handleClick}
@@ -245,7 +246,7 @@ const handleClick = () => {
                             alt={property.title}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
-                            className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            className="object-cover desktop-hover-scale"
                             loading="lazy"
                         />
                     ) : (
@@ -260,7 +261,7 @@ const handleClick = () => {
                 )}
                 
                 {/* Photo Count Badge */}
-                <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/40 backdrop-blur-md text-white text-[10px] sm:text-xs font-medium">
+                <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/60 text-white text-[10px] sm:text-xs font-medium">
                     <Camera className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                     <span>{propertyImages?.length || 0}</span>
                 </div>

@@ -2,7 +2,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LucideIcon } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { motion } from "framer-motion"
+
+// NOTE: framer-motion removed from StatsCard.
+// Previously: 4 cards × 3 motion.div each = 12 animated nodes on dashboard mount.
+// On mobile, each motion.div triggers layout + paint recalculation.
+// Replaced with CSS-only entry animation (no JS overhead) and a pure-CSS shimmer hover.
 
 interface StatsCardProps {
     title: string
@@ -24,31 +28,27 @@ export function StatsCard({
     index = 0
 }: StatsCardProps) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
+        // CSS fade-in animation driven by animation-delay via inline style.
+        // Uses opacity + translateY via @keyframes stats-card-in (defined below).
+        // This produces the same staggered entry effect without any JS.
+        <div
+            className="stats-card-animate"
+            style={{ animationDelay: `${index * 100}ms` }}
         >
             <Card className="hover:shadow-md transition-shadow group overflow-hidden relative">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-4 md:px-6">
                     <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground group-hover:text-foreground transition-colors">
                         {title}
                     </CardTitle>
-                    <motion.div
-                        whileHover={{ rotate: 15, scale: 1.2 }}
-                        className="transition-colors"
-                    >
+                    {/* Icon scales on hover via CSS group-hover — no JS pointer handler */}
+                    <div className="transition-transform duration-200 group-hover:rotate-12 group-hover:scale-110">
                         <Icon className={cn("h-4 w-4 sm:h-5 sm:w-5", iconColor)} />
-                    </motion.div>
+                    </div>
                 </CardHeader>
                 <CardContent className="px-4 md:px-6">
-                    <motion.div 
-                        initial={{ scale: 0.8 }}
-                        animate={{ scale: 1 }}
-                        className="text-2xl sm:text-3xl font-bold tabular-nums"
-                    >
+                    <div className="text-2xl sm:text-3xl font-bold tabular-nums">
                         {value}
-                    </motion.div>
+                    </div>
                     {change && (
                         <p
                             className={cn(
@@ -62,13 +62,10 @@ export function StatsCard({
                         </p>
                     )}
                 </CardContent>
-                <motion.div 
-                    initial={{ x: "-100%" }}
-                    whileHover={{ x: "100%" }}
-                    transition={{ duration: 0.8, ease: "easeInOut" }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 pointer-events-none"
-                />
+
+                {/* Pure CSS shimmer on hover — no framer whileHover, no JS pointer events */}
+                <div className="stats-card-shimmer pointer-events-none" aria-hidden="true" />
             </Card>
-        </motion.div>
+        </div>
     )
 }

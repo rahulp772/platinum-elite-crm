@@ -94,14 +94,14 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                 collapsed && !isMobile ? "w-20" : "w-72"
             )}
         >
-            {/* Simplified background for mobile to avoid frame drops */}
+            {/* Desktop-only: decorative blur orbs. Completely omitted on mobile to eliminate GPU compositing layers. */}
             {!isMobile && (
                 <>
                     <div className="absolute inset-0 bg-gradient-to-br from-realty-navy/40 via-background to-background" />
-                    <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-realty-gold/5 blur-[100px] animate-pulse" />
+                    <div className="absolute -right-32 -top-32 h-64 w-64 rounded-full bg-realty-gold/5 blur-[100px]" />
                     <div className="absolute -left-20 top-1/3 h-80 w-80 rounded-full bg-realty-navy-light/10 blur-[120px]" />
                     <div className="absolute right-0 bottom-20 h-60 w-60 rounded-full bg-realty-gold/10 blur-[80px]" />
-                    <div className="absolute inset-0 backdrop-blur-3xl bg-background/20" />
+                    {/* NOTE: backdrop-blur-3xl removed — it was creating an expensive full-sidebar GPU layer */}
                 </>
             )}
             {isMobile && <div className="absolute inset-0 bg-card" />}
@@ -130,10 +130,8 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                             )}>
                                 <Building2 className="h-5 w-5 text-realty-navy" />
                             </div>
-                            <div className={cn(
-                                "absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-realty-gold-light",
-                                !isMobile && "animate-pulse"
-                            )} />
+                            {/* Status dot: animate-pulse only on desktop — continuous animation on a GPU-composited element causes paint storms on mobile */}
+                            <div className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-background bg-realty-gold-light" />
                         </div>
                         {!collapsed && (
                             <div className="flex flex-col">
@@ -146,7 +144,6 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
 
                 <div className={cn(
                     "flex items-center gap-3 p-4 mx-3 mt-4 rounded-2xl bg-accent/30 border border-border shadow-sm",
-                    !isMobile && "backdrop-blur-xl",
                     collapsed && !isMobile && "justify-center mx-2 p-3"
                 )}>
                     <Avatar className={cn("ring-2 ring-primary/10 ring-offset-2 ring-offset-background", collapsed ? "h-10 w-10" : "h-11 w-11")}>
@@ -211,7 +208,7 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                             return (
                                 <Tooltip key={item.name}>
                                     <TooltipTrigger asChild>{NavItem}</TooltipTrigger>
-                                    <TooltipContent side="right" className="bg-popover text-popover-foreground border-border backdrop-blur-xl">
+                                    <TooltipContent side="right" className="bg-popover text-popover-foreground border-border">
                                         <div className="flex items-center gap-2">
                                             {item.name}
                                             {item.badge && (

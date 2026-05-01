@@ -272,3 +272,124 @@
   animation: float 10s ease-in-out infinite;
   animation-delay: -3s;
 }
+
+/* ─── Mobile Performance Optimizations ─────────────────────────────────────── */
+
+/**
+ * On touch devices (phones/tablets), hover-driven transforms never fire
+ * but still create compositing layers per element. Globally disable them
+ * so the GPU doesn't allocate unnecessary layers for every card/button.
+ */
+@media (hover: none) {
+  .group:hover .group-hover\:scale-105,
+  .group:hover .group-hover\:scale-110,
+  .group:hover .group-hover\:scale-125 {
+    transform: none !important;
+  }
+
+  /* Disable transition on scale so no compositing layer is created */
+  .transition-transform {
+    transition-property: none;
+  }
+}
+
+/**
+ * Reduce motion: disable all animations for users who prefer it.
+ * This also covers older/low-power mobile devices.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .animate-float,
+  .animate-float-delayed,
+  .animate-pulse {
+    animation: none !important;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* content-visibility: auto skips off-screen rendering for long lists */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 280px; /* Estimated card height */
+}
+
+/* iOS momentum scrolling on overflow containers */
+.scroll-smooth-ios {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
+/* desktop-hover-scale: Scales images on hover ONLY on pointer-capable devices.
+   On mobile/touch, this class is a no-op — no GPU compositing layer is allocated. */
+.desktop-hover-scale {
+  transition: transform 0.4s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .group:hover .desktop-hover-scale {
+    transform: scale(1.08);
+  }
+}
+
+/* Promote fixed/sticky elements to their own GPU layer proactively */
+.promote-layer {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* ─── StatsCard CSS Animations (replaces Framer Motion) ────────────────────── */
+
+@keyframes stats-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Entry animation wrapper — stagger delay set via inline style on each card */
+.stats-card-animate {
+  opacity: 0;
+  animation: stats-card-in 0.4s ease-out forwards;
+}
+
+/* Shimmer sweep on card hover — pure CSS, no JS pointer events */
+@keyframes stats-card-shimmer {
+  from { transform: translateX(-100%) skewX(-12deg); }
+  to   { transform: translateX(200%) skewX(-12deg); }
+}
+
+.stats-card-shimmer {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  /* Hidden by default; slides in on group hover */
+  transform: translateX(-100%) skewX(-12deg);
+  transition: none;
+}
+
+/* Only activate shimmer on devices that support hover (not touch) */
+@media (hover: hover) {
+  .group:hover .stats-card-shimmer {
+    animation: stats-card-shimmer 0.8s ease-in-out forwards;
+  }
+}
+
+/* Respect reduced motion — skip entry animation entirely */
+@media (prefers-reduced-motion: reduce) {
+  .stats-card-animate {
+    opacity: 1;
+    animation: none;
+  }
+}

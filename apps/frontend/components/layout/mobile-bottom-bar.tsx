@@ -34,8 +34,10 @@ export function MobileBottomBar({ onMenuClick }: MobileBottomBarProps) {
         (href !== "/" && pathname.startsWith(href))
 
     return (
-        <div className="fixed bottom-2 left-2 right-2 z-50 md:hidden rounded-2xl">
-            <div className="bg-background/70 backdrop-blur-xl shadow-[0_8px_32px_rgba(0,0,0,0.15)] rounded-2xl">
+        <div className="fixed bottom-2 left-2 right-2 z-50 md:hidden rounded-2xl promote-layer">
+            {/* Use solid bg instead of backdrop-blur-xl: blur on a fixed full-width element
+                repaints on every scroll frame and creates a GPU compositing storm on mobile. */}
+            <div className="bg-background/95 border border-border shadow-[0_8px_32px_rgba(0,0,0,0.15)] rounded-2xl">
                 <div className="flex items-center justify-between h-14 px-1 py-2">
                     {/* Properties */}
                     {mobileNavItems.slice(0, 1).map((item) => (

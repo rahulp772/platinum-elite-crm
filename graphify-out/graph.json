@@ -9,7 +9,7 @@
       "source_file": "apps\\backend\\eslint.config.mjs",
       "source_location": "L1",
       "id": "apps_backend_eslint_config_mjs",
-      "community": 159,
+      "community": 158,
       "norm_label": "eslint.config.mjs"
     },
     {
@@ -18,7 +18,7 @@
       "source_file": "apps\\backend\\src\\app.controller.spec.ts",
       "source_location": "L1",
       "id": "apps_backend_src_app_controller_spec_ts",
-      "community": 160,
+      "community": 159,
       "norm_label": "app.controller.spec.ts"
     },
     {
@@ -486,7 +486,7 @@
       "source_file": "apps\\backend\\src\\audit\\audit.service.ts",
       "source_location": "L52",
       "id": "audit_service_auditservice_logloginsuccess",
-      "community": 3,
+      "community": 2,
       "norm_label": ".logloginsuccess()"
     },
     {
@@ -495,7 +495,7 @@
       "source_file": "apps\\backend\\src\\audit\\audit.service.ts",
       "source_location": "L68",
       "id": "audit_service_auditservice_logloginfailed",
-      "community": 3,
+      "community": 2,
       "norm_label": ".logloginfailed()"
     },
     {
@@ -639,7 +639,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_auth_auth_service_ts",
-      "community": 3,
+      "community": 2,
       "norm_label": "auth.service.ts"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L19",
       "id": "auth_service_authservice",
-      "community": 3,
+      "community": 2,
       "norm_label": "authservice"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L20",
       "id": "auth_service_authservice_constructor",
-      "community": 3,
+      "community": 2,
       "norm_label": ".constructor()"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L32",
       "id": "auth_service_authservice_register",
-      "community": 3,
+      "community": 2,
       "norm_label": ".register()"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L89",
       "id": "auth_service_authservice_login",
-      "community": 3,
+      "community": 2,
       "norm_label": ".login()"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "apps\\backend\\src\\auth\\strategies\\jwt.strategy.ts",
       "source_location": "L1",
       "id": "apps_backend_src_auth_strategies_jwt_strategy_ts",
-      "community": 3,
+      "community": 2,
       "norm_label": "jwt.strategy.ts"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "apps\\backend\\src\\auth\\strategies\\jwt.strategy.ts",
       "source_location": "L11",
       "id": "jwt_strategy_jwtstrategy",
-      "community": 3,
+      "community": 2,
       "norm_label": "jwtstrategy"
     },
     {
@@ -846,7 +846,7 @@
       "source_file": "apps\\backend\\src\\auth\\strategies\\jwt.strategy.ts",
       "source_location": "L12",
       "id": "jwt_strategy_jwtstrategy_constructor",
-      "community": 3,
+      "community": 2,
       "norm_label": ".constructor()"
     },
     {
@@ -855,7 +855,7 @@
       "source_file": "apps\\backend\\src\\auth\\strategies\\jwt.strategy.ts",
       "source_location": "L26",
       "id": "jwt_strategy_jwtstrategy_validate",
-      "community": 3,
+      "community": 2,
       "norm_label": ".validate()"
     },
     {
@@ -936,7 +936,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L1",
       "id": "apps_backend_src_chat_chat_gateway_ts",
-      "community": 3,
+      "community": 2,
       "norm_label": "chat.gateway.ts"
     },
     {
@@ -945,7 +945,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L40",
       "id": "chat_gateway_chatgateway",
-      "community": 3,
+      "community": 2,
       "norm_label": "chatgateway"
     },
     {
@@ -954,7 +954,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L46",
       "id": "chat_gateway_chatgateway_constructor",
-      "community": 3,
+      "community": 2,
       "norm_label": ".constructor()"
     },
     {
@@ -963,7 +963,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L54",
       "id": "chat_gateway_chatgateway_handleconnection",
-      "community": 3,
+      "community": 2,
       "norm_label": ".handleconnection()"
     },
     {
@@ -972,7 +972,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L94",
       "id": "chat_gateway_chatgateway_handledisconnect",
-      "community": 3,
+      "community": 2,
       "norm_label": ".handledisconnect()"
     },
     {
@@ -981,7 +981,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L101",
       "id": "chat_gateway_chatgateway_handlejoinconversation",
-      "community": 3,
+      "community": 2,
       "norm_label": ".handlejoinconversation()"
     },
     {
@@ -990,7 +990,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L110",
       "id": "chat_gateway_chatgateway_handleleaveconversation",
-      "community": 3,
+      "community": 2,
       "norm_label": ".handleleaveconversation()"
     },
     {
@@ -999,7 +999,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L119",
       "id": "chat_gateway_chatgateway_handlesendmessage",
-      "community": 3,
+      "community": 2,
       "norm_label": ".handlesendmessage()"
     },
     {
@@ -1008,7 +1008,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L154",
       "id": "chat_gateway_chatgateway_handlemarkread",
-      "community": 3,
+      "community": 2,
       "norm_label": ".handlemarkread()"
     },
     {
@@ -1017,7 +1017,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L174",
       "id": "chat_gateway_chatgateway_sendmessagetouser",
-      "community": 3,
+      "community": 2,
       "norm_label": ".sendmessagetouser()"
     },
     {
@@ -1044,7 +1044,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_chat_chat_service_ts",
-      "community": 3,
+      "community": 2,
       "norm_label": "chat.service.ts"
     },
     {
@@ -1053,7 +1053,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L36",
       "id": "chat_service_chatservice",
-      "community": 3,
+      "community": 2,
       "norm_label": "chatservice"
     },
     {
@@ -1062,7 +1062,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L37",
       "id": "chat_service_chatservice_constructor",
-      "community": 3,
+      "community": 2,
       "norm_label": ".constructor()"
     },
     {
@@ -1080,7 +1080,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L173",
       "id": "chat_service_chatservice_getmessages",
-      "community": 3,
+      "community": 2,
       "norm_label": ".getmessages()"
     },
     {
@@ -1089,7 +1089,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L249",
       "id": "chat_service_chatservice_sendmessage",
-      "community": 3,
+      "community": 2,
       "norm_label": ".sendmessage()"
     },
     {
@@ -1098,7 +1098,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L312",
       "id": "chat_service_chatservice_createconversation",
-      "community": 3,
+      "community": 2,
       "norm_label": ".createconversation()"
     },
     {
@@ -1107,7 +1107,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L379",
       "id": "chat_service_chatservice_getconversationwithparticipants",
-      "community": 3,
+      "community": 2,
       "norm_label": ".getconversationwithparticipants()"
     },
     {
@@ -1116,7 +1116,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L421",
       "id": "chat_service_chatservice_markmessagesasread",
-      "community": 3,
+      "community": 2,
       "norm_label": ".markmessagesasread()"
     },
     {
@@ -1125,7 +1125,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L432",
       "id": "chat_service_chatservice_getconversation",
-      "community": 3,
+      "community": 2,
       "norm_label": ".getconversation()"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "apps\\backend\\src\\common\\date-utils.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_date_utils_ts",
-      "community": 161,
+      "community": 160,
       "norm_label": "date-utils.ts"
     },
     {
@@ -1269,7 +1269,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\all-exceptions.filter.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_filters_all_exceptions_filter_ts",
-      "community": 2,
+      "community": 3,
       "norm_label": "all-exceptions.filter.ts"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\all-exceptions.filter.ts",
       "source_location": "L14",
       "id": "all_exceptions_filter_allexceptionsfilter",
-      "community": 2,
+      "community": 3,
       "norm_label": "allexceptionsfilter"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\all-exceptions.filter.ts",
       "source_location": "L17",
       "id": "all_exceptions_filter_allexceptionsfilter_catch",
-      "community": 2,
+      "community": 3,
       "norm_label": ".catch()"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\all-exceptions.filter.ts",
       "source_location": "L69",
       "id": "all_exceptions_filter_allexceptionsfilter_handledatabaseerror",
-      "community": 2,
+      "community": 3,
       "norm_label": ".handledatabaseerror()"
     },
     {
@@ -1305,7 +1305,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\http-exception.filter.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_filters_http_exception_filter_ts",
-      "community": 2,
+      "community": 3,
       "norm_label": "http-exception.filter.ts"
     },
     {
@@ -1314,7 +1314,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\http-exception.filter.ts",
       "source_location": "L13",
       "id": "http_exception_filter_httpexceptionfilter",
-      "community": 2,
+      "community": 3,
       "norm_label": "httpexceptionfilter"
     },
     {
@@ -1323,7 +1323,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\http-exception.filter.ts",
       "source_location": "L16",
       "id": "http_exception_filter_httpexceptionfilter_catch",
-      "community": 2,
+      "community": 3,
       "norm_label": ".catch()"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "apps\\backend\\src\\common\\filters\\http-exception.filter.ts",
       "source_location": "L60",
       "id": "http_exception_filter_httpexceptionfilter_geterrorname",
-      "community": 2,
+      "community": 3,
       "norm_label": ".geterrorname()"
     },
     {
@@ -1485,7 +1485,7 @@
       "source_file": "apps\\backend\\src\\common\\interfaces\\error-response.interface.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_interfaces_error_response_interface_ts",
-      "community": 162,
+      "community": 161,
       "norm_label": "error-response.interface.ts"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "apps\\backend\\src\\deals\\enums\\deal.enum.ts",
       "source_location": "L1",
       "id": "apps_backend_src_deals_enums_deal_enum_ts",
-      "community": 163,
+      "community": 162,
       "norm_label": "deal.enum.ts"
     },
     {
@@ -2403,7 +2403,7 @@
       "source_file": "apps\\backend\\src\\leads\\enums\\lead.enum.ts",
       "source_location": "L1",
       "id": "apps_backend_src_leads_enums_lead_enum_ts",
-      "community": 164,
+      "community": 163,
       "norm_label": "lead.enum.ts"
     },
     {
@@ -3060,7 +3060,7 @@
       "source_file": "apps\\backend\\src\\properties\\enums\\property.enum.ts",
       "source_location": "L1",
       "id": "apps_backend_src_properties_enums_property_enum_ts",
-      "community": 165,
+      "community": 164,
       "norm_label": "property.enum.ts"
     },
     {
@@ -3735,7 +3735,7 @@
       "source_file": "apps\\backend\\src\\tasks\\enums\\task.enum.ts",
       "source_location": "L1",
       "id": "apps_backend_src_tasks_enums_task_enum_ts",
-      "community": 166,
+      "community": 165,
       "norm_label": "task.enum.ts"
     },
     {
@@ -4221,7 +4221,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_users_users_service_ts",
-      "community": 3,
+      "community": 2,
       "norm_label": "users.service.ts"
     },
     {
@@ -4230,7 +4230,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L16",
       "id": "users_service_usersservice",
-      "community": 3,
+      "community": 2,
       "norm_label": "usersservice"
     },
     {
@@ -4239,7 +4239,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L17",
       "id": "users_service_usersservice_constructor",
-      "community": 3,
+      "community": 2,
       "norm_label": ".constructor()"
     },
     {
@@ -4248,7 +4248,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L23",
       "id": "users_service_usersservice_findall",
-      "community": 3,
+      "community": 2,
       "norm_label": ".findall()"
     },
     {
@@ -4257,7 +4257,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L54",
       "id": "users_service_usersservice_findone",
-      "community": 3,
+      "community": 2,
       "norm_label": ".findone()"
     },
     {
@@ -4266,7 +4266,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L66",
       "id": "users_service_usersservice_update",
-      "community": 3,
+      "community": 2,
       "norm_label": ".update()"
     },
     {
@@ -4275,7 +4275,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L80",
       "id": "users_service_usersservice_remove",
-      "community": 1,
+      "community": 2,
       "norm_label": ".remove()"
     },
     {
@@ -4284,7 +4284,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L86",
       "id": "users_service_usersservice_invite",
-      "community": 3,
+      "community": 2,
       "norm_label": ".invite()"
     },
     {
@@ -4293,7 +4293,7 @@
       "source_file": "apps\\backend\\src\\users\\users.service.ts",
       "source_location": "L130",
       "id": "users_service_usersservice_sendinviteemail",
-      "community": 3,
+      "community": 2,
       "norm_label": ".sendinviteemail()"
     },
     {
@@ -4392,7 +4392,7 @@
       "source_file": "apps\\backend\\src\\users\\enums\\user.enum.ts",
       "source_location": "L1",
       "id": "apps_backend_src_users_enums_user_enum_ts",
-      "community": 167,
+      "community": 166,
       "norm_label": "user.enum.ts"
     },
     {
@@ -4401,7 +4401,7 @@
       "source_file": "apps\\backend\\test\\app.e2e-spec.ts",
       "source_location": "L1",
       "id": "apps_backend_test_app_e2e_spec_ts",
-      "community": 168,
+      "community": 167,
       "norm_label": "app.e2e-spec.ts"
     },
     {
@@ -4410,7 +4410,7 @@
       "source_file": "apps\\frontend\\next-env.d.ts",
       "source_location": "L1",
       "id": "apps_frontend_next_env_d_ts",
-      "community": 169,
+      "community": 168,
       "norm_label": "next-env.d.ts"
     },
     {
@@ -4419,7 +4419,7 @@
       "source_file": "apps\\frontend\\next.config.ts",
       "source_location": "L1",
       "id": "apps_frontend_next_config_ts",
-      "community": 170,
+      "community": 169,
       "norm_label": "next.config.ts"
     },
     {
@@ -4428,7 +4428,7 @@
       "source_file": "apps\\frontend\\postcss.config.js",
       "source_location": "L1",
       "id": "apps_frontend_postcss_config_js",
-      "community": 171,
+      "community": 170,
       "norm_label": "postcss.config.js"
     },
     {
@@ -4527,7 +4527,7 @@
       "source_file": "apps\\frontend\\tailwind.config.ts",
       "source_location": "L1",
       "id": "apps_frontend_tailwind_config_ts",
-      "community": 172,
+      "community": 171,
       "norm_label": "tailwind.config.ts"
     },
     {
@@ -4554,7 +4554,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\error.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_error_tsx",
-      "community": 173,
+      "community": 172,
       "norm_label": "error.tsx"
     },
     {
@@ -4563,7 +4563,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\layout.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_layout_tsx",
-      "community": 174,
+      "community": 173,
       "norm_label": "layout.tsx"
     },
     {
@@ -4608,7 +4608,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_page_tsx",
-      "community": 175,
+      "community": 174,
       "norm_label": "page.tsx"
     },
     {
@@ -4671,7 +4671,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\dashboardv2\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_dashboardv2_page_tsx",
-      "community": 176,
+      "community": 175,
       "norm_label": "page.tsx"
     },
     {
@@ -4698,7 +4698,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\deals\\loading.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_deals_loading_tsx",
-      "community": 177,
+      "community": 176,
       "norm_label": "loading.tsx"
     },
     {
@@ -4725,7 +4725,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\help\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_help_page_tsx",
-      "community": 178,
+      "community": 177,
       "norm_label": "page.tsx"
     },
     {
@@ -4734,7 +4734,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\error.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_leads_error_tsx",
-      "community": 179,
+      "community": 178,
       "norm_label": "error.tsx"
     },
     {
@@ -4743,7 +4743,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\loading.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_leads_loading_tsx",
-      "community": 180,
+      "community": 179,
       "norm_label": "loading.tsx"
     },
     {
@@ -4759,7 +4759,7 @@
       "label": "handlePageChange()",
       "file_type": "code",
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
-      "source_location": "L44",
+      "source_location": "L48",
       "id": "page_handlepagechange",
       "community": 31,
       "norm_label": "handlepagechange()"
@@ -4768,7 +4768,7 @@
       "label": "handleLimitChange()",
       "file_type": "code",
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
-      "source_location": "L48",
+      "source_location": "L52",
       "id": "page_handlelimitchange",
       "community": 31,
       "norm_label": "handlelimitchange()"
@@ -4824,7 +4824,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\import\\page.tsx",
       "source_location": "L77",
       "id": "page_handledownloadtemplate",
-      "community": 1,
+      "community": 2,
       "norm_label": "handledownloadtemplate()"
     },
     {
@@ -5004,7 +5004,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\loading.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_properties_loading_tsx",
-      "community": 181,
+      "community": 180,
       "norm_label": "loading.tsx"
     },
     {
@@ -5022,7 +5022,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_properties_id_page_tsx",
-      "community": 2,
+      "community": 3,
       "norm_label": "page.tsx"
     },
     {
@@ -5031,7 +5031,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L39",
       "id": "page_parseimages",
-      "community": 2,
+      "community": 3,
       "norm_label": "parseimages()"
     },
     {
@@ -5040,7 +5040,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L121",
       "id": "page_openlightbox",
-      "community": 2,
+      "community": 3,
       "norm_label": "openlightbox()"
     },
     {
@@ -5049,7 +5049,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L126",
       "id": "page_nextimage",
-      "community": 2,
+      "community": 3,
       "norm_label": "nextimage()"
     },
     {
@@ -5058,7 +5058,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L131",
       "id": "page_previmage",
-      "community": 2,
+      "community": 3,
       "norm_label": "previmage()"
     },
     {
@@ -5067,7 +5067,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L137",
       "id": "page_handlekeydown",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlekeydown()"
     },
     {
@@ -5076,7 +5076,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L147",
       "id": "page_formatprice",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatprice()"
     },
     {
@@ -5085,7 +5085,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\[id]\\page.tsx",
       "source_location": "L155",
       "id": "page_formatdate",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatdate()"
     },
     {
@@ -5544,7 +5544,7 @@
       "source_file": "apps\\frontend\\app\\landing\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_landing_page_tsx",
-      "community": 182,
+      "community": 181,
       "norm_label": "page.tsx"
     },
     {
@@ -5598,7 +5598,7 @@
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_login_page_tsx",
-      "community": 3,
+      "community": 2,
       "norm_label": "page.tsx"
     },
     {
@@ -5607,7 +5607,7 @@
       "source_file": "apps\\frontend\\app\\register\\page.tsx",
       "source_location": "L18",
       "id": "page_handlesubmit",
-      "community": 3,
+      "community": 2,
       "norm_label": "handlesubmit()"
     },
     {
@@ -5616,7 +5616,7 @@
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
       "source_location": "L53",
       "id": "page_handletenantselect",
-      "community": 3,
+      "community": 2,
       "norm_label": "handletenantselect()"
     },
     {
@@ -5625,7 +5625,7 @@
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
       "source_location": "L70",
       "id": "page_handledemologin",
-      "community": 3,
+      "community": 2,
       "norm_label": "handledemologin()"
     },
     {
@@ -5634,7 +5634,7 @@
       "source_file": "apps\\frontend\\app\\register\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_register_page_tsx",
-      "community": 3,
+      "community": 2,
       "norm_label": "page.tsx"
     },
     {
@@ -5778,7 +5778,7 @@
       "source_file": "apps\\frontend\\components\\analytics\\agent-leaderboard.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_analytics_agent_leaderboard_tsx",
-      "community": 183,
+      "community": 182,
       "norm_label": "agent-leaderboard.tsx"
     },
     {
@@ -5805,7 +5805,7 @@
       "source_file": "apps\\frontend\\components\\analytics\\revenue-chart.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_analytics_revenue_chart_tsx",
-      "community": 184,
+      "community": 183,
       "norm_label": "revenue-chart.tsx"
     },
     {
@@ -5814,7 +5814,7 @@
       "source_file": "apps\\frontend\\components\\analytics\\source-distribution.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_analytics_source_distribution_tsx",
-      "community": 185,
+      "community": 184,
       "norm_label": "source-distribution.tsx"
     },
     {
@@ -5895,7 +5895,7 @@
       "source_file": "apps\\frontend\\components\\dashboard\\agent-dashboard-view.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboard_agent_dashboard_view_tsx",
-      "community": 186,
+      "community": 185,
       "norm_label": "agent-dashboard-view.tsx"
     },
     {
@@ -5904,7 +5904,7 @@
       "source_file": "apps\\frontend\\components\\dashboard\\funnel-svg.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboard_funnel_svg_tsx",
-      "community": 187,
+      "community": 186,
       "norm_label": "funnel-svg.tsx"
     },
     {
@@ -5913,7 +5913,7 @@
       "source_file": "apps\\frontend\\components\\dashboard\\lead-funnel-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboard_lead_funnel_widget_tsx",
-      "community": 188,
+      "community": 187,
       "norm_label": "lead-funnel-widget.tsx"
     },
     {
@@ -5922,17 +5922,8 @@
       "source_file": "apps\\frontend\\components\\dashboard\\stats-card.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboard_stats_card_tsx",
-      "community": 135,
+      "community": 188,
       "norm_label": "stats-card.tsx"
-    },
-    {
-      "label": "StatsCard()",
-      "file_type": "code",
-      "source_file": "apps\\frontend\\components\\dashboard\\stats-card.tsx",
-      "source_location": "L17",
-      "id": "stats_card_statscard",
-      "community": 135,
-      "norm_label": "statscard()"
     },
     {
       "label": "upcoming-tasks-widget.tsx",
@@ -5994,7 +5985,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widget-grid.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widget_grid_tsx",
-      "community": 136,
+      "community": 135,
       "norm_label": "widget-grid.tsx"
     },
     {
@@ -6003,7 +5994,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widget-grid.tsx",
       "source_location": "L95",
       "id": "widget_grid_handledragend",
-      "community": 136,
+      "community": 135,
       "norm_label": "handledragend()"
     },
     {
@@ -6012,7 +6003,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widget-settings-dialog.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widget_settings_dialog_tsx",
-      "community": 137,
+      "community": 136,
       "norm_label": "widget-settings-dialog.tsx"
     },
     {
@@ -6021,7 +6012,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widget-settings-dialog.tsx",
       "source_location": "L25",
       "id": "widget_settings_dialog_widgetsettingsdialog",
-      "community": 137,
+      "community": 136,
       "norm_label": "widgetsettingsdialog()"
     },
     {
@@ -6030,7 +6021,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widget-wrapper.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widget_wrapper_tsx",
-      "community": 138,
+      "community": 137,
       "norm_label": "widget-wrapper.tsx"
     },
     {
@@ -6039,7 +6030,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widget-wrapper.tsx",
       "source_location": "L14",
       "id": "widget_wrapper_widgetwrapper",
-      "community": 138,
+      "community": 137,
       "norm_label": "widgetwrapper()"
     },
     {
@@ -6048,7 +6039,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\active-deals-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_active_deals_widget_tsx",
-      "community": 139,
+      "community": 138,
       "norm_label": "active-deals-widget.tsx"
     },
     {
@@ -6057,7 +6048,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\active-deals-widget.tsx",
       "source_location": "L46",
       "id": "active_deals_widget_formatcurrency",
-      "community": 139,
+      "community": 138,
       "norm_label": "formatcurrency()"
     },
     {
@@ -6066,7 +6057,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\active-listings-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_active_listings_widget_tsx",
-      "community": 140,
+      "community": 139,
       "norm_label": "active-listings-widget.tsx"
     },
     {
@@ -6075,7 +6066,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\active-listings-widget.tsx",
       "source_location": "L35",
       "id": "active_listings_widget_formatcurrency",
-      "community": 140,
+      "community": 139,
       "norm_label": "formatcurrency()"
     },
     {
@@ -6111,7 +6102,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\deals-by-stage-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_deals_by_stage_widget_tsx",
-      "community": 141,
+      "community": 140,
       "norm_label": "deals-by-stage-widget.tsx"
     },
     {
@@ -6120,7 +6111,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\deals-by-stage-widget.tsx",
       "source_location": "L6",
       "id": "deals_by_stage_widget_dealsbystagewidget",
-      "community": 141,
+      "community": 140,
       "norm_label": "dealsbystagewidget()"
     },
     {
@@ -6129,7 +6120,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\expiring-properties-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_expiring_properties_widget_tsx",
-      "community": 142,
+      "community": 141,
       "norm_label": "expiring-properties-widget.tsx"
     },
     {
@@ -6138,7 +6129,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\expiring-properties-widget.tsx",
       "source_location": "L31",
       "id": "expiring_properties_widget_getdaysuntil",
-      "community": 142,
+      "community": 141,
       "norm_label": "getdaysuntil()"
     },
     {
@@ -6192,7 +6183,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\lead-sources-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_lead_sources_widget_tsx",
-      "community": 143,
+      "community": 142,
       "norm_label": "lead-sources-widget.tsx"
     },
     {
@@ -6201,7 +6192,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\lead-sources-widget.tsx",
       "source_location": "L6",
       "id": "lead_sources_widget_leadsourceswidget",
-      "community": 143,
+      "community": 142,
       "norm_label": "leadsourceswidget()"
     },
     {
@@ -6210,7 +6201,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\revenue-trend-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_revenue_trend_widget_tsx",
-      "community": 144,
+      "community": 143,
       "norm_label": "revenue-trend-widget.tsx"
     },
     {
@@ -6219,7 +6210,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\revenue-trend-widget.tsx",
       "source_location": "L31",
       "id": "revenue_trend_widget_formatcurrency",
-      "community": 144,
+      "community": 143,
       "norm_label": "formatcurrency()"
     },
     {
@@ -6237,7 +6228,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\stats-pipeline-value-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_stats_pipeline_value_widget_tsx",
-      "community": 145,
+      "community": 144,
       "norm_label": "stats-pipeline-value-widget.tsx"
     },
     {
@@ -6246,7 +6237,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\stats-pipeline-value-widget.tsx",
       "source_location": "L59",
       "id": "stats_pipeline_value_widget_formatcurrency",
-      "community": 145,
+      "community": 144,
       "norm_label": "formatcurrency()"
     },
     {
@@ -6291,7 +6282,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\team-activity-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_team_activity_widget_tsx",
-      "community": 146,
+      "community": 145,
       "norm_label": "team-activity-widget.tsx"
     },
     {
@@ -6300,7 +6291,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\team-activity-widget.tsx",
       "source_location": "L6",
       "id": "team_activity_widget_teamactivitywidget",
-      "community": 146,
+      "community": 145,
       "norm_label": "teamactivitywidget()"
     },
     {
@@ -6372,7 +6363,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\upcoming-tasks-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_upcoming_tasks_widget_tsx",
-      "community": 147,
+      "community": 146,
       "norm_label": "upcoming-tasks-widget.tsx"
     },
     {
@@ -6381,7 +6372,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\upcoming-tasks-widget.tsx",
       "source_location": "L38",
       "id": "upcoming_tasks_widget_formatdate",
-      "community": 147,
+      "community": 146,
       "norm_label": "formatdate()"
     },
     {
@@ -6390,7 +6381,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\week-schedule-widget.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_dashboardv2_widgets_week_schedule_widget_tsx",
-      "community": 148,
+      "community": 147,
       "norm_label": "week-schedule-widget.tsx"
     },
     {
@@ -6399,7 +6390,7 @@
       "source_file": "apps\\frontend\\components\\dashboardv2\\widgets\\week-schedule-widget.tsx",
       "source_location": "L6",
       "id": "week_schedule_widget_weekschedulewidget",
-      "community": 148,
+      "community": 147,
       "norm_label": "weekschedulewidget()"
     },
     {
@@ -6604,7 +6595,7 @@
       "label": "handleClick()",
       "file_type": "code",
       "source_file": "apps\\frontend\\components\\layout\\sidebar.tsx",
-      "source_location": "L172",
+      "source_location": "L169",
       "id": "sidebar_handleclick",
       "community": 6,
       "norm_label": "handleclick()"
@@ -6615,7 +6606,7 @@
       "source_file": "apps\\frontend\\components\\leads\\add-lead-dialog-controlled.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_leads_add_lead_dialog_controlled_tsx",
-      "community": 149,
+      "community": 148,
       "norm_label": "add-lead-dialog-controlled.tsx"
     },
     {
@@ -6624,7 +6615,7 @@
       "source_file": "apps\\frontend\\components\\leads\\add-lead-dialog-controlled.tsx",
       "source_location": "L28",
       "id": "add_lead_dialog_controlled_addleaddialogcontrolled",
-      "community": 149,
+      "community": 148,
       "norm_label": "addleaddialogcontrolled()"
     },
     {
@@ -6723,7 +6714,7 @@
       "source_file": "apps\\frontend\\components\\leads\\convert-to-deal-modal.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_leads_convert_to_deal_modal_tsx",
-      "community": 150,
+      "community": 149,
       "norm_label": "convert-to-deal-modal.tsx"
     },
     {
@@ -6732,7 +6723,7 @@
       "source_file": "apps\\frontend\\components\\leads\\convert-to-deal-modal.tsx",
       "source_location": "L41",
       "id": "convert_to_deal_modal_converttodealmodal",
-      "community": 150,
+      "community": 149,
       "norm_label": "converttodealmodal()"
     },
     {
@@ -6813,7 +6804,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_leads_lead_detail_split_view_tsx",
-      "community": 2,
+      "community": 3,
       "norm_label": "lead-detail-split-view.tsx"
     },
     {
@@ -6822,7 +6813,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L60",
       "id": "lead_detail_split_view_formatstatus",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatstatus()"
     },
     {
@@ -6831,7 +6822,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L75",
       "id": "lead_detail_split_view_formatactivitycontent",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatactivitycontent()"
     },
     {
@@ -6840,7 +6831,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L239",
       "id": "lead_detail_split_view_handlereassign",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlereassign()"
     },
     {
@@ -6849,7 +6840,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L265",
       "id": "lead_detail_split_view_handlemodalcomplete",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlemodalcomplete()"
     },
     {
@@ -6858,7 +6849,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L271",
       "id": "lead_detail_split_view_handlemodalskip",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlemodalskip()"
     },
     {
@@ -6867,7 +6858,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L276",
       "id": "lead_detail_split_view_handlecallclick",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlecallclick()"
     },
     {
@@ -6876,7 +6867,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L281",
       "id": "lead_detail_split_view_handlecalloutcomecomplete",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlecalloutcomecomplete()"
     },
     {
@@ -6885,7 +6876,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L297",
       "id": "lead_detail_split_view_handlewhatsappclick",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlewhatsappclick()"
     },
     {
@@ -6894,7 +6885,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L304",
       "id": "lead_detail_split_view_handledatechange",
-      "community": 2,
+      "community": 3,
       "norm_label": "handledatechange()"
     },
     {
@@ -6903,7 +6894,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L308",
       "id": "lead_detail_split_view_handlesavefollowup",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlesavefollowup()"
     },
     {
@@ -6912,7 +6903,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L335",
       "id": "lead_detail_split_view_handlequickdate",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlequickdate()"
     },
     {
@@ -6921,7 +6912,7 @@
       "source_file": "apps\\frontend\\components\\leads\\lead-detail-split-view.tsx",
       "source_location": "L347",
       "id": "lead_detail_split_view_handleaddnote",
-      "community": 2,
+      "community": 3,
       "norm_label": "handleaddnote()"
     },
     {
@@ -7128,7 +7119,7 @@
       "source_file": "apps\\frontend\\components\\leads\\mandatory-follow-up-modal.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_leads_mandatory_follow_up_modal_tsx",
-      "community": 2,
+      "community": 3,
       "norm_label": "mandatory-follow-up-modal.tsx"
     },
     {
@@ -7137,7 +7128,7 @@
       "source_file": "apps\\frontend\\components\\leads\\mandatory-follow-up-modal.tsx",
       "source_location": "L64",
       "id": "mandatory_follow_up_modal_toggleproperty",
-      "community": 2,
+      "community": 3,
       "norm_label": "toggleproperty()"
     },
     {
@@ -7146,7 +7137,7 @@
       "source_file": "apps\\frontend\\components\\leads\\mandatory-follow-up-modal.tsx",
       "source_location": "L72",
       "id": "mandatory_follow_up_modal_handlesubmit",
-      "community": 2,
+      "community": 3,
       "norm_label": "handlesubmit()"
     },
     {
@@ -7389,7 +7380,7 @@
       "source_file": "apps\\frontend\\components\\properties\\property-filters.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_properties_property_filters_tsx",
-      "community": 151,
+      "community": 150,
       "norm_label": "property-filters.tsx"
     },
     {
@@ -7398,7 +7389,7 @@
       "source_file": "apps\\frontend\\components\\properties\\property-filters.tsx",
       "source_location": "L22",
       "id": "property_filters_propertyfilters",
-      "community": 151,
+      "community": 150,
       "norm_label": "propertyfilters()"
     },
     {
@@ -7434,7 +7425,7 @@
       "source_file": "apps\\frontend\\components\\settings\\appearance-form.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_settings_appearance_form_tsx",
-      "community": 152,
+      "community": 151,
       "norm_label": "appearance-form.tsx"
     },
     {
@@ -7443,7 +7434,7 @@
       "source_file": "apps\\frontend\\components\\settings\\appearance-form.tsx",
       "source_location": "L25",
       "id": "appearance_form_appearanceform",
-      "community": 152,
+      "community": 151,
       "norm_label": "appearanceform()"
     },
     {
@@ -7515,7 +7506,7 @@
       "source_file": "apps\\frontend\\components\\tasks\\task-card.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_tasks_task_card_tsx",
-      "community": 153,
+      "community": 152,
       "norm_label": "task-card.tsx"
     },
     {
@@ -7524,7 +7515,7 @@
       "source_file": "apps\\frontend\\components\\tasks\\task-card.tsx",
       "source_location": "L55",
       "id": "task_card_cn",
-      "community": 153,
+      "community": 152,
       "norm_label": "cn()"
     },
     {
@@ -7596,7 +7587,7 @@
       "source_file": "apps\\frontend\\components\\ui\\badge.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_ui_badge_tsx",
-      "community": 154,
+      "community": 153,
       "norm_label": "badge.tsx"
     },
     {
@@ -7605,7 +7596,7 @@
       "source_file": "apps\\frontend\\components\\ui\\badge.tsx",
       "source_location": "L30",
       "id": "badge_badge",
-      "community": 154,
+      "community": 153,
       "norm_label": "badge()"
     },
     {
@@ -7794,7 +7785,7 @@
       "source_file": "apps\\frontend\\components\\ui\\skeleton.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_ui_skeleton_tsx",
-      "community": 155,
+      "community": 154,
       "norm_label": "skeleton.tsx"
     },
     {
@@ -7803,7 +7794,7 @@
       "source_file": "apps\\frontend\\components\\ui\\skeleton.tsx",
       "source_location": "L3",
       "id": "skeleton_skeleton",
-      "community": 155,
+      "community": 154,
       "norm_label": "skeleton()"
     },
     {
@@ -8100,7 +8091,7 @@
       "source_file": "apps\\frontend\\hooks\\use-search.ts",
       "source_location": "L1",
       "id": "apps_frontend_hooks_use_search_ts",
-      "community": 156,
+      "community": 155,
       "norm_label": "use-search.ts"
     },
     {
@@ -8109,7 +8100,7 @@
       "source_file": "apps\\frontend\\hooks\\use-search.ts",
       "source_location": "L5",
       "id": "use_search_usesearch",
-      "community": 156,
+      "community": 155,
       "norm_label": "usesearch()"
     },
     {
@@ -8190,7 +8181,7 @@
       "source_file": "apps\\frontend\\lib\\api.ts",
       "source_location": "L1",
       "id": "apps_frontend_lib_api_ts",
-      "community": 157,
+      "community": 156,
       "norm_label": "api.ts"
     },
     {
@@ -8199,7 +8190,7 @@
       "source_file": "apps\\frontend\\lib\\api.ts",
       "source_location": "L3",
       "id": "api_getapiurl",
-      "community": 157,
+      "community": 156,
       "norm_label": "getapiurl()"
     },
     {
@@ -8395,7 +8386,7 @@
       "label": "hasPermission()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L84",
+      "source_location": "L87",
       "id": "auth_haspermission",
       "community": 1,
       "norm_label": "haspermission()"
@@ -8404,7 +8395,7 @@
       "label": "hasRoleLevel()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L97",
+      "source_location": "L100",
       "id": "auth_hasrolelevel",
       "community": 1,
       "norm_label": "hasrolelevel()"
@@ -8413,7 +8404,7 @@
       "label": "getAuthHeaders()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L109",
+      "source_location": "L112",
       "id": "auth_getauthheaders",
       "community": 4,
       "norm_label": "getauthheaders()"
@@ -8422,7 +8413,7 @@
       "label": "authFetch()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L129",
+      "source_location": "L132",
       "id": "auth_authfetch",
       "community": 1,
       "norm_label": "authfetch()"
@@ -8433,7 +8424,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L1",
       "id": "apps_frontend_lib_date_utils_ts",
-      "community": 2,
+      "community": 3,
       "norm_label": "date-utils.ts"
     },
     {
@@ -8442,7 +8433,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L5",
       "id": "date_utils_getusertimezone",
-      "community": 2,
+      "community": 3,
       "norm_label": "getusertimezone()"
     },
     {
@@ -8451,7 +8442,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L20",
       "id": "date_utils_toisostring",
-      "community": 2,
+      "community": 3,
       "norm_label": "toisostring()"
     },
     {
@@ -8460,7 +8451,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L31",
       "id": "date_utils_toisostringfromlocal",
-      "community": 2,
+      "community": 3,
       "norm_label": "toisostringfromlocal()"
     },
     {
@@ -8469,7 +8460,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L40",
       "id": "date_utils_tolocaldatetimeinput",
-      "community": 2,
+      "community": 3,
       "norm_label": "tolocaldatetimeinput()"
     },
     {
@@ -8478,7 +8469,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L47",
       "id": "date_utils_parsedate",
-      "community": 2,
+      "community": 3,
       "norm_label": "parsedate()"
     },
     {
@@ -8487,7 +8478,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L70",
       "id": "date_utils_formatdateintimezone",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatdateintimezone()"
     },
     {
@@ -8496,7 +8487,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L84",
       "id": "date_utils_formatdatetimeintimezone",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatdatetimeintimezone()"
     },
     {
@@ -8505,7 +8496,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L91",
       "id": "date_utils_formatdateonly",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatdateonly()"
     },
     {
@@ -8514,7 +8505,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L98",
       "id": "date_utils_formattimeonly",
-      "community": 2,
+      "community": 3,
       "norm_label": "formattimeonly()"
     },
     {
@@ -8523,7 +8514,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L105",
       "id": "date_utils_formatrelativetime",
-      "community": 2,
+      "community": 3,
       "norm_label": "formatrelativetime()"
     },
     {
@@ -8532,7 +8523,7 @@
       "source_file": "apps\\frontend\\lib\\date-utils.ts",
       "source_location": "L130",
       "id": "date_utils_getdatelabel",
-      "community": 2,
+      "community": 3,
       "norm_label": "getdatelabel()"
     },
     {
@@ -8604,7 +8595,7 @@
       "source_file": "apps\\frontend\\lib\\utils.ts",
       "source_location": "L1",
       "id": "apps_frontend_lib_utils_ts",
-      "community": 158,
+      "community": 157,
       "norm_label": "utils.ts"
     },
     {
@@ -8613,7 +8604,7 @@
       "source_file": "apps\\frontend\\lib\\utils.ts",
       "source_location": "L4",
       "id": "utils_cn",
-      "community": 158,
+      "community": 157,
       "norm_label": "cn()"
     },
     {
@@ -10035,8 +10026,8 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\page.tsx",
       "source_location": "L80",
       "weight": 1.0,
-      "_src": "page_handlelimitchange",
-      "_tgt": "audit_service_auditservice_log",
+      "_src": "audit_service_auditservice_log",
+      "_tgt": "page_handlelimitchange",
       "source": "audit_service_auditservice_log",
       "target": "page_handlelimitchange"
     },
@@ -16392,7 +16383,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
-      "source_location": "L44",
+      "source_location": "L48",
       "weight": 1.0,
       "_src": "apps_frontend_app_dashboard_properties_page_tsx",
       "_tgt": "page_handlepagechange",
@@ -16404,7 +16395,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
-      "source_location": "L48",
+      "source_location": "L52",
       "weight": 1.0,
       "_src": "apps_frontend_app_dashboard_properties_page_tsx",
       "_tgt": "page_handlelimitchange",
@@ -18215,18 +18206,6 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "apps\\frontend\\components\\dashboard\\stats-card.tsx",
-      "source_location": "L17",
-      "weight": 1.0,
-      "_src": "apps_frontend_components_dashboard_stats_card_tsx",
-      "_tgt": "stats_card_statscard",
-      "source": "apps_frontend_components_dashboard_stats_card_tsx",
-      "target": "stats_card_statscard",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\components\\dashboardv2\\draggable-widget.tsx",
       "source_location": "L54",
       "weight": 1.0,
@@ -18732,7 +18711,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\components\\layout\\sidebar.tsx",
-      "source_location": "L172",
+      "source_location": "L169",
       "weight": 1.0,
       "_src": "apps_frontend_components_layout_sidebar_tsx",
       "_tgt": "sidebar_handleclick",
@@ -20796,7 +20775,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L84",
+      "source_location": "L87",
       "weight": 1.0,
       "_src": "apps_frontend_lib_auth_ts",
       "_tgt": "auth_haspermission",
@@ -20808,7 +20787,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L97",
+      "source_location": "L100",
       "weight": 1.0,
       "_src": "apps_frontend_lib_auth_ts",
       "_tgt": "auth_hasrolelevel",
@@ -20820,7 +20799,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L109",
+      "source_location": "L112",
       "weight": 1.0,
       "_src": "apps_frontend_lib_auth_ts",
       "_tgt": "auth_getauthheaders",
@@ -20832,7 +20811,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L129",
+      "source_location": "L132",
       "weight": 1.0,
       "_src": "apps_frontend_lib_auth_ts",
       "_tgt": "auth_authfetch",
@@ -20868,7 +20847,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L85",
+      "source_location": "L88",
       "weight": 1.0,
       "_src": "auth_haspermission",
       "_tgt": "auth_getcurrentuser",
@@ -20880,7 +20859,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L98",
+      "source_location": "L101",
       "weight": 1.0,
       "_src": "auth_hasrolelevel",
       "_tgt": "auth_getcurrentuser",
@@ -20892,7 +20871,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L120",
+      "source_location": "L123",
       "weight": 1.0,
       "_src": "auth_getauthheaders",
       "_tgt": "auth_getcurrenttenantid",
@@ -20904,7 +20883,7 @@
       "relation": "calls",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\auth.ts",
-      "source_location": "L133",
+      "source_location": "L136",
       "weight": 1.0,
       "_src": "auth_authfetch",
       "_tgt": "auth_getauthheaders",

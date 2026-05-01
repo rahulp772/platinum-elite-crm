@@ -74,7 +74,8 @@ api.interceptors.response.use(
       if (typeof window !== 'undefined') {
         const currentPath = window.location.pathname
         if (currentPath !== '/login' && currentPath !== '/register') {
-          window.location.href = '/login?expired=true'
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || ''
+          window.location.href = `${appUrl}/login?expired=true`
         }
       }
     }

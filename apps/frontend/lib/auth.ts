@@ -74,7 +74,10 @@ export async function requireAuth(): Promise<UserPayload> {
   const user = await getCurrentUser()
 
   if (!user) {
-    redirect('/login')
+    const loginUrl = process.env.NEXT_PUBLIC_APP_URL 
+      ? `${process.env.NEXT_PUBLIC_APP_URL}/login`
+      : '/login'
+    redirect(loginUrl)
   }
 
   return user
@@ -142,7 +145,10 @@ export async function authFetch<T>(
 
   if (!response.ok) {
     if (response.status === 401) {
-      redirect('/login?expired=true')
+      const loginUrl = process.env.NEXT_PUBLIC_APP_URL 
+        ? `${process.env.NEXT_PUBLIC_APP_URL}/login?expired=true`
+        : '/login?expired=true'
+      redirect(loginUrl)
     }
     throw new Error(`API Error: ${response.status}`)
   }

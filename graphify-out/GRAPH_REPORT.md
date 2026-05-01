@@ -1,11 +1,11 @@
 # Graph Report - platinum-elite-crm  (2026-05-02)
 
 ## Corpus Check
-- 303 files · ~273,570 words
+- 303 files · ~273,799 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 995 nodes · 1047 edges · 97 communities detected
+- 994 nodes · 1046 edges · 97 communities detected
 - Extraction: 83% EXTRACTED · 17% INFERRED · 0% AMBIGUOUS · INFERRED: 182 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -121,6 +121,8 @@
 10. `DealsService` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
+- `handleDownloadTemplate()` --calls--> `GET()`  [INFERRED]
+  apps\frontend\app\(dashboard)\leads\import\page.tsx → apps\frontend\app\api\v1\[...path]\route.ts
 - `handleFileUpload()` --calls--> `POST()`  [INFERRED]
   apps\frontend\app\(dashboard)\leads\import\page.tsx → apps\frontend\app\api\v1\[...path]\route.ts
 - `handleStartImport()` --calls--> `POST()`  [INFERRED]
@@ -128,8 +130,6 @@
 - `PipelinePage()` --calls--> `useAuth()`  [INFERRED]
   apps\frontend\app\(dashboard)\pipeline\page.tsx → apps\frontend\lib\auth-context.tsx
 - `createDeal()` --calls--> `getAuthHeaders()`  [INFERRED]
-  apps\frontend\app\actions\deals.ts → apps\frontend\lib\auth.ts
-- `updateDeal()` --calls--> `getAuthHeaders()`  [INFERRED]
   apps\frontend\app\actions\deals.ts → apps\frontend\lib\auth.ts
 
 ## Communities
@@ -139,16 +139,16 @@ Cohesion: 0.09
 Nodes (12): ActivityLoggerService, AuditService, createDemoTenants(), deleteDemoTenants(), main(), refreshDemoTenants(), seedDemoData(), showStatus() (+4 more)
 
 ### Community 1 - "Community 1"
-Cohesion: 0.07
-Nodes (30): handleSubmit(), handleSubmit(), authFetch(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), getCurrentUser() (+22 more)
+Cohesion: 0.08
+Nodes (29): handleSubmit(), handleSubmit(), authFetch(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), getCurrentUser() (+21 more)
 
 ### Community 2 - "Community 2"
-Cohesion: 0.07
-Nodes (26): AllExceptionsFilter, formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel(), getUserTimezone() (+18 more)
+Cohesion: 0.06
+Nodes (9): AuthService, ChatGateway, ChatService, JwtStrategy, handleDemoLogin(), handleDownloadTemplate(), handleSubmit(), handleTenantSelect() (+1 more)
 
 ### Community 3 - "Community 3"
-Cohesion: 0.06
-Nodes (8): AuthService, ChatGateway, ChatService, JwtStrategy, handleDemoLogin(), handleSubmit(), handleTenantSelect(), UsersService
+Cohesion: 0.07
+Nodes (26): AllExceptionsFilter, formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel(), getUserTimezone() (+18 more)
 
 ### Community 4 - "Community 4"
 Cohesion: 0.08
@@ -689,9 +689,9 @@ Nodes (1): User
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 3`, `Community 4`, `Community 12`, `Community 28`?**
+- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 4`, `Community 12`, `Community 28`?**
   _High betweenness centrality (0.058) - this node is a cross-community bridge._
-- **Why does `toISOString()` connect `Community 2` to `Community 8`, `Community 1`, `Community 3`?**
+- **Why does `toISOString()` connect `Community 3` to `Community 8`, `Community 1`, `Community 2`?**
   _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **Why does `getAuthHeaders()` connect `Community 4` to `Community 1`?**
   _High betweenness centrality (0.019) - this node is a cross-community bridge._

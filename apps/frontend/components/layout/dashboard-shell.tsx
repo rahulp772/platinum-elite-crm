@@ -65,13 +65,11 @@ export function DashboardShell({ children }: DashboardShellProps) {
               </div>
               {/* Sidebar - Desktop always visible */}
               <div className="hidden md:block">
-                <TooltipProvider>
-                  <Sidebar 
-                    isMobile={false}
-                    mobileOpen={false}
-                    onMobileClose={() => {}}
-                  />
-                </TooltipProvider>
+                <Sidebar 
+                  isMobile={false}
+                  mobileOpen={false}
+                  onMobileClose={() => {}}
+                />
               </div>
             </>
           )}
@@ -99,7 +97,8 @@ export function DashboardShell({ children }: DashboardShellProps) {
             <Header 
               onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} 
             />
-            <main className="flex-1 overflow-y-auto p-6">
+            {/* scroll-smooth-ios: prevents iOS rubber-band jank from propagating to parent shell */}
+            <main className="flex-1 overflow-y-auto p-6 scroll-smooth-ios">
               {children}
             </main>
           </div>
