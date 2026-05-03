@@ -8,6 +8,7 @@ import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getAppUrl } from "@/lib/app-redirect"
 import {
   Building2,
   Users,
@@ -93,12 +94,12 @@ const Navbar = () => {
           >
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          <Link href="/login" className="hidden sm:block">
+          <Link href={getAppUrl("/login")} className="hidden sm:block">
             <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-accent">
               Sign In
             </Button>
           </Link>
-          <Link href="/register">
+          <Link href={getAppUrl("/register")}>
             <Button className="bg-gradient-to-r from-[#D4AF37] to-[#B8962F] hover:from-[#F1D279] hover:to-[#D4AF37] text-slate-950 font-bold shadow-[0_0_20px_rgba(212,175,55,0.2)]">
               Start Free Trial
             </Button>
@@ -153,13 +154,13 @@ const HeroSection = () => {
           </p>
 
           <div className="flex flex-wrap gap-4 mb-10">
-            <Link href="/register">
+            <Link href={getAppUrl("/register")}>
               <Button size="lg" className="h-14 px-8 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-xl group">
                 Try for Free
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
-            <Link href="/login">
+            <Link href={getAppUrl("/login")}>
               <Button size="lg" variant="outline" className="h-14 px-8 border-border bg-accent/5 text-foreground rounded-xl hover:bg-accent group">
                 <Play className="mr-2 h-5 w-5 fill-[#D4AF37] text-[#D4AF37]" />
                 View Demo
@@ -546,7 +547,7 @@ const PricingSection = () => {
                 ))}
               </div>
 
-              <Link href="/register">
+              <Link href={getAppUrl("/register")}>
                 <Button 
                   className={`w-full h-12 rounded-xl font-semibold ${
                     plan.isPopular 
@@ -587,12 +588,12 @@ const FinalCTA = () => {
             Join real estate professionals who trust MakeItCRM to manage their leads, deals, and team collaboration.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
-            <Link href="/register">
+            <Link href={getAppUrl("/register")}>
               <Button size="lg" className="h-14 px-10 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-2xl text-lg">
                 Start Free Trial
               </Button>
             </Link>
-            <Link href="/login">
+            <Link href={getAppUrl("/login")}>
               <Button size="lg" variant="outline" className="h-14 px-10 rounded-2xl text-lg">
                 Sign In
               </Button>

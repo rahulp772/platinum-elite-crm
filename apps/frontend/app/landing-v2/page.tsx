@@ -8,6 +8,7 @@ import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getAppUrl } from "@/lib/app-redirect"
 import {
   Building2,
   Users,
@@ -91,12 +92,12 @@ const Navbar = () => {
           >
             {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
           </Button>
-          <Link href="/login" className="hidden sm:block">
+          <Link href={getAppUrl("/login")} className="hidden sm:block">
             <Button variant="ghost" className="text-muted-foreground hover:text-foreground hover:bg-accent">
               Sign In
             </Button>
           </Link>
-          <Link href="/register">
+          <Link href={getAppUrl("/register")}>
             <Button className="bg-gradient-to-r from-[#D4AF37] to-[#B8962F] hover:from-[#F1D279] hover:to-[#D4AF37] text-slate-950 font-bold shadow-[0_0_20px_rgba(212,175,55,0.2)]">
               Start Free Trial
             </Button>
@@ -168,7 +169,7 @@ const HeroSection = () => {
             security, intelligent role hierarchy, and a CRM as elite as your properties.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 mb-8">
-            <Link href="/register">
+            <Link href={getAppUrl("/register")}>
                 <Button size="lg" className="h-16 px-10 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-2xl group text-lg shadow-[0_20px_50px_rgba(212,175,55,0.3)] hover:scale-[1.02] transition-transform">
                 Start Free Trial
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -808,7 +809,7 @@ const FinalCTA = () => {
                         Get the security, intelligence, and speed you deserve.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-6 relative z-10">
-                        <Link href="/register">
+                        <Link href={getAppUrl("/register")}>
                             <Button size="lg" className="h-16 px-12 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 font-bold rounded-2xl text-xl shadow-[0_20px_50px_rgba(212,175,55,0.4)] hover:scale-[1.05] transition-transform">
                                 Get MakeItCRM Now
                             </Button>

@@ -4,6 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
+import { useAppRedirect } from "@/lib/app-redirect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -12,6 +13,7 @@ import { Building2, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from "luci
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function RegisterPage() {
+  useAppRedirect()
   const { register } = useAuth()
   const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)

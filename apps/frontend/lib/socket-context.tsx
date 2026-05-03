@@ -21,6 +21,11 @@ let toastIdsTimeout: Map<string, NodeJS.Timeout> = new Map()
 function getSocketUrl(): string {
   if (typeof window === 'undefined') return 'http://localhost:3001'
   
+  const envUrl = process.env.NEXT_PUBLIC_SOCKET_URL
+  if (envUrl) {
+    return envUrl
+  }
+  
   const hostname = window.location.hostname
   const protocol = window.location.protocol
   

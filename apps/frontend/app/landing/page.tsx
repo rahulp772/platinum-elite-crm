@@ -2,9 +2,13 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
+import { motion } from "framer-motion"
+import { useTheme } from "next-themes"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getAppUrl } from "@/lib/app-redirect"
 import {
     Building2,
     Users,
@@ -91,12 +95,12 @@ export default function LandingPage() {
                         <span className="text-lg font-bold text-white">MakeItCRM</span>
                     </div>
                     <div className="flex items-center gap-4">
-                        <Link href="/login">
+                        <Link href={getAppUrl("/login")}>
                             <Button variant="ghost" className="text-slate-300 hover:text-white">
                                 Sign In
                             </Button>
                         </Link>
-                        <Link href="/register">
+                        <Link href={getAppUrl("/register")}>
                             <Button className="bg-gradient-to-r from-realty-gold to-realty-gold-dark hover:from-realty-gold-light hover:to-realty-gold text-slate-950 font-semibold">
                                 Get Started
                             </Button>
@@ -130,7 +134,7 @@ export default function LandingPage() {
                         most powerful real estate CRM built for modern professionals.
                     </p>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <Link href="/register">
+                        <Link href={getAppUrl("/register")}>
                             <Button
                                 size="lg"
                                 className="bg-gradient-to-r from-realty-gold to-realty-gold-dark hover:from-realty-gold-light hover:to-realty-gold text-slate-950 font-semibold h-12 px-8"
@@ -139,7 +143,7 @@ export default function LandingPage() {
                                 <ArrowRight className="ml-2 h-4 w-4" />
                             </Button>
                         </Link>
-                        <Link href="/login">
+                        <Link href={getAppUrl("/login")}>
                             <Button
                                 size="lg"
                                 variant="outline"
@@ -287,7 +291,7 @@ export default function LandingPage() {
                         Join hundreds of real estate professionals who have already made the switch.
                         Start your free trial today — no credit card required.
                     </p>
-                    <Link href="/register">
+                    <Link href={getAppUrl("/register")}>
                         <Button
                             size="lg"
                             className="bg-gradient-to-r from-realty-gold to-realty-gold-dark hover:from-realty-gold-light hover:to-realty-gold text-slate-950 font-semibold h-12 px-8"
@@ -310,10 +314,10 @@ export default function LandingPage() {
                             <span className="text-lg font-bold text-white">MakeItCRM</span>
                         </div>
                         <div className="flex items-center gap-6 text-sm text-slate-400">
-                            <Link href="/login" className="hover:text-white transition-colors">
+                            <Link href={getAppUrl("/login")} className="hover:text-white transition-colors">
                                 Sign In
                             </Link>
-                            <Link href="/register" className="hover:text-white transition-colors">
+                            <Link href={getAppUrl("/register")} className="hover:text-white transition-colors">
                                 Register
                             </Link>
                         </div>

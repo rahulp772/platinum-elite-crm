@@ -3,6 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
+import { useAppRedirect } from "@/lib/app-redirect"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -17,6 +18,7 @@ interface TenantInfo {
 }
 
 export default function LoginPage() {
+  useAppRedirect()
   const { login } = useAuth()
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
