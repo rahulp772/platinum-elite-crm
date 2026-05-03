@@ -14,6 +14,7 @@ import { Tenant } from '../tenants/entities/tenant.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuditService } from '../audit/audit.service';
+import { RolesService } from '../roles/roles.service';
 
 @Injectable()
 export class AuthService {
@@ -27,6 +28,7 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     private auditService: AuditService,
+    private rolesService: RolesService,
   ) {}
 
   async register(registerDto: RegisterDto) {
@@ -55,28 +57,12 @@ export class AuthService {
     });
     await this.tenantRepository.save(tenant);
 
-    const adminRole = this.roleRepository.create({
-      name: 'Admin',
-      tenantId: tenant.id,
-      permissions: [
-        'leads:read',
-        'leads:write',
-        'deals:read',
-        'deals:write',
-        'properties:read',
-        'properties:write',
-        'tasks:read',
-        'tasks:write',
-        'reports:read',
-        'settings:write',
-        'users:read',
-        'users:write',
-        'roles:write',
-      ],
-      level: 100,
-      isSystem: false,
-    });
-    await this.roleRepository.save(adminRole);
+    const seededRoles = await this.rolesService.seedDefaultRoles(tenant.id);
+    const adminRole = seededRoles.find(r => r.name === 'Admin');
+
+    if (!adminRole) {
+      throw new Error('Default roles failed to seed');
+    }
 
     const user = this.userRepository.create({
       email,

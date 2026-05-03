@@ -10,6 +10,7 @@ import { Role } from '../roles/entities/role.entity';
 import { Tenant } from '../tenants/entities/tenant.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuditModule } from '../audit/audit.module';
+import { RolesModule } from '../roles/roles.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { AuditModule } from '../audit/audit.module';
       inject: [ConfigService],
     }),
     AuditModule,
+    RolesModule,
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
