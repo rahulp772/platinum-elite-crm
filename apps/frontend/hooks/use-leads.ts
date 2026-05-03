@@ -20,6 +20,7 @@ interface LeadsFilters {
     source?: string
     assignedToId?: string
     builderId?: string
+    date?: string
 }
 
 

@@ -6,7 +6,7 @@ export type LeadStatus =
   | "site_visit_scheduled"
   | "site_visit_done"
   | "negotiation"
-  | "won"
+  | "booked"
   | "lost"
 
 export type LeadTier = "HIGH" | "MEDIUM" | "LOW"

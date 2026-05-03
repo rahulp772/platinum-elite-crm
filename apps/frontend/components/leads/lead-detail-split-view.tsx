@@ -50,10 +50,10 @@ const quickActionsMap: Record<LeadStatus, QuickAction[]> = {
         { label: "Keep in Touch", nextStatus: "qualified", description: "Still interested, no rush" },
     ],
     negotiation: [
-        { label: "Close Deal", nextStatus: "won", description: "Deal closed!" },
+        { label: "Close Deal", nextStatus: "booked", description: "Deal closed!" },
         { label: "Keep Negotiating", nextStatus: "negotiation", description: "Still discussing" },
     ],
-    won: [],
+    booked: [],
     lost: [],
 }
 import { toast } from "sonner"
@@ -67,7 +67,7 @@ function formatStatus(status: string): string {
         'site_visit_scheduled': 'Visit Scheduled',
         'site_visit_done': 'Visit Done',
         'negotiation': 'Negotiation',
-        'won': 'Won',
+        'booked': 'Won',
         'lost': 'Lost'
     }
     return statusMap[status] || status.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
@@ -649,7 +649,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                                 <SelectItem value="site_visit_scheduled">Visit Scheduled</SelectItem>
                                 <SelectItem value="site_visit_done">Visit Done</SelectItem>
                                 <SelectItem value="negotiation">Negotiation</SelectItem>
-                                <SelectItem value="won">Won / Booked</SelectItem>
+                                <SelectItem value="booked">Won / Booked</SelectItem>
                                 <SelectItem value="lost">Lost</SelectItem>
                             </SelectContent>
                         </Select>

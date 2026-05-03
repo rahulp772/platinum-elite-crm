@@ -838,7 +838,7 @@ const Footer = () => {
                             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D4AF37]">
                                 <Building2 className="h-5 w-5 text-slate-950" />
                             </div>
-                            <span className="text-lg font-bold text-foreground tracking-tight">PlatinumElite</span>
+                            <span className="text-lg font-bold text-foreground tracking-tight">MakeIt<span className="text-[#D4AF37]">CRM</span></span>
                         </Link>
                         <p className="text-muted-foreground text-sm leading-relaxed mb-8">
                             The world's most advanced CRM for real estate professionals. Built for growth, security, and elite performance.

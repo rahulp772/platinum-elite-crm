@@ -47,7 +47,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
     
     const timezone = getUserTimezone(user)
 
-    const showFollowUp = status !== "won" && status !== "lost"
+    const showFollowUp = status !== "booked" && status !== "lost"
     const showPropertyPicker = status === "site_visit_scheduled"
     const showVisitSelector = status === "site_visit_done"
 
@@ -179,7 +179,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                                 <SelectItem value="site_visit_scheduled">Visit Scheduled</SelectItem>
                                 <SelectItem value="site_visit_done">Visit Done</SelectItem>
                                 <SelectItem value="negotiation">Negotiation</SelectItem>
-                                <SelectItem value="won">Won / Booked</SelectItem>
+                                <SelectItem value="booked">Won / Booked</SelectItem>
                                 <SelectItem value="lost">Lost</SelectItem>
                             </SelectContent>
                         </Select>
@@ -325,7 +325,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                             )}
                             {!showFollowUp && (
                                 <div className="p-3 bg-muted/50 dark:bg-muted/30 rounded-lg text-sm text-muted-foreground">
-                                    {status === "won" ? "🎉 Deal won! No follow-up needed." : "Lead marked as lost. No follow-up needed."}
+                                    {status === "booked" ? "🎉 Deal won! No follow-up needed." : "Lead marked as lost. No follow-up needed."}
                                 </div>
                             )}
                         </>

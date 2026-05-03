@@ -34,8 +34,8 @@ export function AgentDashboardView() {
     todayEnd.setHours(23, 59, 59, 999)
 
     // Filter leads
-    const overdueLeads = leads?.filter((lead: any) => lead.followUpAt && new Date(lead.followUpAt) < now && !["won", "lost", "booked"].includes(lead.status)) || []
-    const todayLeads = leads?.filter((lead: any) => lead.followUpAt && new Date(lead.followUpAt) >= now && new Date(lead.followUpAt) <= todayEnd && !["won", "lost", "booked"].includes(lead.status)) || []
+    const overdueLeads = leads?.filter((lead: any) => lead.followUpAt && new Date(lead.followUpAt) < now && !["lost", "booked"].includes(lead.status)) || []
+    const todayLeads = leads?.filter((lead: any) => lead.followUpAt && new Date(lead.followUpAt) >= now && new Date(lead.followUpAt) <= todayEnd && !["lost", "booked"].includes(lead.status)) || []
     const newLeads = leads?.filter((lead: any) => lead.status === "new") || []
 
     return (

@@ -54,6 +54,7 @@ export class LeadsController {
   @ApiQuery({ name: 'source', type: String, required: false })
   @ApiQuery({ name: 'assignedToId', type: String, required: false })
   @ApiQuery({ name: 'builderId', type: String, required: false })
+  @ApiQuery({ name: 'date', type: String, required: false })
   findAll(
 
     @Request() req,
@@ -64,6 +65,7 @@ export class LeadsController {
      @Query('source') source?: string,
     @Query('assignedToId') assignedToId?: string,
     @Query('builderId') builderId?: string,
+    @Query('date') date?: string,
   ) {
 
     return this.leadsService.findAll(req.user, {
@@ -74,6 +76,7 @@ export class LeadsController {
       source,
       assignedToId,
       builderId,
+      date,
     });
   }
 

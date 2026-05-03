@@ -38,7 +38,7 @@ const PIPELINE_STAGES: { id: LeadStatus; title: string; color: string }[] = [
     { id: "qualified", title: "Qualified", color: "bg-teal-500/10 border-teal-500/20" },
     { id: "site_visit_scheduled", title: "Visit Scheduled", color: "bg-blue-500/10 border-blue-500/20" },
     { id: "negotiation", title: "Negotiation", color: "bg-purple-500/10 border-purple-500/20" },
-    { id: "won", title: "Won", color: "bg-green-500/10 border-green-500/20" },
+    { id: "booked", title: "Won / Booked", color: "bg-green-500/10 border-green-500/20" },
 ]
 
 const dropAnimation: DropAnimation = {
@@ -102,8 +102,8 @@ export function PipelineBoard() {
         const cols = new Map<string, any[]>()
         PIPELINE_STAGES.forEach((stage) => cols.set(stage.id, []))
         leads.forEach((lead) => {
-            // Map "won" to "won" column for leads
-            const effectiveStage = lead.status === "won" ? "won" : lead.status
+            // Map "booked" to "booked" column for leads
+            const effectiveStage = lead.status === "booked" ? "booked" : lead.status
             const stageLeads = cols.get(effectiveStage)
             if (stageLeads) {
                 stageLeads.push(lead)
@@ -132,15 +132,15 @@ export function PipelineBoard() {
 
         if (!activeLeadData) return
 
-        const activeStage = activeLeadData.status === "won" ? "won" : activeLeadData.status
-        const overStage = (PIPELINE_STAGES.find((s) => s.id === overId) ? overId : (overLeadData?.status === "won" ? "won" : overLeadData?.status))
+        const activeStage = activeLeadData.status === "booked" ? "booked" : activeLeadData.status
+        const overStage = (PIPELINE_STAGES.find((s) => s.id === overId) ? overId : (overLeadData?.status === "booked" ? "booked" : overLeadData?.status))
 
         if (!overStage || activeStage === overStage) return
 
         setLeads((prev) => {
             const activeIndex = prev.findIndex((l) => l.id === activeId)
             const newLeads = [...prev]
-            newLeads[activeIndex] = { ...newLeads[activeIndex], status: overStage === "won" ? "won" : overStage }
+            newLeads[activeIndex] = { ...newLeads[activeIndex], status: overStage === "booked" ? "booked" : overStage }
             return newLeads
         })
     }

@@ -246,6 +246,7 @@ export class LeadsService {
       source?: string;
       assignedToId?: string;
       builderId?: string;
+      date?: string;
     },
 
   ) {
@@ -260,6 +261,7 @@ export class LeadsService {
       source,
       assignedToId,
       builderId,
+      date,
     } = options || {};
 
 
@@ -318,7 +320,11 @@ export class LeadsService {
 
     let query = baseQuery.clone();
 
-    if (status && status !== 'all') {
+    if (status === 'open') {
+      query = query.andWhere('lead.status NOT IN (:...excluded)', {
+        excluded: [LeadStatus.BOOKED, LeadStatus.LOST],
+      });
+    } else if (status && status !== 'all') {
       query = query.andWhere('lead.status = :status', { status });
     }
     if (source && source !== 'all') {
@@ -337,6 +343,16 @@ export class LeadsService {
       query = query.andWhere(
         '(lead.name ILIKE :search OR lead.email ILIKE :search OR lead.phone ILIKE :search)',
         { search: `%${search}%` },
+      );
+    }
+    
+    if (options?.date) {
+      const timezone = user.timezone || 'Asia/Kolkata';
+      const startOfDay = dateUtils.getZonedStartOfDay(options.date, timezone);
+      const endOfDay = dateUtils.getZonedEndOfDay(options.date, timezone);
+      query = query.andWhere(
+        'lead.followUpAt >= :startOfDay AND lead.followUpAt <= :endOfDay',
+        { startOfDay, endOfDay },
       );
     }
 
@@ -391,6 +407,7 @@ export class LeadsService {
     const oldAssignedToId = lead.assignedToId;
 
     if (assignedToId && assignedToId !== lead.assignedToId) {
+      const oldAssignedToName = lead.assignedTo?.name || 'Unassigned';
       const assignedToUser = await this.userRepository.findOne({
         where: { id: assignedToId, tenantId: user.tenantId },
       });
@@ -404,7 +421,7 @@ export class LeadsService {
         lead.id,
         user.id,
         LeadActivityAction.ASSIGNED,
-        lead.assignedTo?.name,
+        oldAssignedToName,
         assignedToUser.name,
       );
     }
@@ -561,18 +578,19 @@ export class LeadsService {
 
     const leads = await this.leadRepository.find({
       where: { id: In(leadIds), tenantId: user.tenantId },
+      relations: ['assignedTo'],
     });
 
     for (const lead of leads) {
-      const oldAssigned = lead.assignedToId;
+      const oldAssignedToName = lead.assignedTo?.name || 'Unassigned';
       lead.assignedTo = assignedToUser;
       await this.leadRepository.save(lead);
       await this.logActivity(
         lead.id,
         user.id,
         LeadActivityAction.ASSIGNED,
-        oldAssigned,
-        assignedToId,
+        oldAssignedToName,
+        assignedToUser.name,
       );
     }
 
@@ -638,6 +656,11 @@ export class LeadsService {
 
     const lead = await this.findOne(leadId, user);
     const oldAssignedToId = lead.assignedToId;
+    const oldAssignedToName = lead.assignedTo?.name || 'Unassigned';
+
+    if (oldAssignedToId === assignedToId) {
+      return { message: 'Lead is already assigned to this user' };
+    }
 
     const newAssignedUser = await this.userRepository.findOne({
       where: { id: assignedToId, tenantId: user.tenantId },
@@ -654,9 +677,9 @@ export class LeadsService {
       lead.id,
       user.id,
       LeadActivityAction.REASSIGNED,
-      oldAssignedToId,
-      assignedToId,
-      `Reassigned from ${lead.assignedTo?.name || oldAssignedToId} to ${newAssignedUser.name}`,
+      oldAssignedToName,
+      newAssignedUser.name,
+      `Reassigned from ${oldAssignedToName} to ${newAssignedUser.name}`,
     );
 
     return { message: 'Lead reassigned successfully' };
