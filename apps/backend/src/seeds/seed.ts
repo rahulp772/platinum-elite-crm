@@ -18,7 +18,6 @@ import { Task } from '../tasks/entities/task.entity';
 import { TaskStatus, TaskPriority, TaskType } from '../tasks/enums/task.enum';
 import { Builder } from '../builders/entities/builder.entity';
 
-
 const BASE_PERMISSIONS = [
   'leads:read',
   'leads:write',
@@ -61,7 +60,6 @@ export class SeedService {
     private dataSource: DataSource,
   ) {}
 
-
   async seed() {
     console.log('🌱 Starting database seed...');
     await this.seedTenantsAndRoles();
@@ -72,7 +70,6 @@ export class SeedService {
     await this.seedTasks();
     console.log('✅ Seed completed successfully!');
   }
-
 
   private async clearDatabase() {
     console.log('🧹 Clearing database...');
@@ -249,7 +246,8 @@ export class SeedService {
     const BUILDERS = [
       {
         name: 'Sobha Realty',
-        description: 'International luxury real estate developer with a reputation for quality.',
+        description:
+          'International luxury real estate developer with a reputation for quality.',
         website: 'https://www.sobharealty.com',
         foundedYear: 1976,
         headquarters: 'Dubai / Bangalore',
@@ -271,7 +269,8 @@ export class SeedService {
       },
       {
         name: 'Godrej Properties',
-        description: 'Brings the Godrej Group philosophy of innovation, sustainability, and excellence to the real estate industry.',
+        description:
+          'Brings the Godrej Group philosophy of innovation, sustainability, and excellence to the real estate industry.',
         website: 'https://www.godrejproperties.com',
         foundedYear: 1990,
         headquarters: 'Mumbai',
@@ -282,7 +281,7 @@ export class SeedService {
       },
       {
         name: 'Lodha Group',
-        description: 'India\'s No.1 real estate developer by residential sales.',
+        description: "India's No.1 real estate developer by residential sales.",
         website: 'https://www.lodhagroup.in',
         foundedYear: 1980,
         headquarters: 'Mumbai',
@@ -313,7 +312,6 @@ export class SeedService {
     }
     console.log(`   Seeded ${BUILDERS.length} builders.`);
   }
-
 
   private async seedSuperAdmin() {
     console.log('👑 Creating super admin...');
@@ -350,7 +348,6 @@ export class SeedService {
     });
     const builders = await this.builderRepository.find();
     const tenantId = tenants[0].id;
-
 
     const firstNames = [
       'James',
@@ -415,7 +412,6 @@ export class SeedService {
       'Kolkata',
     ];
 
-
     for (let i = 0; i < 60; i++) {
       const firstName =
         firstNames[Math.floor(Math.random() * firstNames.length)];
@@ -428,8 +424,10 @@ export class SeedService {
           ? users[Math.floor(Math.random() * users.length)]
           : null;
       const hasFollowUp = Math.random() > 0.5;
-      const builderId = Math.random() > 0.3 ? builders[Math.floor(Math.random() * builders.length)].id : undefined;
-
+      const builderId =
+        Math.random() > 0.3
+          ? builders[Math.floor(Math.random() * builders.length)].id
+          : undefined;
 
       const leadData: Partial<Lead> = {
         name: `${firstName} ${lastName}`,
@@ -466,8 +464,6 @@ export class SeedService {
         builderId,
       };
 
-
-
       await this.leadRepository.save(leadData);
     }
 
@@ -501,7 +497,8 @@ export class SeedService {
     const properties = [
       {
         title: 'Sobha Zenith Sector 89',
-        description: 'Luxury 3 BHK apartment with world-class amenities and premium finishes.',
+        description:
+          'Luxury 3 BHK apartment with world-class amenities and premium finishes.',
         price: 25000000,
         status: PropertyStatus.AVAILABLE,
         type: PropertyType.APARTMENT,
@@ -518,13 +515,14 @@ export class SeedService {
         reraAuthority: 'HARERA',
         constructionStatus: 'Under Construction',
         possessionDate: new Date('2026-12-31'),
-        builderId: builders.find(b => b.name === 'Sobha Realty')?.id,
+        builderId: builders.find((b) => b.name === 'Sobha Realty')?.id,
         images: sampleImages.slice(0, 4),
         views: 450,
       },
       {
         title: 'DLF Ultima Phase 2',
-        description: 'Premium living in the heart of Gurgaon with lush green surroundings.',
+        description:
+          'Premium living in the heart of Gurgaon with lush green surroundings.',
         price: 32000000,
         status: PropertyStatus.AVAILABLE,
         type: PropertyType.APARTMENT,
@@ -541,7 +539,7 @@ export class SeedService {
         reraAuthority: 'HARERA',
         constructionStatus: 'Ready to Move',
         possessionDate: new Date('2024-06-01'),
-        builderId: builders.find(b => b.name === 'DLF Limited')?.id,
+        builderId: builders.find((b) => b.name === 'DLF Limited')?.id,
         images: sampleImages.slice(2, 6),
         views: 890,
       },
@@ -563,13 +561,14 @@ export class SeedService {
         reraNumber: 'PRM/KA/RERA/1251/309/PR/171014/000123',
         reraAuthority: 'KRERA',
         constructionStatus: 'Ready to Move',
-        builderId: builders.find(b => b.name === 'Godrej Properties')?.id,
+        builderId: builders.find((b) => b.name === 'Godrej Properties')?.id,
         images: sampleImages.slice(4, 8),
         views: 320,
       },
       {
         title: 'Lodha World One',
-        description: 'Iconic skyscraper in Mumbai offering unparalleled luxury.',
+        description:
+          'Iconic skyscraper in Mumbai offering unparalleled luxury.',
         price: 85000000,
         status: PropertyStatus.AVAILABLE,
         type: PropertyType.CONDO,
@@ -585,13 +584,14 @@ export class SeedService {
         reraNumber: 'P51900008345',
         reraAuthority: 'MahaRERA',
         constructionStatus: 'Ready to Move',
-        builderId: builders.find(b => b.name === 'Lodha Group')?.id,
+        builderId: builders.find((b) => b.name === 'Lodha Group')?.id,
         images: sampleImages.slice(6, 10),
         views: 1250,
       },
       {
         title: 'Prestige Falcon City',
-        description: 'Mixed-use development with retail and residential spaces.',
+        description:
+          'Mixed-use development with retail and residential spaces.',
         price: 21000000,
         status: PropertyStatus.PENDING,
         type: PropertyType.APARTMENT,
@@ -607,7 +607,7 @@ export class SeedService {
         reraNumber: 'PRM/KA/RERA/1251/310/PR/170913/000114',
         reraAuthority: 'KRERA',
         constructionStatus: 'Ready to Move',
-        builderId: builders.find(b => b.name === 'Prestige Group')?.id,
+        builderId: builders.find((b) => b.name === 'Prestige Group')?.id,
         images: sampleImages.slice(0, 3),
         views: 210,
       },
@@ -618,7 +618,13 @@ export class SeedService {
         ...prop,
         agentId: agent?.id,
         tenantId,
-        features: ['Clubhouse', 'Gym', 'Swimming Pool', 'Security', 'Power Backup'],
+        features: [
+          'Clubhouse',
+          'Gym',
+          'Swimming Pool',
+          'Security',
+          'Power Backup',
+        ],
         listed: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000),
         yearBuilt: 2020 + Math.floor(Math.random() * 4),
       });
@@ -626,7 +632,6 @@ export class SeedService {
 
     console.log(`   Created 5 properties`);
   }
-
 
   private async seedTasks() {
     console.log('📋 Seeding tasks...');

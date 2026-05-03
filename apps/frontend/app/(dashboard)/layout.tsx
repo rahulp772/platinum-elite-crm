@@ -9,6 +9,7 @@ import { AuthGuard } from "@/components/auth-guard"
 import { Sidebar } from "@/components/layout/sidebar"
 import { Header } from "@/components/layout/header"
 import { MobileBottomBar } from "@/components/layout/mobile-bottom-bar"
+import { TrialBanner } from "@/components/trial-banner"
 
 export default function DashboardLayout({
     children,
@@ -74,6 +75,7 @@ export default function DashboardLayout({
                             <Header 
                                 onMobileMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} 
                             />
+                            <TrialBanner />
                             <main className="flex-1 overflow-y-auto p-4 md:p-6">
                                 {children}
                             </main>

@@ -14,7 +14,6 @@ import { Tenant } from '../../tenants/entities/tenant.entity';
 import { PropertyStatus, PropertyType } from '../enums/property.enum';
 import { Builder } from '../../builders/entities/builder.entity';
 
-
 @Entity('properties')
 export class Property {
   @PrimaryGeneratedColumn('uuid')

@@ -1,4 +1,12 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Patch,
+  Param,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { TenantsService } from './tenants.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -20,5 +28,13 @@ export class TenantsController {
   @ApiOperation({ summary: 'Get tenant by ID' })
   findOne(@Param('id') id: string) {
     return this.tenantsService.findOne(id);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Update tenant' })
+  update(@Param('id') id: string, @Body() updateData: any, @Request() req) {
+    return this.tenantsService.update(id, updateData, req.user);
   }
 }

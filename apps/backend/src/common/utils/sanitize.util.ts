@@ -1,7 +1,13 @@
-import { registerDecorator, ValidationOptions, ValidatorConstraint, ValidationArguments } from 'class-validator';
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidatorConstraint,
+  ValidationArguments,
+} from 'class-validator';
 
 export const HTML_TAGS_REGEX = /<[^>]*>/g;
-export const SQL_INJECTION_PATTERN = /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|TRUNCATE)\b)/i;
+export const SQL_INJECTION_PATTERN =
+  /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|UNION|ALTER|CREATE|TRUNCATE)\b)/i;
 
 export function IsSanitized(validationOptions?: ValidationOptions) {
   return function (object: object, propertyName: string) {
@@ -32,7 +38,7 @@ export function IsSanitized(validationOptions?: ValidationOptions) {
 export function sanitizeString(value: string): string {
   if (!value) return '';
 
-  let sanitized = value
+  const sanitized = value
     .replace(HTML_TAGS_REGEX, '')
     .replace(/['"]/g, '')
     .trim();
@@ -40,13 +46,19 @@ export function sanitizeString(value: string): string {
   return sanitized;
 }
 
-export function sanitizeObject(obj: Record<string, unknown>): Record<string, unknown> {
+export function sanitizeObject(
+  obj: Record<string, unknown>,
+): Record<string, unknown> {
   const sanitized: Record<string, unknown> = {};
 
   for (const [key, value] of Object.entries(obj)) {
     if (Array.isArray(value)) {
       sanitized[key] = value.map((item) =>
-        typeof item === 'string' ? sanitizeString(item) : typeof item === 'object' && item !== null ? sanitizeObject(item as Record<string, unknown>) : item,
+        typeof item === 'string'
+          ? sanitizeString(item)
+          : typeof item === 'object' && item !== null
+            ? sanitizeObject(item as Record<string, unknown>)
+            : item,
       );
     } else if (typeof value === 'string') {
       sanitized[key] = sanitizeString(value);

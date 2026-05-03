@@ -47,4 +47,13 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   officeAddress?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  jobTitle?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  isOnboardingComplete?: boolean;
 }

@@ -30,7 +30,7 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto) {
-    const { email, password, name } = registerDto;
+    const { email, password, tenantName } = registerDto;
 
     const existingUser = await this.userRepository.findOne({
       where: { email },
@@ -41,10 +41,49 @@ export class AuthService {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const trialStartDate = new Date();
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + 7);
+
+    const tenant = this.tenantRepository.create({
+      name: tenantName || 'My Company',
+      isTrial: true,
+      trialStartDate,
+      trialEndDate,
+      isActive: true,
+      timezone: 'Asia/Kolkata',
+    });
+    await this.tenantRepository.save(tenant);
+
+    const adminRole = this.roleRepository.create({
+      name: 'Admin',
+      tenantId: tenant.id,
+      permissions: [
+        'leads:read',
+        'leads:write',
+        'deals:read',
+        'deals:write',
+        'properties:read',
+        'properties:write',
+        'tasks:read',
+        'tasks:write',
+        'reports:read',
+        'settings:write',
+        'users:read',
+        'users:write',
+        'roles:write',
+      ],
+      level: 100,
+      isSystem: false,
+    });
+    await this.roleRepository.save(adminRole);
+
     const user = this.userRepository.create({
       email,
       password: hashedPassword,
-      name,
+      name: '',
+      tenantId: tenant.id,
+      roleId: adminRole.id,
       timezone: 'Asia/Kolkata',
     });
 
@@ -64,6 +103,7 @@ export class AuthService {
       roleId: user.roleId,
       isSuperAdmin: user.isSuperAdmin,
       timezone: user.timezone,
+      isOnboardingComplete: user.isOnboardingComplete,
     };
 
     if (user.roleId) {
@@ -102,6 +142,7 @@ export class AuthService {
         'timezone',
         'failedLoginAttempts',
         'lockedUntil',
+        'isOnboardingComplete',
       ],
     });
 
@@ -236,6 +277,7 @@ export class AuthService {
       roleId: user.roleId,
       isSuperAdmin: user.isSuperAdmin,
       timezone: user.timezone,
+      isOnboardingComplete: (user as any).isOnboardingComplete || false,
     };
 
     if (user.roleId) {
@@ -255,6 +297,54 @@ export class AuthService {
     return {
       access_token: this.jwtService.sign(payload),
       user: userResponse,
+    };
+  }
+
+  async getSubscriptionStatus(userId: string) {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['tenant'],
+    });
+
+    if (!user || !user.tenantId) {
+      return { status: 'inactive' };
+    }
+
+    const tenant = user.tenant;
+    const now = new Date();
+    let isTrialExpired = false;
+    let daysSinceExpiry = 0;
+
+    if (tenant.isTrial && tenant.trialEndDate) {
+      const trialEnd = new Date(tenant.trialEndDate);
+      if (now > trialEnd) {
+        isTrialExpired = true;
+        daysSinceExpiry = Math.floor(
+          (now.getTime() - trialEnd.getTime()) / (1000 * 60 * 60 * 24),
+        );
+      }
+    }
+
+    const planTierMap: Record<string, number> = {
+      starter: 0,
+      professional: 1,
+      enterprise: 2,
+    };
+    const planNameLower = tenant.planName?.toLowerCase() || '';
+    const planTier = planTierMap[planNameLower] ?? -1;
+    const isOnHighestPlan = planNameLower === 'enterprise';
+
+    return {
+      isTrial: tenant.isTrial,
+      isTrialExpired,
+      daysSinceExpiry,
+      trialEndDate: tenant.trialEndDate,
+      planName: tenant.planName,
+      subscriptionStatus: tenant.subscriptionStatus,
+      subscriptionStartDate: tenant.subscriptionStartDate,
+      subscriptionEndDate: tenant.subscriptionEndDate,
+      planTier,
+      isOnHighestPlan,
     };
   }
 }

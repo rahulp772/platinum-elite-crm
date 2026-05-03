@@ -17,6 +17,22 @@ export interface User {
   isSuperAdmin?: boolean;
   permissions?: string[];
   timezone?: string;
+  isOnboardingComplete?: boolean;
+  jobTitle?: string;
+  phone?: string;
+  whatsapp?: string;
+  officeAddress?: string;
+  tenant?: any;
+}
+
+export interface TenantSubscription {
+  isTrial: boolean;
+  trialStartDate?: string;
+  trialEndDate?: string;
+  planName?: string;
+  subscriptionStatus?: string;
+  subscriptionStartDate?: string;
+  subscriptionEndDate?: string;
 }
 
 export interface AuthResponse {

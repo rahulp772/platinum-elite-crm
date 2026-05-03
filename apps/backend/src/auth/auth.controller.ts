@@ -58,4 +58,12 @@ export class AuthController {
   getProfile(@Request() req) {
     return req.user;
   }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @Get('subscription')
+  @ApiOperation({ summary: 'Get subscription status' })
+  getSubscription(@Request() req) {
+    return this.authService.getSubscriptionStatus(req.user.id);
+  }
 }

@@ -20,6 +20,6 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
       return true;
     }
 
-    return super.canActivate(context) as Promise<boolean>;
+    return super.canActivate(context);
   }
 }

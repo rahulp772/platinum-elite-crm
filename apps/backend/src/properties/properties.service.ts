@@ -16,7 +16,6 @@ interface FindAllOptions {
   builderId?: string;
 }
 
-
 @Injectable()
 export class PropertiesService {
   constructor(
@@ -44,7 +43,6 @@ export class PropertiesService {
       .leftJoinAndSelect('property.builder', 'builder')
       .select(['property', 'agent.id', 'agent.name', 'agent.email', 'builder']);
 
-
     if (!isGlobalAdmin) {
       query.where('property.tenantId = :tenantId', { tenantId: user.tenantId });
     }
@@ -63,11 +61,10 @@ export class PropertiesService {
     if (type && type !== 'all') {
       query.andWhere('property.type = :type', { type });
     }
-    
+
     if (builderId) {
       query.andWhere('property.builderId = :builderId', { builderId });
     }
-
 
     switch (sortBy) {
       case 'oldest':

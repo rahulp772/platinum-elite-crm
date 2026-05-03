@@ -25,6 +25,7 @@ import { TeamsModule } from './teams/teams.module';
 import { PortalWebhooksModule } from './portal-webhooks/portal-webhooks.module';
 import { AuditModule } from './audit/audit.module';
 import { BuildersModule } from './builders/builders.module';
+import { PlansModule } from './plans/plans.module';
 
 
 @Module({
@@ -87,6 +88,7 @@ import { BuildersModule } from './builders/builders.module';
     TeamsModule,
     PortalWebhooksModule,
     BuildersModule,
+    PlansModule,
   ],
 
   controllers: [AppController],

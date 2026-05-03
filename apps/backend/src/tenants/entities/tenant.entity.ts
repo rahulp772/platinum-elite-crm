@@ -30,6 +30,30 @@ export class Tenant {
   @Column({ default: false })
   isDemo: boolean;
 
+  @Column({ default: true })
+  isTrial: boolean;
+
+  @Column({ nullable: true })
+  trialStartDate: Date;
+
+  @Column({ nullable: true })
+  trialEndDate: Date;
+
+  @Column({ default: false })
+  isActive: boolean;
+
+  @Column({ nullable: true })
+  planName: string;
+
+  @Column({ nullable: true, default: 'trial' })
+  subscriptionStatus: string;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  subscriptionStartDate: Date;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  subscriptionEndDate: Date;
+
   @OneToMany(() => User, (user) => user.tenant)
   users: User[];
 

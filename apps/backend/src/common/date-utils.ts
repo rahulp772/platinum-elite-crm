@@ -1,5 +1,11 @@
 import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
-import { startOfDay, endOfDay, addDays, addHours, differenceInDays } from 'date-fns';
+import {
+  startOfDay,
+  endOfDay,
+  addDays,
+  addHours,
+  differenceInDays,
+} from 'date-fns';
 
 export const dateUtils = {
   toUTC(date: Date | string | null | undefined): Date | null {
@@ -63,7 +69,11 @@ export const dateUtils = {
     return utcDate < new Date();
   },
 
-  formatInTimezone(date: Date | string, timezone: string, formatStr: string): string {
+  formatInTimezone(
+    date: Date | string,
+    timezone: string,
+    formatStr: string,
+  ): string {
     const utcDate = dateUtils.toUTC(date) || new Date();
     return formatInTimeZone(utcDate, timezone, formatStr);
   },

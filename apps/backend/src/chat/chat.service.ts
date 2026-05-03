@@ -95,7 +95,7 @@ export class ChatService {
         .addOrderBy('message.timestamp', 'DESC')
         .getMany();
 
-      const lastMessagePerConv = new Map<string, typeof allMessages[0]>();
+      const lastMessagePerConv = new Map<string, (typeof allMessages)[0]>();
       for (const msg of allMessages) {
         if (!lastMessagePerConv.has(msg.conversationId)) {
           lastMessagePerConv.set(msg.conversationId, msg);

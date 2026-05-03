@@ -7,7 +7,11 @@ export const RateLimitOptions = (
   ttl: number,
   limit: number,
 ): MethodDecorator => {
-  return (target: object, key: string | symbol, descriptor: PropertyDescriptor) => {
+  return (
+    target: object,
+    key: string | symbol,
+    descriptor: PropertyDescriptor,
+  ) => {
     SetMetadata('throttle_ttl', ttl)(target, key, descriptor);
     SetMetadata('throttle_limit', limit)(target, key, descriptor);
     return descriptor;

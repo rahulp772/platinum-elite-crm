@@ -125,9 +125,7 @@ export class TasksService {
     };
   }
 
-  async count(
-    currentUser: User,
-  ): Promise<{
+  async count(currentUser: User): Promise<{
     total: number;
     overdue: number;
     today: number;
@@ -135,11 +133,17 @@ export class TasksService {
   }> {
     const timezone = currentUser.timezone || 'Asia/Kolkata';
     const now = new Date();
-    
+
     const startOfToday = dateUtils.getZonedStartOfDay(now, timezone);
     const endOfToday = dateUtils.getZonedEndOfDay(now, timezone);
-    const startOfTomorrow = dateUtils.getZonedStartOfDay(dateUtils.addDays(now, 1), timezone);
-    const endOfTomorrow = dateUtils.getZonedEndOfDay(dateUtils.addDays(now, 1), timezone);
+    const startOfTomorrow = dateUtils.getZonedStartOfDay(
+      dateUtils.addDays(now, 1),
+      timezone,
+    );
+    const endOfTomorrow = dateUtils.getZonedEndOfDay(
+      dateUtils.addDays(now, 1),
+      timezone,
+    );
 
     const overdue = await this.taskRepository
       .createQueryBuilder('task')

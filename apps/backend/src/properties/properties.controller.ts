@@ -68,7 +68,6 @@ export class PropertiesController {
     });
   }
 
-
   @Get(':id/related')
   @RequirePermissions('properties:read')
   @ApiOperation({ summary: 'Get related properties by type' })

@@ -610,26 +610,32 @@ const PricingSection = () => {
     const plans = [
         {
             name: "Starter",
-            price: "49",
+            price: "0",
+            period: "Free",
             desc: "Perfect for individual agents starting their journey.",
-            features: ["Up to 500 Leads", "Basic Analytics", "Email Support", "Mobile App Access", "Single User"],
-            buttonText: "Start Starter Trial",
+            features: ["Up to 50 Leads", "Basic CRM", "Email Support", "Mobile App Access", "Up to 2 Users", "Up to 10 Properties"],
+            buttonText: "Start Free Trial",
+            buttonLink: "/register",
             isPopular: false
         },
         {
             name: "Professional",
-            price: "129",
+            price: "49",
+            period: "/month",
             desc: "Designed for high-performing teams and agencies.",
-            features: ["Unlimited Leads", "Advanced AI Scoring", "Priority Support", "Team Collaboration Tools", "Up to 10 Users", "Custom Workflows"],
-            buttonText: "Go Professional",
+            features: ["Up to 500 Leads", "Advanced Analytics", "Priority Support", "Team Collaboration", "Up to 10 Users", "Custom Workflows", "Up to 100 Properties"],
+            buttonText: "Start Free Trial",
+            buttonLink: "/register",
             isPopular: true
         },
         {
             name: "Enterprise",
-            price: "Custom",
+            price: "149",
+            period: "/month",
             desc: "Custom solutions for large-scale real estate firms.",
-            features: ["White-label Branding", "24/7 Dedicated Support", "API Access", "Custom Integrations", "Unlimited Users", "Advanced Security"],
-            buttonText: "Contact Sales",
+            features: ["Unlimited Leads", "White-label Branding", "24/7 Dedicated Support", "API Access", "Unlimited Users", "Advanced Security", "Unlimited Properties"],
+            buttonText: "Start Free Trial",
+            buttonLink: "/register",
             isPopular: false
         }
     ]
@@ -642,6 +648,10 @@ const PricingSection = () => {
                     <Badge variant="outline" className="mb-6 border-[#D4AF37]/30 text-[#D4AF37]">Pricing Plans</Badge>
                     <h2 className="text-4xl md:text-6xl font-bold text-foreground mb-6">Transparent Pricing for <br /><span className="text-[#D4AF37]">Elite Performance</span></h2>
                     <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Choose the plan that fits your business scale. No hidden fees, just pure growth.</p>
+                    <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-sm font-medium">
+                        <Sparkles className="h-4 w-4" />
+                        7-day free trial on all plans
+                    </div>
                 </div>
 
                 <div className="grid lg:grid-cols-3 gap-8">
@@ -667,10 +677,9 @@ const PricingSection = () => {
                                 <h3 className={`text-2xl font-bold mb-2 ${plan.isPopular ? "text-white" : "text-foreground"}`}>{plan.name}</h3>
                                 <div className="flex items-baseline gap-1">
                                     <span className={`text-5xl font-black ${plan.isPopular ? "text-[#D4AF37]" : "text-foreground"}`}>
-                                        {plan.price === "Custom" ? "" : "$"}
-                                        {plan.price}
+                                        ${plan.price}
                                     </span>
-                                    {plan.price !== "Custom" && <span className="text-muted-foreground font-medium">/month</span>}
+                                    <span className="text-muted-foreground font-medium">{plan.period}</span>
                                 </div>
                                 <p className="text-muted-foreground mt-4 text-sm leading-relaxed">{plan.desc}</p>
                             </div>
@@ -686,15 +695,17 @@ const PricingSection = () => {
                                 ))}
                             </div>
 
-                            <Button 
-                                className={`w-full h-14 rounded-2xl font-bold text-lg transition-all ${
-                                    plan.isPopular 
-                                        ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02] shadow-lg shadow-[#D4AF37]/20" 
-                                        : "bg-accent hover:bg-accent/80 text-foreground"
-                                }`}
-                            >
-                                {plan.buttonText}
-                            </Button>
+                            <Link href={plan.buttonLink}>
+                                <Button 
+                                    className={`w-full h-14 rounded-2xl font-bold text-lg transition-all ${
+                                        plan.isPopular 
+                                            ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02] shadow-lg shadow-[#D4AF37]/20" 
+                                            : "bg-accent hover:bg-accent/80 text-foreground"
+                                    }`}
+                                >
+                                    {plan.buttonText}
+                                </Button>
+                            </Link>
                         </motion.div>
                     ))}
                 </div>

@@ -73,6 +73,12 @@ export class User {
   @Column({ default: false })
   isSuperAdmin: boolean;
 
+  @Column({ default: false })
+  isOnboardingComplete: boolean;
+
+  @Column({ nullable: true })
+  jobTitle: string;
+
   permissions: string[];
 
   @OneToMany(() => Property, (property) => property.agent)

@@ -2,18 +2,22 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Building2, Loader2, AlertCircle } from "lucide-react"
+import { Building2, Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 
 export default function RegisterPage() {
   const { register } = useAuth()
+  const router = useRouter()
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
+  const [showPassword, setShowPassword] = React.useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = React.useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -21,7 +25,6 @@ export default function RegisterPage() {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const name = formData.get("name") as string
     const email = formData.get("email") as string
     const password = formData.get("password") as string
     const confirmPassword = formData.get("confirmPassword") as string
@@ -32,10 +35,18 @@ export default function RegisterPage() {
       return
     }
 
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long.")
+      setIsLoading(false)
+      return
+    }
+
     try {
-      await register({ name, email, password })
+      await register({ email, password })
+      router.push('/onboarding')
     } catch (err: any) {
-      setError(err.response?.data?.message || "Registration failed. Please try again.")
+      const message = err?.response?.data?.message || err?.message || "Registration failed. Please try again."
+      setError(message)
     } finally {
       setIsLoading(false)
     }
@@ -54,9 +65,9 @@ export default function RegisterPage() {
           <div className="p-3 rounded-xl bg-gradient-to-br from-realty-gold to-realty-gold-dark mb-4 shadow-lg shadow-realty-gold/20">
             <Building2 className="h-8 w-8 text-realty-navy" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">Join MakeItCRM</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">Start Your Free Trial</CardTitle>
           <CardDescription className="text-muted-foreground">
-            Create an account to start managing your properties
+            7-day free trial. No credit card required.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -69,46 +80,62 @@ export default function RegisterPage() {
               </Alert>
             )}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-foreground">Full Name</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="John Doe"
-                required
-                className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-realty-gold/50"
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="email" className="text-foreground">Email</Label>
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="name@example.com"
+                placeholder="name@company.com"
                 required
                 className="bg-background border-input text-foreground placeholder:text-muted-foreground focus-visible:ring-realty-gold/50"
               />
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="password" title="password" className="text-foreground">Password</Label>
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-foreground">Password</Label>
+              <div className="relative">
                 <Input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   required
-                  className="bg-background border-input text-foreground focus-visible:ring-realty-gold/50"
+                  className="bg-background border-input text-foreground focus-visible:ring-realty-gold/50 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" title="confirmPassword" className="text-foreground">Confirm</Label>
+              <div className="text-xs text-muted-foreground space-y-1">
+                <p className="font-medium">Password must have:</p>
+                <div className="grid grid-cols-2 gap-1">
+                  <div className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> At least 8 characters</div>
+                  <div className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> One uppercase letter</div>
+                  <div className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> One lowercase letter</div>
+                  <div className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> One number</div>
+                  <div className="flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> One special character</div>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+              <div className="relative">
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   required
-                  className="bg-background border-input text-foreground focus-visible:ring-realty-gold/50"
+                  className="bg-background border-input text-foreground focus-visible:ring-realty-gold/50 pr-10"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
               </div>
             </div>
           </CardContent>
@@ -119,7 +146,7 @@ export default function RegisterPage() {
               disabled={isLoading}
             >
               {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Create Account
+              Start Free Trial
             </Button>
             <div className="text-sm text-center text-muted-foreground">
               Already have an account?{" "}

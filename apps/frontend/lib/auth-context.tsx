@@ -14,12 +14,13 @@ interface AuthContextType {
   user: User | null
   isLoading: boolean
   login: (data: { email: string; password: string; tenantId?: string }) => Promise<{ tenants?: TenantInfo[] } | void>
-  register: (data: { email: string; password: string; name: string; tenantId?: string; roleId?: string }) => Promise<void>
+  register: (data: { email: string; password: string }) => Promise<void>
   logout: () => Promise<void>
   setUser: (user: User | null) => void
   isAuthenticated: boolean
   hasPermission: (permission: string) => boolean
   isAuthLoading: boolean
+  updateProfile: (data: { name?: string; phone?: string; whatsapp?: string; officeAddress?: string; jobTitle?: string; isOnboardingComplete?: boolean }) => Promise<void>
 }
 
 const COOKIE_NAMES = {
@@ -111,12 +112,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userData = getUserFromCookie()
     if (userData) {
       setUser(userData)
+      // Redirect to onboarding if not complete
+      if (!userData.isOnboardingComplete) {
+        router.push('/onboarding')
+        return
+      }
     }
 
     router.push('/')
   }
 
-  const register = async (data: { email: string; password: string; name: string; tenantId?: string; roleId?: string }) => {
+  const register = async (data: { email: string; password: string }) => {
     const response = await fetch('/api/v1/auth/register', {
       method: 'POST',
       headers: {
@@ -137,8 +143,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (userData) {
       setUser(userData)
     }
+  }
 
-    router.push('/')
+  const updateProfile = async (data: { name?: string; phone?: string; whatsapp?: string; officeAddress?: string; jobTitle?: string; isOnboardingComplete?: boolean }) => {
+    const userData = getUserFromCookie()
+    if (!userData) {
+      throw new Error('User not authenticated')
+    }
+
+    const response = await fetch(`/api/v1/users/${userData.id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+      credentials: 'include',
+    })
+
+    const responseData = await response.json()
+
+    if (!response.ok) {
+      throw new Error(responseData.message || 'Profile update failed')
+    }
+
+    // Update local user state
+    const updatedUser = { ...userData, ...data }
+    setUser(updatedUser)
   }
 
   const logout = async () => {
@@ -179,6 +209,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         hasPermission,
         isAuthLoading: isLoading,
+        updateProfile,
       }}
     >
       {children}

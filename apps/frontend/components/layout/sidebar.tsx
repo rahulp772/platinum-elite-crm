@@ -18,6 +18,8 @@ import {
     LogOut,
     ChevronLeft,
     Kanban,
+    Sparkles,
+    AlertTriangle,
 } from "lucide-react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
@@ -25,6 +27,7 @@ import { Button } from "@/components/ui/button"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { useAuth } from "@/lib/auth-context"
 import { useNotifications } from "@/lib/notification-context"
+import api from "@/lib/api"
 
 const navigation = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard, permission: undefined },
@@ -52,6 +55,15 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
     const { user, logout, hasPermission } = useAuth()
     const { unreadMessages } = useNotifications()
     const [collapsed, setCollapsed] = React.useState(false)
+    const [subscriptionStatus, setSubscriptionStatus] = React.useState<any>(null)
+
+    React.useEffect(() => {
+        if (user?.tenantId) {
+            api.get('/auth/subscription')
+                .then(res => setSubscriptionStatus(res.data))
+                .catch(console.error)
+        }
+    }, [user?.tenantId])
     
     const navItems = React.useMemo(() => {
         return navigation
@@ -81,6 +93,7 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
                 logout={logout}
                 onMobileClose={onMobileClose}
                 isMobile={isMobile}
+                subscriptionStatus={subscriptionStatus}
             />
         </TooltipProvider>
     )
@@ -95,9 +108,10 @@ interface SidebarContentProps {
     logout: () => void
     onMobileClose?: () => void
     isMobile?: boolean
+    subscriptionStatus?: any
 }
 
-function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, logout, onMobileClose, isMobile = false }: SidebarContentProps) {
+function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, logout, onMobileClose, isMobile = false, subscriptionStatus }: SidebarContentProps) {
     return (
         <div
             className={cn(
@@ -283,19 +297,73 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                     </Tooltip>
                 </div>
 
-                {!collapsed && (
+                {!collapsed && subscriptionStatus && (
                     <div className="p-3">
-                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-realty-navy to-realty-navy-dark p-4 shadow-xl border border-realty-gold/20">
-                            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-realty-gold/10 blur-2xl" />
-                            <div className="absolute -left-4 -bottom-4 h-20 w-20 rounded-full bg-realty-gold/5 blur-xl" />
-                            <div className="relative">
-                                <p className="text-xs font-bold text-realty-gold-light uppercase tracking-wider">Elite Upgrade</p>
-                                <p className="mt-1 text-[10px] text-zinc-400">Unlock premium market intelligence</p>
-                                <Button size="sm" className="mt-3 w-full bg-realty-gold text-realty-navy hover:bg-realty-gold-light font-bold text-xs border-0">
-                                    Upgrade Now
-                                </Button>
+                        {subscriptionStatus.isOnHighestPlan ? (
+                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-realty-gold/20 to-realty-gold/10 p-4 shadow-xl border border-realty-gold/20 group">
+                                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-realty-gold/10 blur-2xl group-hover:bg-realty-gold/20 transition-all duration-500" />
+                                <div className="relative flex items-center gap-2 mb-2">
+                                    <div className="p-1 rounded-md bg-realty-gold/20">
+                                        <Sparkles className="h-3 w-3 text-realty-gold" />
+                                    </div>
+                                    <p className="text-xs font-bold text-realty-gold uppercase tracking-wider">{subscriptionStatus.planName || 'Enterprise'}</p>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <p className="text-[10px] text-muted-foreground capitalize">
+                                        {subscriptionStatus.subscriptionStatus || 'Active'}
+                                    </p>
+                                    <Badge variant="outline" className="text-[9px] h-4 border-realty-gold/30 text-realty-gold px-1">PRO</Badge>
+                                </div>
                             </div>
-                        </div>
+                        ) : subscriptionStatus.isTrial ? (
+                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 p-4 shadow-xl border border-amber-500/20 group">
+                                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-500/10 blur-2xl group-hover:bg-amber-500/20 transition-all duration-500" />
+                                <div className="relative flex items-center gap-2 mb-2">
+                                    <div className="p-1 rounded-md bg-amber-500/20">
+                                        <Sparkles className="h-3 w-3 text-amber-500" />
+                                    </div>
+                                    <p className="text-xs font-bold text-amber-500 uppercase tracking-wider">
+                                        {subscriptionStatus.planName ? `${subscriptionStatus.planName} Trial` : 'Free Trial'}
+                                    </p>
+                                </div>
+                                {subscriptionStatus.trialEndDate && (
+                                    <p className="text-[10px] text-muted-foreground mb-3">
+                                        {subscriptionStatus.isTrialExpired 
+                                            ? `Expired ${subscriptionStatus.daysSinceExpiry} days ago`
+                                            : `${Math.ceil((new Date(subscriptionStatus.trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days remaining`
+                                        }
+                                    </p>
+                                )}
+                                <Link href="/pricing">
+                                    <Button size="sm" className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400 font-bold text-xs border-0 shadow-lg shadow-amber-500/20 h-8">
+                                        Upgrade Now
+                                    </Button>
+                                </Link>
+                            </div>
+                        ) : (
+                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-realty-navy to-realty-navy-dark p-4 shadow-xl border border-realty-gold/20 group">
+                                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-realty-gold/10 blur-2xl group-hover:bg-realty-gold/20 transition-all duration-500" />
+                                <div className="absolute -left-4 -bottom-4 h-20 w-20 rounded-full bg-realty-gold/5 blur-xl" />
+                                <div className="relative">
+                                    <div className="flex items-center gap-2 mb-2">
+                                        <p className="text-xs font-bold text-realty-gold-light uppercase tracking-wider">
+                                            {subscriptionStatus.planName || 'Elite Upgrade'}
+                                        </p>
+                                        {!subscriptionStatus.planName && <Badge className="text-[8px] h-3 bg-realty-gold text-realty-navy px-1 font-black">NEW</Badge>}
+                                    </div>
+                                    <p className="text-[10px] text-zinc-400 mb-3">
+                                        {subscriptionStatus.planName 
+                                            ? `${subscriptionStatus.subscriptionStatus || 'Active'} subscription`
+                                            : 'Unlock premium market intelligence'}
+                                    </p>
+                                    <Link href="/pricing">
+                                        <Button size="sm" className="w-full bg-realty-gold text-realty-navy hover:bg-realty-gold-light font-bold text-xs border-0 shadow-lg shadow-realty-gold/20 h-8">
+                                            {subscriptionStatus.planName ? 'Upgrade Plan' : 'Upgrade Now'}
+                                        </Button>
+                                    </Link>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
