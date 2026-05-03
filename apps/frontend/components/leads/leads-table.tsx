@@ -46,7 +46,7 @@ import { Lead } from "@/types/lead"
 import { cn } from "@/lib/utils"
 
 const statusColors: Record<string, string> = {
-    new: "bg-realty-navy/10 text-realty-navy border-realty-navy/20",
+    new: "bg-realty-navy/10 text-realty-navy dark:text-blue-400 border-realty-navy/20",
     contacted: "bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 border-indigo-500/20",
     rnr: "bg-orange-500/10 text-orange-700 dark:text-orange-400 border-orange-500/20",
     qualified: "bg-teal-500/10 text-teal-700 dark:text-teal-400 border-teal-500/20",

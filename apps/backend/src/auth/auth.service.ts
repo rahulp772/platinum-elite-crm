@@ -129,6 +129,9 @@ export class AuthService {
         'failedLoginAttempts',
         'lockedUntil',
         'isOnboardingComplete',
+        'phone',
+        'whatsapp',
+        'officeAddress',
       ],
     });
 
@@ -264,6 +267,9 @@ export class AuthService {
       isSuperAdmin: user.isSuperAdmin,
       timezone: user.timezone,
       isOnboardingComplete: (user as any).isOnboardingComplete || false,
+      phone: (user as any).phone || '',
+      whatsapp: (user as any).whatsapp || '',
+      officeAddress: (user as any).officeAddress || '',
     };
 
     if (user.roleId) {

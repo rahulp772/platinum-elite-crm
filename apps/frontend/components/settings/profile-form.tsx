@@ -62,14 +62,18 @@ export function ProfileForm() {
         const detectedTz = getUserTimezone(user)
         setDefaultTimezone(detectedTz)
         if (user) {
+            const userTimezone = user.timezone || detectedTz
             form.reset({
                 name: user.name || "",
                 email: user.email || "",
                 phone: (user as any).phone || "",
                 whatsapp: (user as any).whatsapp || "",
                 officeAddress: (user as any).officeAddress || "",
-                timezone: user.timezone || detectedTz,
+                timezone: userTimezone,
             })
+            if (!user.timezone) {
+                form.setValue("timezone", detectedTz)
+            }
         }
     }, [user, form])
 
@@ -173,7 +177,7 @@ export function ProfileForm() {
                         <div className="grid gap-2">
                             <Label htmlFor="timezone">Timezone</Label>
                             <Select
-                                defaultValue={form.getValues("timezone") || defaultTimezone}
+                                value={form.watch("timezone") || defaultTimezone}
                                 onValueChange={(value) => form.setValue("timezone", value)}
                             >
                                 <SelectTrigger id="timezone">

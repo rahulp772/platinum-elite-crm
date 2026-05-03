@@ -27,7 +27,7 @@
       "source_file": "apps\\backend\\src\\app.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_app_controller_ts",
-      "community": 47,
+      "community": 48,
       "norm_label": "app.controller.ts"
     },
     {
@@ -36,7 +36,7 @@
       "source_file": "apps\\backend\\src\\app.controller.ts",
       "source_location": "L5",
       "id": "app_controller_appcontroller",
-      "community": 47,
+      "community": 48,
       "norm_label": "appcontroller"
     },
     {
@@ -45,7 +45,7 @@
       "source_file": "apps\\backend\\src\\app.controller.ts",
       "source_location": "L6",
       "id": "app_controller_appcontroller_constructor",
-      "community": 47,
+      "community": 48,
       "norm_label": ".constructor()"
     },
     {
@@ -54,7 +54,7 @@
       "source_file": "apps\\backend\\src\\app.controller.ts",
       "source_location": "L9",
       "id": "app_controller_appcontroller_gethello",
-      "community": 47,
+      "community": 48,
       "norm_label": ".gethello()"
     },
     {
@@ -558,7 +558,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_auth_auth_controller_ts",
-      "community": 7,
+      "community": 33,
       "norm_label": "auth.controller.ts"
     },
     {
@@ -567,7 +567,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L23",
       "id": "auth_controller_authcontroller",
-      "community": 7,
+      "community": 33,
       "norm_label": "authcontroller"
     },
     {
@@ -576,7 +576,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L24",
       "id": "auth_controller_authcontroller_constructor",
-      "community": 7,
+      "community": 33,
       "norm_label": ".constructor()"
     },
     {
@@ -585,7 +585,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L31",
       "id": "auth_controller_authcontroller_login",
-      "community": 7,
+      "community": 33,
       "norm_label": ".login()"
     },
     {
@@ -594,7 +594,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L42",
       "id": "auth_controller_authcontroller_methodnotallowed",
-      "community": 7,
+      "community": 33,
       "norm_label": ".methodnotallowed()"
     },
     {
@@ -603,7 +603,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L50",
       "id": "auth_controller_authcontroller_register",
-      "community": 7,
+      "community": 33,
       "norm_label": ".register()"
     },
     {
@@ -612,7 +612,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L58",
       "id": "auth_controller_authcontroller_getprofile",
-      "community": 7,
+      "community": 33,
       "norm_label": ".getprofile()"
     },
     {
@@ -621,7 +621,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.controller.ts",
       "source_location": "L66",
       "id": "auth_controller_authcontroller_getsubscription",
-      "community": 7,
+      "community": 0,
       "norm_label": ".getsubscription()"
     },
     {
@@ -648,7 +648,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_auth_auth_service_ts",
-      "community": 7,
+      "community": 0,
       "norm_label": "auth.service.ts"
     },
     {
@@ -657,7 +657,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L20",
       "id": "auth_service_authservice",
-      "community": 7,
+      "community": 0,
       "norm_label": "authservice"
     },
     {
@@ -666,7 +666,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L21",
       "id": "auth_service_authservice_constructor",
-      "community": 7,
+      "community": 0,
       "norm_label": ".constructor()"
     },
     {
@@ -675,7 +675,7 @@
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
       "source_location": "L34",
       "id": "auth_service_authservice_register",
-      "community": 7,
+      "community": 0,
       "norm_label": ".register()"
     },
     {
@@ -691,9 +691,9 @@
       "label": ".getSubscriptionStatus()",
       "file_type": "code",
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
-      "source_location": "L289",
+      "source_location": "L295",
       "id": "auth_service_authservice_getsubscriptionstatus",
-      "community": 7,
+      "community": 0,
       "norm_label": ".getsubscriptionstatus()"
     },
     {
@@ -774,7 +774,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\permissions.guard.ts",
       "source_location": "L1",
       "id": "apps_backend_src_auth_guards_permissions_guard_ts",
-      "community": 48,
+      "community": 49,
       "norm_label": "permissions.guard.ts"
     },
     {
@@ -783,7 +783,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\permissions.guard.ts",
       "source_location": "L6",
       "id": "permissions_guard_permissionsguard",
-      "community": 48,
+      "community": 49,
       "norm_label": "permissionsguard"
     },
     {
@@ -792,7 +792,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\permissions.guard.ts",
       "source_location": "L7",
       "id": "permissions_guard_permissionsguard_constructor",
-      "community": 48,
+      "community": 49,
       "norm_label": ".constructor()"
     },
     {
@@ -801,7 +801,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\permissions.guard.ts",
       "source_location": "L9",
       "id": "permissions_guard_permissionsguard_canactivate",
-      "community": 48,
+      "community": 49,
       "norm_label": ".canactivate()"
     },
     {
@@ -810,7 +810,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\roles.guard.ts",
       "source_location": "L1",
       "id": "apps_backend_src_auth_guards_roles_guard_ts",
-      "community": 49,
+      "community": 50,
       "norm_label": "roles.guard.ts"
     },
     {
@@ -819,7 +819,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\roles.guard.ts",
       "source_location": "L6",
       "id": "roles_guard_rolesguard",
-      "community": 49,
+      "community": 50,
       "norm_label": "rolesguard"
     },
     {
@@ -828,7 +828,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\roles.guard.ts",
       "source_location": "L7",
       "id": "roles_guard_rolesguard_constructor",
-      "community": 49,
+      "community": 50,
       "norm_label": ".constructor()"
     },
     {
@@ -837,7 +837,7 @@
       "source_file": "apps\\backend\\src\\auth\\guards\\roles.guard.ts",
       "source_location": "L9",
       "id": "roles_guard_rolesguard_canactivate",
-      "community": 49,
+      "community": 50,
       "norm_label": ".canactivate()"
     },
     {
@@ -1161,7 +1161,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L1",
       "id": "apps_backend_src_chat_chat_gateway_ts",
-      "community": 0,
+      "community": 15,
       "norm_label": "chat.gateway.ts"
     },
     {
@@ -1170,7 +1170,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L40",
       "id": "chat_gateway_chatgateway",
-      "community": 0,
+      "community": 15,
       "norm_label": "chatgateway"
     },
     {
@@ -1179,7 +1179,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L46",
       "id": "chat_gateway_chatgateway_constructor",
-      "community": 0,
+      "community": 15,
       "norm_label": ".constructor()"
     },
     {
@@ -1188,7 +1188,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L54",
       "id": "chat_gateway_chatgateway_handleconnection",
-      "community": 0,
+      "community": 15,
       "norm_label": ".handleconnection()"
     },
     {
@@ -1197,7 +1197,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L94",
       "id": "chat_gateway_chatgateway_handledisconnect",
-      "community": 0,
+      "community": 15,
       "norm_label": ".handledisconnect()"
     },
     {
@@ -1206,7 +1206,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L101",
       "id": "chat_gateway_chatgateway_handlejoinconversation",
-      "community": 0,
+      "community": 15,
       "norm_label": ".handlejoinconversation()"
     },
     {
@@ -1215,7 +1215,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L110",
       "id": "chat_gateway_chatgateway_handleleaveconversation",
-      "community": 0,
+      "community": 15,
       "norm_label": ".handleleaveconversation()"
     },
     {
@@ -1224,7 +1224,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L119",
       "id": "chat_gateway_chatgateway_handlesendmessage",
-      "community": 0,
+      "community": 15,
       "norm_label": ".handlesendmessage()"
     },
     {
@@ -1233,7 +1233,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L154",
       "id": "chat_gateway_chatgateway_handlemarkread",
-      "community": 0,
+      "community": 15,
       "norm_label": ".handlemarkread()"
     },
     {
@@ -1242,7 +1242,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.gateway.ts",
       "source_location": "L174",
       "id": "chat_gateway_chatgateway_sendmessagetouser",
-      "community": 0,
+      "community": 15,
       "norm_label": ".sendmessagetouser()"
     },
     {
@@ -1269,7 +1269,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_chat_chat_service_ts",
-      "community": 0,
+      "community": 4,
       "norm_label": "chat.service.ts"
     },
     {
@@ -1278,7 +1278,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L36",
       "id": "chat_service_chatservice",
-      "community": 0,
+      "community": 4,
       "norm_label": "chatservice"
     },
     {
@@ -1287,7 +1287,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L37",
       "id": "chat_service_chatservice_constructor",
-      "community": 0,
+      "community": 4,
       "norm_label": ".constructor()"
     },
     {
@@ -1296,7 +1296,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L46",
       "id": "chat_service_chatservice_getconversations",
-      "community": 0,
+      "community": 4,
       "norm_label": ".getconversations()"
     },
     {
@@ -1323,7 +1323,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L312",
       "id": "chat_service_chatservice_createconversation",
-      "community": 0,
+      "community": 4,
       "norm_label": ".createconversation()"
     },
     {
@@ -1332,7 +1332,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L379",
       "id": "chat_service_chatservice_getconversationwithparticipants",
-      "community": 0,
+      "community": 4,
       "norm_label": ".getconversationwithparticipants()"
     },
     {
@@ -1341,7 +1341,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L421",
       "id": "chat_service_chatservice_markmessagesasread",
-      "community": 0,
+      "community": 15,
       "norm_label": ".markmessagesasread()"
     },
     {
@@ -1350,7 +1350,7 @@
       "source_file": "apps\\backend\\src\\chat\\chat.service.ts",
       "source_location": "L432",
       "id": "chat_service_chatservice_getconversation",
-      "community": 0,
+      "community": 4,
       "norm_label": ".getconversation()"
     },
     {
@@ -1359,7 +1359,7 @@
       "source_file": "apps\\backend\\src\\chat\\dto\\chat.dto.ts",
       "source_location": "L1",
       "id": "apps_backend_src_chat_dto_chat_dto_ts",
-      "community": 44,
+      "community": 45,
       "norm_label": "chat.dto.ts"
     },
     {
@@ -1368,7 +1368,7 @@
       "source_file": "apps\\backend\\src\\chat\\dto\\chat.dto.ts",
       "source_location": "L14",
       "id": "chat_dto_attachmentdto",
-      "community": 44,
+      "community": 45,
       "norm_label": "attachmentdto"
     },
     {
@@ -1377,7 +1377,7 @@
       "source_file": "apps\\backend\\src\\chat\\dto\\chat.dto.ts",
       "source_location": "L32",
       "id": "chat_dto_sendmessagedto",
-      "community": 44,
+      "community": 45,
       "norm_label": "sendmessagedto"
     },
     {
@@ -1386,7 +1386,7 @@
       "source_file": "apps\\backend\\src\\chat\\dto\\chat.dto.ts",
       "source_location": "L45",
       "id": "chat_dto_createconversationdto",
-      "community": 44,
+      "community": 45,
       "norm_label": "createconversationdto"
     },
     {
@@ -1395,7 +1395,7 @@
       "source_file": "apps\\backend\\src\\chat\\dto\\chat.dto.ts",
       "source_location": "L53",
       "id": "chat_dto_getmessagesquerydto",
-      "community": 44,
+      "community": 45,
       "norm_label": "getmessagesquerydto"
     },
     {
@@ -1611,7 +1611,7 @@
       "source_file": "apps\\backend\\src\\common\\guards\\throttle.guard.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_guards_throttle_guard_ts",
-      "community": 50,
+      "community": 51,
       "norm_label": "throttle.guard.ts"
     },
     {
@@ -1620,7 +1620,7 @@
       "source_file": "apps\\backend\\src\\common\\guards\\throttle.guard.ts",
       "source_location": "L5",
       "id": "throttle_guard_customthrottlerguard",
-      "community": 50,
+      "community": 51,
       "norm_label": "customthrottlerguard"
     },
     {
@@ -1629,7 +1629,7 @@
       "source_file": "apps\\backend\\src\\common\\guards\\throttle.guard.ts",
       "source_location": "L6",
       "id": "throttle_guard_customthrottlerguard_shouldskip",
-      "community": 50,
+      "community": 51,
       "norm_label": ".shouldskip()"
     },
     {
@@ -1638,7 +1638,7 @@
       "source_file": "apps\\backend\\src\\common\\guards\\throttle.guard.ts",
       "source_location": "L17",
       "id": "throttle_guard_customthrottlerguard_canactivate",
-      "community": 50,
+      "community": 51,
       "norm_label": ".canactivate()"
     },
     {
@@ -1647,7 +1647,7 @@
       "source_file": "apps\\backend\\src\\common\\interceptors\\logging.interceptor.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_interceptors_logging_interceptor_ts",
-      "community": 51,
+      "community": 0,
       "norm_label": "logging.interceptor.ts"
     },
     {
@@ -1656,7 +1656,7 @@
       "source_file": "apps\\backend\\src\\common\\interceptors\\logging.interceptor.ts",
       "source_location": "L13",
       "id": "logging_interceptor_logginginterceptor",
-      "community": 51,
+      "community": 0,
       "norm_label": "logginginterceptor"
     },
     {
@@ -1665,7 +1665,7 @@
       "source_file": "apps\\backend\\src\\common\\interceptors\\logging.interceptor.ts",
       "source_location": "L16",
       "id": "logging_interceptor_logginginterceptor_intercept",
-      "community": 51,
+      "community": 0,
       "norm_label": ".intercept()"
     },
     {
@@ -1674,7 +1674,7 @@
       "source_file": "apps\\backend\\src\\common\\interceptors\\logging.interceptor.ts",
       "source_location": "L51",
       "id": "logging_interceptor_logginginterceptor_sanitizebody",
-      "community": 51,
+      "community": 0,
       "norm_label": ".sanitizebody()"
     },
     {
@@ -1719,7 +1719,7 @@
       "source_file": "apps\\backend\\src\\common\\pipes\\sanitize.pipe.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_pipes_sanitize_pipe_ts",
-      "community": 33,
+      "community": 34,
       "norm_label": "sanitize.pipe.ts"
     },
     {
@@ -1728,7 +1728,7 @@
       "source_file": "apps\\backend\\src\\common\\pipes\\sanitize.pipe.ts",
       "source_location": "L10",
       "id": "sanitize_pipe_sanitizepipe",
-      "community": 33,
+      "community": 34,
       "norm_label": "sanitizepipe"
     },
     {
@@ -1737,7 +1737,7 @@
       "source_file": "apps\\backend\\src\\common\\pipes\\sanitize.pipe.ts",
       "source_location": "L11",
       "id": "sanitize_pipe_sanitizepipe_transform",
-      "community": 33,
+      "community": 34,
       "norm_label": ".transform()"
     },
     {
@@ -1746,7 +1746,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_services_activity_logger_service_ts",
-      "community": 34,
+      "community": 35,
       "norm_label": "activity-logger.service.ts"
     },
     {
@@ -1755,7 +1755,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L24",
       "id": "activity_logger_service_activityloggerservice",
-      "community": 34,
+      "community": 35,
       "norm_label": "activityloggerservice"
     },
     {
@@ -1764,7 +1764,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L27",
       "id": "activity_logger_service_activityloggerservice_constructor",
-      "community": 34,
+      "community": 35,
       "norm_label": ".constructor()"
     },
     {
@@ -1773,7 +1773,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L34",
       "id": "activity_logger_service_activityloggerservice_logleadactivity",
-      "community": 34,
+      "community": 35,
       "norm_label": ".logleadactivity()"
     },
     {
@@ -1782,7 +1782,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L53",
       "id": "activity_logger_service_activityloggerservice_logdealactivity",
-      "community": 34,
+      "community": 35,
       "norm_label": ".logdealactivity()"
     },
     {
@@ -1791,7 +1791,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L72",
       "id": "activity_logger_service_activityloggerservice_maptoleadaction",
-      "community": 34,
+      "community": 35,
       "norm_label": ".maptoleadaction()"
     },
     {
@@ -1800,7 +1800,7 @@
       "source_file": "apps\\backend\\src\\common\\services\\activity-logger.service.ts",
       "source_location": "L95",
       "id": "activity_logger_service_activityloggerservice_maptodealaction",
-      "community": 34,
+      "community": 35,
       "norm_label": ".maptodealaction()"
     },
     {
@@ -1809,7 +1809,7 @@
       "source_file": "apps\\backend\\src\\common\\utils\\sanitize.util.ts",
       "source_location": "L1",
       "id": "apps_backend_src_common_utils_sanitize_util_ts",
-      "community": 33,
+      "community": 34,
       "norm_label": "sanitize.util.ts"
     },
     {
@@ -1818,7 +1818,7 @@
       "source_file": "apps\\backend\\src\\common\\utils\\sanitize.util.ts",
       "source_location": "L12",
       "id": "sanitize_util_issanitized",
-      "community": 33,
+      "community": 34,
       "norm_label": "issanitized()"
     },
     {
@@ -1827,7 +1827,7 @@
       "source_file": "apps\\backend\\src\\common\\utils\\sanitize.util.ts",
       "source_location": "L38",
       "id": "sanitize_util_sanitizestring",
-      "community": 33,
+      "community": 34,
       "norm_label": "sanitizestring()"
     },
     {
@@ -1836,7 +1836,7 @@
       "source_file": "apps\\backend\\src\\common\\utils\\sanitize.util.ts",
       "source_location": "L49",
       "id": "sanitize_util_sanitizeobject",
-      "community": 33,
+      "community": 34,
       "norm_label": "sanitizeobject()"
     },
     {
@@ -1845,7 +1845,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_deals_deals_controller_ts",
-      "community": 17,
+      "community": 18,
       "norm_label": "deals.controller.ts"
     },
     {
@@ -1854,7 +1854,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L30",
       "id": "deals_controller_dealscontroller",
-      "community": 17,
+      "community": 18,
       "norm_label": "dealscontroller"
     },
     {
@@ -1863,7 +1863,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L31",
       "id": "deals_controller_dealscontroller_constructor",
-      "community": 17,
+      "community": 18,
       "norm_label": ".constructor()"
     },
     {
@@ -1872,7 +1872,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L36",
       "id": "deals_controller_dealscontroller_create",
-      "community": 17,
+      "community": 18,
       "norm_label": ".create()"
     },
     {
@@ -1881,7 +1881,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L47",
       "id": "deals_controller_dealscontroller_findall",
-      "community": 17,
+      "community": 18,
       "norm_label": ".findall()"
     },
     {
@@ -1890,7 +1890,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L65",
       "id": "deals_controller_dealscontroller_findone",
-      "community": 17,
+      "community": 18,
       "norm_label": ".findone()"
     },
     {
@@ -1899,7 +1899,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L72",
       "id": "deals_controller_dealscontroller_update",
-      "community": 17,
+      "community": 18,
       "norm_label": ".update()"
     },
     {
@@ -1908,7 +1908,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L83",
       "id": "deals_controller_dealscontroller_remove",
-      "community": 17,
+      "community": 18,
       "norm_label": ".remove()"
     },
     {
@@ -1917,7 +1917,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L90",
       "id": "deals_controller_dealscontroller_getactivities",
-      "community": 17,
+      "community": 18,
       "norm_label": ".getactivities()"
     },
     {
@@ -1926,7 +1926,7 @@
       "source_file": "apps\\backend\\src\\deals\\deals.controller.ts",
       "source_location": "L97",
       "id": "deals_controller_dealscontroller_reassign",
-      "community": 17,
+      "community": 18,
       "norm_label": ".reassign()"
     },
     {
@@ -2376,7 +2376,7 @@
       "source_file": "apps\\backend\\src\\leads\\leads.service.ts",
       "source_location": "L239",
       "id": "leads_service_leadsservice_findall",
-      "community": 4,
+      "community": 7,
       "norm_label": ".findall()"
     },
     {
@@ -2871,7 +2871,7 @@
       "source_file": "apps\\backend\\src\\plans\\plans.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_plans_plans_controller_ts",
-      "community": 45,
+      "community": 46,
       "norm_label": "plans.controller.ts"
     },
     {
@@ -2880,7 +2880,7 @@
       "source_file": "apps\\backend\\src\\plans\\plans.controller.ts",
       "source_location": "L8",
       "id": "plans_controller_planscontroller",
-      "community": 45,
+      "community": 46,
       "norm_label": "planscontroller"
     },
     {
@@ -2889,7 +2889,7 @@
       "source_file": "apps\\backend\\src\\plans\\plans.controller.ts",
       "source_location": "L9",
       "id": "plans_controller_planscontroller_constructor",
-      "community": 45,
+      "community": 46,
       "norm_label": ".constructor()"
     },
     {
@@ -2898,7 +2898,7 @@
       "source_file": "apps\\backend\\src\\plans\\plans.controller.ts",
       "source_location": "L13",
       "id": "plans_controller_planscontroller_findall",
-      "community": 45,
+      "community": 46,
       "norm_label": ".findall()"
     },
     {
@@ -2907,7 +2907,7 @@
       "source_file": "apps\\backend\\src\\plans\\plans.controller.ts",
       "source_location": "L19",
       "id": "plans_controller_planscontroller_findone",
-      "community": 45,
+      "community": 46,
       "norm_label": ".findone()"
     },
     {
@@ -2970,7 +2970,7 @@
       "source_file": "apps\\backend\\src\\portal-webhooks\\portal-webhooks.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_portal_webhooks_portal_webhooks_controller_ts",
-      "community": 38,
+      "community": 39,
       "norm_label": "portal-webhooks.controller.ts"
     },
     {
@@ -2979,7 +2979,7 @@
       "source_file": "apps\\backend\\src\\portal-webhooks\\portal-webhooks.controller.ts",
       "source_location": "L32",
       "id": "portal_webhooks_controller_portalwebhookscontroller",
-      "community": 38,
+      "community": 39,
       "norm_label": "portalwebhookscontroller"
     },
     {
@@ -2988,7 +2988,7 @@
       "source_file": "apps\\backend\\src\\portal-webhooks\\portal-webhooks.controller.ts",
       "source_location": "L33",
       "id": "portal_webhooks_controller_portalwebhookscontroller_constructor",
-      "community": 38,
+      "community": 39,
       "norm_label": ".constructor()"
     },
     {
@@ -2997,7 +2997,7 @@
       "source_file": "apps\\backend\\src\\portal-webhooks\\portal-webhooks.controller.ts",
       "source_location": "L37",
       "id": "portal_webhooks_controller_portalwebhookscontroller_process99acres",
-      "community": 38,
+      "community": 39,
       "norm_label": ".process99acres()"
     },
     {
@@ -3006,7 +3006,7 @@
       "source_file": "apps\\backend\\src\\portal-webhooks\\portal-webhooks.controller.ts",
       "source_location": "L70",
       "id": "portal_webhooks_controller_portalwebhookscontroller_processmagicbricks",
-      "community": 38,
+      "community": 39,
       "norm_label": ".processmagicbricks()"
     },
     {
@@ -3015,7 +3015,7 @@
       "source_file": "apps\\backend\\src\\portal-webhooks\\portal-webhooks.controller.ts",
       "source_location": "L103",
       "id": "portal_webhooks_controller_portalwebhookscontroller_processhousing",
-      "community": 38,
+      "community": 39,
       "norm_label": ".processhousing()"
     },
     {
@@ -3132,7 +3132,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_properties_properties_controller_ts",
-      "community": 18,
+      "community": 19,
       "norm_label": "properties.controller.ts"
     },
     {
@@ -3141,7 +3141,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L30",
       "id": "properties_controller_propertiescontroller",
-      "community": 18,
+      "community": 19,
       "norm_label": "propertiescontroller"
     },
     {
@@ -3150,7 +3150,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L31",
       "id": "properties_controller_propertiescontroller_constructor",
-      "community": 18,
+      "community": 19,
       "norm_label": ".constructor()"
     },
     {
@@ -3159,7 +3159,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L36",
       "id": "properties_controller_propertiescontroller_create",
-      "community": 18,
+      "community": 19,
       "norm_label": ".create()"
     },
     {
@@ -3168,7 +3168,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L50",
       "id": "properties_controller_propertiescontroller_findall",
-      "community": 18,
+      "community": 19,
       "norm_label": ".findall()"
     },
     {
@@ -3177,7 +3177,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L74",
       "id": "properties_controller_propertiescontroller_findrelated",
-      "community": 18,
+      "community": 19,
       "norm_label": ".findrelated()"
     },
     {
@@ -3186,7 +3186,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L82",
       "id": "properties_controller_propertiescontroller_findone",
-      "community": 18,
+      "community": 19,
       "norm_label": ".findone()"
     },
     {
@@ -3195,7 +3195,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L89",
       "id": "properties_controller_propertiescontroller_update",
-      "community": 18,
+      "community": 19,
       "norm_label": ".update()"
     },
     {
@@ -3204,7 +3204,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L100",
       "id": "properties_controller_propertiescontroller_remove",
-      "community": 18,
+      "community": 19,
       "norm_label": ".remove()"
     },
     {
@@ -3213,7 +3213,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.controller.ts",
       "source_location": "L107",
       "id": "properties_controller_propertiescontroller_togglefavorite",
-      "community": 18,
+      "community": 19,
       "norm_label": ".togglefavorite()"
     },
     {
@@ -3240,7 +3240,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_properties_properties_service_ts",
-      "community": 20,
+      "community": 4,
       "norm_label": "properties.service.ts"
     },
     {
@@ -3249,7 +3249,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L20",
       "id": "properties_service_propertiesservice",
-      "community": 20,
+      "community": 4,
       "norm_label": "propertiesservice"
     },
     {
@@ -3258,7 +3258,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L21",
       "id": "properties_service_propertiesservice_constructor",
-      "community": 20,
+      "community": 4,
       "norm_label": ".constructor()"
     },
     {
@@ -3267,7 +3267,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L26",
       "id": "properties_service_propertiesservice_create",
-      "community": 20,
+      "community": 4,
       "norm_label": ".create()"
     },
     {
@@ -3285,7 +3285,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L104",
       "id": "properties_service_propertiesservice_findrelated",
-      "community": 20,
+      "community": 4,
       "norm_label": ".findrelated()"
     },
     {
@@ -3294,7 +3294,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L114",
       "id": "properties_service_propertiesservice_findone",
-      "community": 20,
+      "community": 4,
       "norm_label": ".findone()"
     },
     {
@@ -3303,7 +3303,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L127",
       "id": "properties_service_propertiesservice_update",
-      "community": 20,
+      "community": 4,
       "norm_label": ".update()"
     },
     {
@@ -3312,7 +3312,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L133",
       "id": "properties_service_propertiesservice_remove",
-      "community": 20,
+      "community": 4,
       "norm_label": ".remove()"
     },
     {
@@ -3321,7 +3321,7 @@
       "source_file": "apps\\backend\\src\\properties\\properties.service.ts",
       "source_location": "L139",
       "id": "properties_service_propertiesservice_togglefavorite",
-      "community": 20,
+      "community": 4,
       "norm_label": ".togglefavorite()"
     },
     {
@@ -3483,7 +3483,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_roles_roles_service_ts",
-      "community": 7,
+      "community": 20,
       "norm_label": "roles.service.ts"
     },
     {
@@ -3492,7 +3492,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L13",
       "id": "roles_service_rolesservice",
-      "community": 7,
+      "community": 20,
       "norm_label": "rolesservice"
     },
     {
@@ -3501,7 +3501,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L14",
       "id": "roles_service_rolesservice_constructor",
-      "community": 7,
+      "community": 20,
       "norm_label": ".constructor()"
     },
     {
@@ -3510,7 +3510,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L19",
       "id": "roles_service_rolesservice_findall",
-      "community": 7,
+      "community": 20,
       "norm_label": ".findall()"
     },
     {
@@ -3519,7 +3519,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L39",
       "id": "roles_service_rolesservice_findone",
-      "community": 7,
+      "community": 20,
       "norm_label": ".findone()"
     },
     {
@@ -3528,7 +3528,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L57",
       "id": "roles_service_rolesservice_create",
-      "community": 7,
+      "community": 20,
       "norm_label": ".create()"
     },
     {
@@ -3537,7 +3537,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L75",
       "id": "roles_service_rolesservice_update",
-      "community": 7,
+      "community": 20,
       "norm_label": ".update()"
     },
     {
@@ -3546,7 +3546,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L90",
       "id": "roles_service_rolesservice_remove",
-      "community": 7,
+      "community": 20,
       "norm_label": ".remove()"
     },
     {
@@ -3555,7 +3555,7 @@
       "source_file": "apps\\backend\\src\\roles\\roles.service.ts",
       "source_location": "L104",
       "id": "roles_service_rolesservice_seeddefaultroles",
-      "community": 7,
+      "community": 20,
       "norm_label": ".seeddefaultroles()"
     },
     {
@@ -3924,7 +3924,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_tasks_tasks_service_ts",
-      "community": 19,
+      "community": 7,
       "norm_label": "tasks.service.ts"
     },
     {
@@ -3933,7 +3933,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L28",
       "id": "tasks_service_tasksservice",
-      "community": 19,
+      "community": 7,
       "norm_label": "tasksservice"
     },
     {
@@ -3942,7 +3942,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L29",
       "id": "tasks_service_tasksservice_constructor",
-      "community": 19,
+      "community": 7,
       "norm_label": ".constructor()"
     },
     {
@@ -3951,7 +3951,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L36",
       "id": "tasks_service_tasksservice_getuserwithrole",
-      "community": 19,
+      "community": 7,
       "norm_label": ".getuserwithrole()"
     },
     {
@@ -3960,7 +3960,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L43",
       "id": "tasks_service_tasksservice_getbasequery",
-      "community": 19,
+      "community": 7,
       "norm_label": ".getbasequery()"
     },
     {
@@ -3969,7 +3969,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L74",
       "id": "tasks_service_tasksservice_create",
-      "community": 19,
+      "community": 7,
       "norm_label": ".create()"
     },
     {
@@ -3978,7 +3978,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L101",
       "id": "tasks_service_tasksservice_findall",
-      "community": 19,
+      "community": 7,
       "norm_label": ".findall()"
     },
     {
@@ -3987,7 +3987,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L128",
       "id": "tasks_service_tasksservice_count",
-      "community": 0,
+      "community": 4,
       "norm_label": ".count()"
     },
     {
@@ -3996,7 +3996,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L178",
       "id": "tasks_service_tasksservice_findone",
-      "community": 19,
+      "community": 7,
       "norm_label": ".findone()"
     },
     {
@@ -4005,7 +4005,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L220",
       "id": "tasks_service_tasksservice_update",
-      "community": 19,
+      "community": 7,
       "norm_label": ".update()"
     },
     {
@@ -4014,7 +4014,7 @@
       "source_file": "apps\\backend\\src\\tasks\\tasks.service.ts",
       "source_location": "L240",
       "id": "tasks_service_tasksservice_remove",
-      "community": 19,
+      "community": 7,
       "norm_label": ".remove()"
     },
     {
@@ -4086,7 +4086,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_teams_teams_controller_ts",
-      "community": 15,
+      "community": 16,
       "norm_label": "teams.controller.ts"
     },
     {
@@ -4095,7 +4095,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L21",
       "id": "teams_controller_teamscontroller",
-      "community": 15,
+      "community": 16,
       "norm_label": "teamscontroller"
     },
     {
@@ -4104,7 +4104,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L22",
       "id": "teams_controller_teamscontroller_constructor",
-      "community": 15,
+      "community": 16,
       "norm_label": ".constructor()"
     },
     {
@@ -4113,7 +4113,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L26",
       "id": "teams_controller_teamscontroller_create",
-      "community": 15,
+      "community": 16,
       "norm_label": ".create()"
     },
     {
@@ -4122,7 +4122,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L32",
       "id": "teams_controller_teamscontroller_findall",
-      "community": 15,
+      "community": 16,
       "norm_label": ".findall()"
     },
     {
@@ -4131,7 +4131,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L38",
       "id": "teams_controller_teamscontroller_findone",
-      "community": 15,
+      "community": 16,
       "norm_label": ".findone()"
     },
     {
@@ -4140,7 +4140,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L44",
       "id": "teams_controller_teamscontroller_update",
-      "community": 15,
+      "community": 16,
       "norm_label": ".update()"
     },
     {
@@ -4149,7 +4149,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L54",
       "id": "teams_controller_teamscontroller_remove",
-      "community": 15,
+      "community": 16,
       "norm_label": ".remove()"
     },
     {
@@ -4158,7 +4158,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L60",
       "id": "teams_controller_teamscontroller_getteammembers",
-      "community": 15,
+      "community": 16,
       "norm_label": ".getteammembers()"
     },
     {
@@ -4167,7 +4167,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L66",
       "id": "teams_controller_teamscontroller_getuserteam",
-      "community": 15,
+      "community": 16,
       "norm_label": ".getuserteam()"
     },
     {
@@ -4176,7 +4176,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.controller.ts",
       "source_location": "L72",
       "id": "teams_controller_teamscontroller_getteamleadmembers",
-      "community": 15,
+      "community": 16,
       "norm_label": ".getteamleadmembers()"
     },
     {
@@ -4203,7 +4203,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_teams_teams_service_ts",
-      "community": 4,
+      "community": 7,
       "norm_label": "teams.service.ts"
     },
     {
@@ -4212,7 +4212,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L9",
       "id": "teams_service_teamsservice",
-      "community": 4,
+      "community": 7,
       "norm_label": "teamsservice"
     },
     {
@@ -4221,7 +4221,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L10",
       "id": "teams_service_teamsservice_constructor",
-      "community": 4,
+      "community": 7,
       "norm_label": ".constructor()"
     },
     {
@@ -4239,7 +4239,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L51",
       "id": "teams_service_teamsservice_findall",
-      "community": 4,
+      "community": 7,
       "norm_label": ".findall()"
     },
     {
@@ -4248,7 +4248,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L83",
       "id": "teams_service_teamsservice_findone",
-      "community": 4,
+      "community": 7,
       "norm_label": ".findone()"
     },
     {
@@ -4257,7 +4257,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L96",
       "id": "teams_service_teamsservice_update",
-      "community": 4,
+      "community": 7,
       "norm_label": ".update()"
     },
     {
@@ -4266,7 +4266,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L124",
       "id": "teams_service_teamsservice_remove",
-      "community": 4,
+      "community": 7,
       "norm_label": ".remove()"
     },
     {
@@ -4275,7 +4275,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L130",
       "id": "teams_service_teamsservice_getteammembers",
-      "community": 4,
+      "community": 7,
       "norm_label": ".getteammembers()"
     },
     {
@@ -4284,7 +4284,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L135",
       "id": "teams_service_teamsservice_getuserteam",
-      "community": 4,
+      "community": 7,
       "norm_label": ".getuserteam()"
     },
     {
@@ -4293,7 +4293,7 @@
       "source_file": "apps\\backend\\src\\teams\\teams.service.ts",
       "source_location": "L148",
       "id": "teams_service_teamsservice_getteamleadmembers",
-      "community": 4,
+      "community": 7,
       "norm_label": ".getteamleadmembers()"
     },
     {
@@ -4347,7 +4347,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.controller.ts",
       "source_location": "L1",
       "id": "apps_backend_src_tenants_tenants_controller_ts",
-      "community": 39,
+      "community": 40,
       "norm_label": "tenants.controller.ts"
     },
     {
@@ -4356,7 +4356,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.controller.ts",
       "source_location": "L16",
       "id": "tenants_controller_tenantscontroller",
-      "community": 39,
+      "community": 40,
       "norm_label": "tenantscontroller"
     },
     {
@@ -4365,7 +4365,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.controller.ts",
       "source_location": "L17",
       "id": "tenants_controller_tenantscontroller_constructor",
-      "community": 39,
+      "community": 40,
       "norm_label": ".constructor()"
     },
     {
@@ -4374,7 +4374,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.controller.ts",
       "source_location": "L21",
       "id": "tenants_controller_tenantscontroller_findall",
-      "community": 39,
+      "community": 40,
       "norm_label": ".findall()"
     },
     {
@@ -4383,7 +4383,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.controller.ts",
       "source_location": "L29",
       "id": "tenants_controller_tenantscontroller_findone",
-      "community": 39,
+      "community": 40,
       "norm_label": ".findone()"
     },
     {
@@ -4392,7 +4392,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.controller.ts",
       "source_location": "L37",
       "id": "tenants_controller_tenantscontroller_update",
-      "community": 39,
+      "community": 40,
       "norm_label": ".update()"
     },
     {
@@ -4419,7 +4419,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.service.ts",
       "source_location": "L1",
       "id": "apps_backend_src_tenants_tenants_service_ts",
-      "community": 40,
+      "community": 41,
       "norm_label": "tenants.service.ts"
     },
     {
@@ -4428,7 +4428,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.service.ts",
       "source_location": "L12",
       "id": "tenants_service_tenantsservice",
-      "community": 40,
+      "community": 41,
       "norm_label": "tenantsservice"
     },
     {
@@ -4437,7 +4437,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.service.ts",
       "source_location": "L13",
       "id": "tenants_service_tenantsservice_constructor",
-      "community": 40,
+      "community": 41,
       "norm_label": ".constructor()"
     },
     {
@@ -4446,7 +4446,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.service.ts",
       "source_location": "L18",
       "id": "tenants_service_tenantsservice_findone",
-      "community": 40,
+      "community": 41,
       "norm_label": ".findone()"
     },
     {
@@ -4455,7 +4455,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.service.ts",
       "source_location": "L26",
       "id": "tenants_service_tenantsservice_findall",
-      "community": 40,
+      "community": 41,
       "norm_label": ".findall()"
     },
     {
@@ -4464,7 +4464,7 @@
       "source_file": "apps\\backend\\src\\tenants\\tenants.service.ts",
       "source_location": "L30",
       "id": "tenants_service_tenantsservice_update",
-      "community": 40,
+      "community": 41,
       "norm_label": ".update()"
     },
     {
@@ -5031,7 +5031,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\calendar\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_calendar_page_tsx",
-      "community": 22,
+      "community": 21,
       "norm_label": "page.tsx"
     },
     {
@@ -5040,7 +5040,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\calendar\\page.tsx",
       "source_location": "L12",
       "id": "page_calendarpage",
-      "community": 22,
+      "community": 21,
       "norm_label": "calendarpage()"
     },
     {
@@ -5085,7 +5085,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\deals\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_deals_page_tsx",
-      "community": 37,
+      "community": 38,
       "norm_label": "page.tsx"
     },
     {
@@ -5094,7 +5094,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\deals\\page.tsx",
       "source_location": "L12",
       "id": "page_dealspage",
-      "community": 37,
+      "community": 38,
       "norm_label": "dealspage()"
     },
     {
@@ -5130,7 +5130,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_leads_page_tsx",
-      "community": 35,
+      "community": 36,
       "norm_label": "page.tsx"
     },
     {
@@ -5139,7 +5139,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
       "source_location": "L48",
       "id": "page_handlepagechange",
-      "community": 35,
+      "community": 36,
       "norm_label": "handlepagechange()"
     },
     {
@@ -5148,7 +5148,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
       "source_location": "L52",
       "id": "page_handlelimitchange",
-      "community": 35,
+      "community": 36,
       "norm_label": "handlelimitchange()"
     },
     {
@@ -5157,7 +5157,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\page.tsx",
       "source_location": "L92",
       "id": "page_handleeditlead",
-      "community": 35,
+      "community": 36,
       "norm_label": "handleeditlead()"
     },
     {
@@ -5166,7 +5166,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\page.tsx",
       "source_location": "L96",
       "id": "page_handleselectionchange",
-      "community": 35,
+      "community": 36,
       "norm_label": "handleselectionchange()"
     },
     {
@@ -5175,7 +5175,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\leads\\page.tsx",
       "source_location": "L100",
       "id": "page_handlebulkaction",
-      "community": 35,
+      "community": 36,
       "norm_label": "handlebulkaction()"
     },
     {
@@ -5247,7 +5247,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_messages_page_tsx",
-      "community": 16,
+      "community": 17,
       "norm_label": "page.tsx"
     },
     {
@@ -5256,7 +5256,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L19",
       "id": "page_transformconversation",
-      "community": 16,
+      "community": 17,
       "norm_label": "transformconversation()"
     },
     {
@@ -5265,7 +5265,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L50",
       "id": "page_transformmessage",
-      "community": 16,
+      "community": 17,
       "norm_label": "transformmessage()"
     },
     {
@@ -5274,7 +5274,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L117",
       "id": "page_handleconversationselect",
-      "community": 16,
+      "community": 17,
       "norm_label": "handleconversationselect()"
     },
     {
@@ -5283,7 +5283,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L151",
       "id": "page_handleconnect",
-      "community": 16,
+      "community": 17,
       "norm_label": "handleconnect()"
     },
     {
@@ -5292,7 +5292,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L155",
       "id": "page_handleconnecterror",
-      "community": 16,
+      "community": 17,
       "norm_label": "handleconnecterror()"
     },
     {
@@ -5301,7 +5301,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L159",
       "id": "page_handlenewmessagefn",
-      "community": 16,
+      "community": 17,
       "norm_label": "handlenewmessagefn()"
     },
     {
@@ -5310,7 +5310,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L206",
       "id": "page_handlemessagesreadfn",
-      "community": 16,
+      "community": 17,
       "norm_label": "handlemessagesreadfn()"
     },
     {
@@ -5319,7 +5319,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L219",
       "id": "page_handleerrorfn",
-      "community": 16,
+      "community": 17,
       "norm_label": "handleerrorfn()"
     },
     {
@@ -5328,7 +5328,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L281",
       "id": "page_handlesendmessage",
-      "community": 16,
+      "community": 17,
       "norm_label": "handlesendmessage()"
     },
     {
@@ -5337,7 +5337,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\messages\\page.tsx",
       "source_location": "L349",
       "id": "page_handlebacktolist",
-      "community": 16,
+      "community": 17,
       "norm_label": "handlebacktolist()"
     },
     {
@@ -5391,7 +5391,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\properties\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_properties_page_tsx",
-      "community": 35,
+      "community": 36,
       "norm_label": "page.tsx"
     },
     {
@@ -5472,7 +5472,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\search\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_search_page_tsx",
-      "community": 41,
+      "community": 42,
       "norm_label": "page.tsx"
     },
     {
@@ -5481,7 +5481,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\search\\page.tsx",
       "source_location": "L26",
       "id": "page_performsearch",
-      "community": 41,
+      "community": 42,
       "norm_label": "performsearch()"
     },
     {
@@ -5490,7 +5490,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\search\\page.tsx",
       "source_location": "L89",
       "id": "page_handleresultclick",
-      "community": 41,
+      "community": 42,
       "norm_label": "handleresultclick()"
     },
     {
@@ -5499,7 +5499,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\search\\page.tsx",
       "source_location": "L103",
       "id": "page_getresulticon",
-      "community": 41,
+      "community": 42,
       "norm_label": "getresulticon()"
     },
     {
@@ -5508,7 +5508,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\search\\page.tsx",
       "source_location": "L114",
       "id": "page_gettypelabel",
-      "community": 41,
+      "community": 42,
       "norm_label": "gettypelabel()"
     },
     {
@@ -5517,7 +5517,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\search\\page.tsx",
       "source_location": "L125",
       "id": "page_gettypecolor",
-      "community": 41,
+      "community": 42,
       "norm_label": "gettypecolor()"
     },
     {
@@ -5562,7 +5562,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L1",
       "id": "apps_frontend_app_dashboard_tasks_page_tsx",
-      "community": 21,
+      "community": 22,
       "norm_label": "page.tsx"
     },
     {
@@ -5571,7 +5571,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L20",
       "id": "page_issameday",
-      "community": 21,
+      "community": 22,
       "norm_label": "issameday()"
     },
     {
@@ -5580,7 +5580,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L26",
       "id": "page_filterbydate",
-      "community": 21,
+      "community": 22,
       "norm_label": "filterbydate()"
     },
     {
@@ -5589,7 +5589,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L59",
       "id": "page_getdatefilterlabel",
-      "community": 21,
+      "community": 22,
       "norm_label": "getdatefilterlabel()"
     },
     {
@@ -5598,7 +5598,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L107",
       "id": "page_handlestatuschange",
-      "community": 21,
+      "community": 22,
       "norm_label": "handlestatuschange()"
     },
     {
@@ -5607,7 +5607,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L111",
       "id": "page_handledatenavclick",
-      "community": 21,
+      "community": 22,
       "norm_label": "handledatenavclick()"
     },
     {
@@ -5616,7 +5616,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L116",
       "id": "page_handleprevday",
-      "community": 21,
+      "community": 22,
       "norm_label": "handleprevday()"
     },
     {
@@ -5625,7 +5625,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L124",
       "id": "page_handlenextday",
-      "community": 21,
+      "community": 22,
       "norm_label": "handlenextday()"
     },
     {
@@ -5634,7 +5634,7 @@
       "source_file": "apps\\frontend\\app\\(dashboard)\\tasks\\page.tsx",
       "source_location": "L132",
       "id": "page_handlegototoday",
-      "community": 21,
+      "community": 22,
       "norm_label": "handlegototoday()"
     },
     {
@@ -5938,7 +5938,7 @@
       "label": "Navbar()",
       "file_type": "code",
       "source_file": "apps\\frontend\\app\\landing-v3\\page.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "id": "page_navbar",
       "community": 71,
       "norm_label": "navbar()"
@@ -5992,7 +5992,7 @@
       "label": "handleTenantSelect()",
       "file_type": "code",
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "id": "page_handletenantselect",
       "community": 0,
       "norm_label": "handletenantselect()"
@@ -6001,7 +6001,7 @@
       "label": "handleDemoLogin()",
       "file_type": "code",
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
-      "source_location": "L70",
+      "source_location": "L72",
       "id": "page_handledemologin",
       "community": 0,
       "norm_label": "handledemologin()"
@@ -6082,7 +6082,7 @@
       "label": "RegisterPage()",
       "file_type": "code",
       "source_file": "apps\\frontend\\app\\register\\page.tsx",
-      "source_location": "L14",
+      "source_location": "L15",
       "id": "page_registerpage",
       "community": 5,
       "norm_label": "registerpage()"
@@ -6300,7 +6300,7 @@
       "source_file": "apps\\frontend\\components\\builders\\add-builder-dialog.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_builders_add_builder_dialog_tsx",
-      "community": 31,
+      "community": 29,
       "norm_label": "add-builder-dialog.tsx"
     },
     {
@@ -6309,7 +6309,7 @@
       "source_file": "apps\\frontend\\components\\builders\\add-builder-dialog.tsx",
       "source_location": "L24",
       "id": "add_builder_dialog_addbuilderdialog",
-      "community": 31,
+      "community": 29,
       "norm_label": "addbuilderdialog()"
     },
     {
@@ -6930,7 +6930,7 @@
       "source_file": "apps\\frontend\\components\\deals\\kanban-board.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_deals_kanban_board_tsx",
-      "community": 42,
+      "community": 43,
       "norm_label": "kanban-board.tsx"
     },
     {
@@ -6939,7 +6939,7 @@
       "source_file": "apps\\frontend\\components\\deals\\kanban-board.tsx",
       "source_location": "L75",
       "id": "kanban_board_handledealtap",
-      "community": 42,
+      "community": 43,
       "norm_label": "handledealtap()"
     },
     {
@@ -6948,7 +6948,7 @@
       "source_file": "apps\\frontend\\components\\deals\\kanban-board.tsx",
       "source_location": "L82",
       "id": "kanban_board_handlemovetostage",
-      "community": 42,
+      "community": 43,
       "norm_label": "handlemovetostage()"
     },
     {
@@ -6957,7 +6957,7 @@
       "source_file": "apps\\frontend\\components\\deals\\kanban-board.tsx",
       "source_location": "L106",
       "id": "kanban_board_ondragstart",
-      "community": 42,
+      "community": 43,
       "norm_label": "ondragstart()"
     },
     {
@@ -6966,7 +6966,7 @@
       "source_file": "apps\\frontend\\components\\deals\\kanban-board.tsx",
       "source_location": "L114",
       "id": "kanban_board_ondragover",
-      "community": 42,
+      "community": 43,
       "norm_label": "ondragover()"
     },
     {
@@ -6975,7 +6975,7 @@
       "source_file": "apps\\frontend\\components\\deals\\kanban-board.tsx",
       "source_location": "L143",
       "id": "kanban_board_ondragend",
-      "community": 42,
+      "community": 43,
       "norm_label": "ondragend()"
     },
     {
@@ -6993,7 +6993,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_layout_header_tsx",
-      "community": 36,
+      "community": 37,
       "norm_label": "header.tsx"
     },
     {
@@ -7002,7 +7002,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L49",
       "id": "header_handlekeydown",
-      "community": 36,
+      "community": 37,
       "norm_label": "handlekeydown()"
     },
     {
@@ -7011,7 +7011,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L60",
       "id": "header_handleclickoutside",
-      "community": 36,
+      "community": 37,
       "norm_label": "handleclickoutside()"
     },
     {
@@ -7020,7 +7020,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L77",
       "id": "header_handleresultclick",
-      "community": 36,
+      "community": 37,
       "norm_label": "handleresultclick()"
     },
     {
@@ -7029,7 +7029,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L94",
       "id": "header_handleviewall",
-      "community": 36,
+      "community": 37,
       "norm_label": "handleviewall()"
     },
     {
@@ -7038,7 +7038,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L99",
       "id": "header_getresulticon",
-      "community": 36,
+      "community": 37,
       "norm_label": "getresulticon()"
     },
     {
@@ -7047,7 +7047,7 @@
       "source_file": "apps\\frontend\\components\\layout\\header.tsx",
       "source_location": "L110",
       "id": "header_gettypelabel",
-      "community": 36,
+      "community": 37,
       "norm_label": "gettypelabel()"
     },
     {
@@ -7218,7 +7218,7 @@
       "source_file": "apps\\frontend\\components\\leads\\date-time-picker.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_leads_date_time_picker_tsx",
-      "community": 46,
+      "community": 47,
       "norm_label": "date-time-picker.tsx"
     },
     {
@@ -7227,7 +7227,7 @@
       "source_file": "apps\\frontend\\components\\leads\\date-time-picker.tsx",
       "source_location": "L35",
       "id": "date_time_picker_handledateselect",
-      "community": 46,
+      "community": 47,
       "norm_label": "handledateselect()"
     },
     {
@@ -7236,7 +7236,7 @@
       "source_file": "apps\\frontend\\components\\leads\\date-time-picker.tsx",
       "source_location": "L46",
       "id": "date_time_picker_handletimechange",
-      "community": 46,
+      "community": 47,
       "norm_label": "handletimechange()"
     },
     {
@@ -7245,7 +7245,7 @@
       "source_file": "apps\\frontend\\components\\leads\\date-time-picker.tsx",
       "source_location": "L56",
       "id": "date_time_picker_handleopenchange",
-      "community": 46,
+      "community": 47,
       "norm_label": "handleopenchange()"
     },
     {
@@ -7254,7 +7254,7 @@
       "source_file": "apps\\frontend\\components\\leads\\date-time-picker.tsx",
       "source_location": "L66",
       "id": "date_time_picker_formatdisplayvalue",
-      "community": 46,
+      "community": 47,
       "norm_label": "formatdisplayvalue()"
     },
     {
@@ -7731,7 +7731,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_messages_chat_window_tsx",
-      "community": 29,
+      "community": 30,
       "norm_label": "chat-window.tsx"
     },
     {
@@ -7740,7 +7740,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L28",
       "id": "chat_window_getotherparticipant",
-      "community": 29,
+      "community": 30,
       "norm_label": "getotherparticipant()"
     },
     {
@@ -7749,7 +7749,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L90",
       "id": "chat_window_openimageingallery",
-      "community": 29,
+      "community": 30,
       "norm_label": "openimageingallery()"
     },
     {
@@ -7758,7 +7758,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L131",
       "id": "chat_window_handlescroll",
-      "community": 29,
+      "community": 30,
       "norm_label": "handlescroll()"
     },
     {
@@ -7767,7 +7767,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L145",
       "id": "chat_window_handlefileselect",
-      "community": 29,
+      "community": 30,
       "norm_label": "handlefileselect()"
     },
     {
@@ -7776,7 +7776,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L152",
       "id": "chat_window_removefile",
-      "community": 29,
+      "community": 30,
       "norm_label": "removefile()"
     },
     {
@@ -7785,7 +7785,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L156",
       "id": "chat_window_handlesend",
-      "community": 29,
+      "community": 30,
       "norm_label": "handlesend()"
     },
     {
@@ -7794,7 +7794,7 @@
       "source_file": "apps\\frontend\\components\\messages\\chat-window.tsx",
       "source_location": "L179",
       "id": "chat_window_handlekeydown",
-      "community": 29,
+      "community": 30,
       "norm_label": "handlekeydown()"
     },
     {
@@ -7972,7 +7972,7 @@
       "label": "onSubmit()",
       "file_type": "code",
       "source_file": "apps\\frontend\\components\\settings\\profile-form.tsx",
-      "source_location": "L76",
+      "source_location": "L80",
       "id": "profile_form_onsubmit",
       "community": 1,
       "norm_label": "onsubmit()"
@@ -8208,7 +8208,7 @@
       "source_file": "apps\\frontend\\components\\ui\\mobile-chart-wrapper.tsx",
       "source_location": "L1",
       "id": "apps_frontend_components_ui_mobile_chart_wrapper_tsx",
-      "community": 30,
+      "community": 31,
       "norm_label": "mobile-chart-wrapper.tsx"
     },
     {
@@ -8217,7 +8217,7 @@
       "source_file": "apps\\frontend\\components\\ui\\mobile-chart-wrapper.tsx",
       "source_location": "L10",
       "id": "mobile_chart_wrapper_mobilechartwrapper",
-      "community": 30,
+      "community": 31,
       "norm_label": "mobilechartwrapper()"
     },
     {
@@ -8226,7 +8226,7 @@
       "source_file": "apps\\frontend\\components\\ui\\mobile-chart-wrapper.tsx",
       "source_location": "L25",
       "id": "mobile_chart_wrapper_usechartanimation",
-      "community": 30,
+      "community": 31,
       "norm_label": "usechartanimation()"
     },
     {
@@ -8361,7 +8361,7 @@
       "source_file": "apps\\frontend\\hooks\\use-builders.ts",
       "source_location": "L1",
       "id": "apps_frontend_hooks_use_builders_ts",
-      "community": 31,
+      "community": 29,
       "norm_label": "use-builders.ts"
     },
     {
@@ -8370,7 +8370,7 @@
       "source_file": "apps\\frontend\\hooks\\use-builders.ts",
       "source_location": "L5",
       "id": "use_builders_usebuilders",
-      "community": 31,
+      "community": 29,
       "norm_label": "usebuilders()"
     },
     {
@@ -8379,7 +8379,7 @@
       "source_file": "apps\\frontend\\hooks\\use-builders.ts",
       "source_location": "L15",
       "id": "use_builders_usebuilder",
-      "community": 31,
+      "community": 29,
       "norm_label": "usebuilder()"
     },
     {
@@ -8388,7 +8388,7 @@
       "source_file": "apps\\frontend\\hooks\\use-builders.ts",
       "source_location": "L26",
       "id": "use_builders_usecreatebuilder",
-      "community": 31,
+      "community": 29,
       "norm_label": "usecreatebuilder()"
     },
     {
@@ -8397,7 +8397,7 @@
       "source_file": "apps\\frontend\\hooks\\use-builders.ts",
       "source_location": "L39",
       "id": "use_builders_useupdatebuilder",
-      "community": 31,
+      "community": 29,
       "norm_label": "useupdatebuilder()"
     },
     {
@@ -8406,7 +8406,7 @@
       "source_file": "apps\\frontend\\hooks\\use-builders.ts",
       "source_location": "L54",
       "id": "use_builders_usedeletebuilder",
-      "community": 31,
+      "community": 29,
       "norm_label": "usedeletebuilder()"
     },
     {
@@ -8415,7 +8415,7 @@
       "source_file": "apps\\frontend\\hooks\\use-deals.ts",
       "source_location": "L1",
       "id": "apps_frontend_hooks_use_deals_ts",
-      "community": 37,
+      "community": 38,
       "norm_label": "use-deals.ts"
     },
     {
@@ -8424,7 +8424,7 @@
       "source_file": "apps\\frontend\\hooks\\use-deals.ts",
       "source_location": "L15",
       "id": "use_deals_usedeals",
-      "community": 37,
+      "community": 38,
       "norm_label": "usedeals()"
     },
     {
@@ -8433,7 +8433,7 @@
       "source_file": "apps\\frontend\\hooks\\use-deals.ts",
       "source_location": "L25",
       "id": "use_deals_usecreatedeal",
-      "community": 37,
+      "community": 38,
       "norm_label": "usecreatedeal()"
     },
     {
@@ -8442,7 +8442,7 @@
       "source_file": "apps\\frontend\\hooks\\use-deals.ts",
       "source_location": "L38",
       "id": "use_deals_useupdatedeal",
-      "community": 37,
+      "community": 38,
       "norm_label": "useupdatedeal()"
     },
     {
@@ -8451,7 +8451,7 @@
       "source_file": "apps\\frontend\\hooks\\use-deals.ts",
       "source_location": "L51",
       "id": "use_deals_useupdatedealstage",
-      "community": 37,
+      "community": 38,
       "norm_label": "useupdatedealstage()"
     },
     {
@@ -8595,7 +8595,7 @@
       "source_file": "apps\\frontend\\hooks\\use-properties.ts",
       "source_location": "L1",
       "id": "apps_frontend_hooks_use_properties_ts",
-      "community": 43,
+      "community": 44,
       "norm_label": "use-properties.ts"
     },
     {
@@ -8604,7 +8604,7 @@
       "source_file": "apps\\frontend\\hooks\\use-properties.ts",
       "source_location": "L26",
       "id": "use_properties_useproperties",
-      "community": 43,
+      "community": 44,
       "norm_label": "useproperties()"
     },
     {
@@ -8613,7 +8613,7 @@
       "source_file": "apps\\frontend\\hooks\\use-properties.ts",
       "source_location": "L41",
       "id": "use_properties_useproperty",
-      "community": 43,
+      "community": 44,
       "norm_label": "useproperty()"
     },
     {
@@ -8622,7 +8622,7 @@
       "source_file": "apps\\frontend\\hooks\\use-properties.ts",
       "source_location": "L52",
       "id": "use_properties_userelatedproperties",
-      "community": 43,
+      "community": 44,
       "norm_label": "userelatedproperties()"
     },
     {
@@ -8631,7 +8631,7 @@
       "source_file": "apps\\frontend\\hooks\\use-properties.ts",
       "source_location": "L63",
       "id": "use_properties_usecreateproperty",
-      "community": 43,
+      "community": 44,
       "norm_label": "usecreateproperty()"
     },
     {
@@ -8640,7 +8640,7 @@
       "source_file": "apps\\frontend\\hooks\\use-properties.ts",
       "source_location": "L76",
       "id": "use_properties_usetogglefavorite",
-      "community": 43,
+      "community": 44,
       "norm_label": "usetogglefavorite()"
     },
     {
@@ -8667,7 +8667,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L1",
       "id": "apps_frontend_hooks_use_tasks_ts",
-      "community": 22,
+      "community": 21,
       "norm_label": "use-tasks.ts"
     },
     {
@@ -8676,7 +8676,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L14",
       "id": "use_tasks_usetasksinfinite",
-      "community": 22,
+      "community": 21,
       "norm_label": "usetasksinfinite()"
     },
     {
@@ -8685,7 +8685,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L28",
       "id": "use_tasks_usetaskcounts",
-      "community": 22,
+      "community": 21,
       "norm_label": "usetaskcounts()"
     },
     {
@@ -8694,7 +8694,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L39",
       "id": "use_tasks_usetasks",
-      "community": 22,
+      "community": 21,
       "norm_label": "usetasks()"
     },
     {
@@ -8703,7 +8703,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L49",
       "id": "use_tasks_usecreatetask",
-      "community": 22,
+      "community": 21,
       "norm_label": "usecreatetask()"
     },
     {
@@ -8712,7 +8712,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L62",
       "id": "use_tasks_useupdatetask",
-      "community": 22,
+      "community": 21,
       "norm_label": "useupdatetask()"
     },
     {
@@ -8721,7 +8721,7 @@
       "source_file": "apps\\frontend\\hooks\\use-tasks.ts",
       "source_location": "L75",
       "id": "use_tasks_usedeletetask",
-      "community": 22,
+      "community": 21,
       "norm_label": "usedeletetask()"
     },
     {
@@ -8750,6 +8750,33 @@
       "id": "api_getapiurl",
       "community": 167,
       "norm_label": "getapiurl()"
+    },
+    {
+      "label": "app-redirect.tsx",
+      "file_type": "code",
+      "source_file": "apps\\frontend\\lib\\app-redirect.tsx",
+      "source_location": "L1",
+      "id": "apps_frontend_lib_app_redirect_tsx",
+      "community": 5,
+      "norm_label": "app-redirect.tsx"
+    },
+    {
+      "label": "useAppRedirect()",
+      "file_type": "code",
+      "source_file": "apps\\frontend\\lib\\app-redirect.tsx",
+      "source_location": "L6",
+      "id": "app_redirect_useappredirect",
+      "community": 5,
+      "norm_label": "useappredirect()"
+    },
+    {
+      "label": "getAppUrl()",
+      "file_type": "code",
+      "source_file": "apps\\frontend\\lib\\app-redirect.tsx",
+      "source_location": "L23",
+      "id": "app_redirect_getappurl",
+      "community": 5,
+      "norm_label": "getappurl()"
     },
     {
       "label": "auth-context.tsx",
@@ -9133,7 +9160,7 @@
       "label": "SocketProvider()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\socket-context.tsx",
-      "source_location": "L34",
+      "source_location": "L39",
       "id": "socket_context_socketprovider",
       "community": 5,
       "norm_label": "socketprovider()"
@@ -9142,7 +9169,7 @@
       "label": "useSocket()",
       "file_type": "code",
       "source_file": "apps\\frontend\\lib\\socket-context.tsx",
-      "source_location": "L153",
+      "source_location": "L158",
       "id": "socket_context_usesocket",
       "community": 5,
       "norm_label": "usesocket()"
@@ -9180,7 +9207,7 @@
       "source_file": "apps\\frontend\\lib\\hooks\\use-media-query.ts",
       "source_location": "L1",
       "id": "apps_frontend_lib_hooks_use_media_query_ts",
-      "community": 30,
+      "community": 31,
       "norm_label": "use-media-query.ts"
     },
     {
@@ -9189,7 +9216,7 @@
       "source_file": "apps\\frontend\\lib\\hooks\\use-media-query.ts",
       "source_location": "L5",
       "id": "use_media_query_usemediaquery",
-      "community": 30,
+      "community": 31,
       "norm_label": "usemediaquery()"
     },
     {
@@ -9198,7 +9225,7 @@
       "source_file": "apps\\frontend\\lib\\hooks\\use-media-query.ts",
       "source_location": "L34",
       "id": "use_media_query_useismobile",
-      "community": 30,
+      "community": 31,
       "norm_label": "useismobile()"
     },
     {
@@ -9207,7 +9234,7 @@
       "source_file": "apps\\frontend\\lib\\hooks\\use-media-query.ts",
       "source_location": "L35",
       "id": "use_media_query_useistablet",
-      "community": 30,
+      "community": 31,
       "norm_label": "useistablet()"
     },
     {
@@ -9216,7 +9243,7 @@
       "source_file": "apps\\frontend\\lib\\hooks\\use-media-query.ts",
       "source_location": "L36",
       "id": "use_media_query_useisdesktop",
-      "community": 30,
+      "community": 31,
       "norm_label": "useisdesktop()"
     },
     {
@@ -11007,7 +11034,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "apps\\backend\\src\\auth\\auth.service.ts",
-      "source_location": "L289",
+      "source_location": "L295",
       "weight": 1.0,
       "_src": "auth_service_authservice",
       "_tgt": "auth_service_authservice_getsubscriptionstatus",
@@ -19023,7 +19050,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\landing-v2\\page.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0,
       "_src": "apps_frontend_app_landing_v2_page_tsx",
       "_tgt": "page_navbar",
@@ -19035,7 +19062,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\landing-v3\\page.tsx",
-      "source_location": "L39",
+      "source_location": "L40",
       "weight": 1.0,
       "_src": "apps_frontend_app_landing_v3_page_tsx",
       "_tgt": "page_navbar",
@@ -19059,7 +19086,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
-      "source_location": "L27",
+      "source_location": "L29",
       "weight": 1.0,
       "_src": "apps_frontend_app_login_page_tsx",
       "_tgt": "page_handlesubmit",
@@ -19071,7 +19098,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
-      "source_location": "L53",
+      "source_location": "L55",
       "weight": 1.0,
       "_src": "apps_frontend_app_login_page_tsx",
       "_tgt": "page_handletenantselect",
@@ -19083,7 +19110,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\login\\page.tsx",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0,
       "_src": "apps_frontend_app_login_page_tsx",
       "_tgt": "page_handledemologin",
@@ -19179,13 +19206,25 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\app\\register\\page.tsx",
-      "source_location": "L14",
+      "source_location": "L15",
       "weight": 1.0,
       "_src": "apps_frontend_app_register_page_tsx",
       "_tgt": "page_registerpage",
       "source": "apps_frontend_app_register_page_tsx",
       "target": "page_registerpage",
       "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "apps\\frontend\\app\\register\\page.tsx",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_src": "page_registerpage",
+      "_tgt": "app_redirect_useappredirect",
+      "source": "page_registerpage",
+      "target": "app_redirect_useappredirect"
     },
     {
       "relation": "calls",
@@ -21279,7 +21318,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\components\\settings\\profile-form.tsx",
-      "source_location": "L76",
+      "source_location": "L80",
       "weight": 1.0,
       "_src": "apps_frontend_components_settings_profile_form_tsx",
       "_tgt": "profile_form_onsubmit",
@@ -21885,6 +21924,30 @@
       "_tgt": "api_getapiurl",
       "source": "apps_frontend_lib_api_ts",
       "target": "api_getapiurl",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps\\frontend\\lib\\app-redirect.tsx",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_src": "apps_frontend_lib_app_redirect_tsx",
+      "_tgt": "app_redirect_useappredirect",
+      "source": "apps_frontend_lib_app_redirect_tsx",
+      "target": "app_redirect_useappredirect",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps\\frontend\\lib\\app-redirect.tsx",
+      "source_location": "L23",
+      "weight": 1.0,
+      "_src": "apps_frontend_lib_app_redirect_tsx",
+      "_tgt": "app_redirect_getappurl",
+      "source": "apps_frontend_lib_app_redirect_tsx",
+      "target": "app_redirect_getappurl",
       "confidence_score": 1.0
     },
     {
@@ -22599,7 +22662,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\socket-context.tsx",
-      "source_location": "L34",
+      "source_location": "L39",
       "weight": 1.0,
       "_src": "apps_frontend_lib_socket_context_tsx",
       "_tgt": "socket_context_socketprovider",
@@ -22611,7 +22674,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\frontend\\lib\\socket-context.tsx",
-      "source_location": "L153",
+      "source_location": "L158",
       "weight": 1.0,
       "_src": "apps_frontend_lib_socket_context_tsx",
       "_tgt": "socket_context_usesocket",
