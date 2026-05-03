@@ -1,11 +1,11 @@
 # Graph Report - platinum-elite-crm  (2026-05-04)
 
 ## Corpus Check
-- 325 files · ~289,174 words
+- 325 files · ~289,705 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1070 nodes · 1127 edges · 104 communities detected
+- 1070 nodes · 1129 edges · 104 communities detected
 - Extraction: 82% EXTRACTED · 18% INFERRED · 0% AMBIGUOUS · INFERRED: 200 edges (avg confidence: 0.8)
 - Token cost: 0 input · 0 output
 
@@ -116,16 +116,16 @@
 - [[_COMMUNITY_Community 127|Community 127]]
 
 ## God Nodes (most connected - your core abstractions)
-1. `GET()` - 31 edges
+1. `GET()` - 33 edges
 2. `getAuthHeaders()` - 24 edges
 3. `LeadsService` - 19 edges
 4. `LeadsController` - 17 edges
 5. `toISOString()` - 13 edges
 6. `AnalyticsService` - 12 edges
 7. `updateActiveFilters()` - 12 edges
-8. `AnalyticsController` - 10 edges
-9. `AuditService` - 10 edges
-10. `DealsService` - 10 edges
+8. `POST()` - 11 edges
+9. `AnalyticsController` - 10 edges
+10. `AuditService` - 10 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `handleDownloadTemplate()` --calls--> `GET()`  [INFERRED]
@@ -147,19 +147,19 @@ Nodes (10): ActivityLoggerService, AuthController, AuthService, ChatGateway, Cha
 
 ### Community 1 - "Community 1"
 Cohesion: 0.06
-Nodes (33): handleSubmit(), handleSubmit(), authFetch(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), getCurrentUser() (+25 more)
-
-### Community 2 - "Community 2"
-Cohesion: 0.06
 Nodes (29): handleSubmit(), AllExceptionsFilter, formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel() (+21 more)
 
+### Community 2 - "Community 2"
+Cohesion: 0.07
+Nodes (27): handleSubmit(), handleSubmit(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), fetchData(), handleFileUpload() (+19 more)
+
 ### Community 3 - "Community 3"
-Cohesion: 0.11
-Nodes (12): AuditService, createDemoTenants(), deleteDemoTenants(), main(), refreshDemoTenants(), seedDemoData(), showStatus(), LoggingInterceptor (+4 more)
+Cohesion: 0.07
+Nodes (32): handleSubmit(), parseBudget(), handleSubmit(), authFetch(), getAuthHeaders(), getCurrentUser(), getCurrentUserId(), hasPermission() (+24 more)
 
 ### Community 4 - "Community 4"
-Cohesion: 0.08
-Nodes (26): handleSubmit(), parseBudget(), handleSubmit(), getAuthHeaders(), createDeal(), deleteDeal(), reassignDeal(), updateDeal() (+18 more)
+Cohesion: 0.11
+Nodes (12): AuditService, createDemoTenants(), deleteDemoTenants(), main(), refreshDemoTenants(), seedDemoData(), showStatus(), LoggingInterceptor (+4 more)
 
 ### Community 5 - "Community 5"
 Cohesion: 0.07
@@ -736,11 +736,11 @@ Nodes (1): User
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 3`, `Community 4`, `Community 13`, `Community 31`?**
-  _High betweenness centrality (0.052) - this node is a cross-community bridge._
-- **Why does `toISOString()` connect `Community 2` to `Community 1`, `Community 3`, `Community 7`?**
-  _High betweenness centrality (0.026) - this node is a cross-community bridge._
-- **Why does `getAuthHeaders()` connect `Community 4` to `Community 1`?**
+- **Why does `GET()` connect `Community 2` to `Community 0`, `Community 3`, `Community 4`, `Community 13`, `Community 31`?**
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
+- **Why does `toISOString()` connect `Community 1` to `Community 2`, `Community 4`, `Community 7`?**
+  _High betweenness centrality (0.025) - this node is a cross-community bridge._
+- **Why does `getAuthHeaders()` connect `Community 3` to `Community 2`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Are the 27 inferred relationships involving `GET()` (e.g. with `.getDashboardStats()` and `.getTeamPerformance()`) actually correct?**
   _`GET()` has 27 INFERRED edges - model-reasoned connections that need verification._
