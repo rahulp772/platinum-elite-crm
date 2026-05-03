@@ -70,7 +70,7 @@ export function FunnelSVG({ data }: FunnelSVGProps) {
       Z
     `
 
-    const conversion = firstStageCount > 0 ? ((d.count / firstStageCount) * 100).toFixed(0) : "0"
+    const conversion = total > 0 ? ((d.count / total) * 100).toFixed(0) : "0"
 
     const res = {
       ...d,

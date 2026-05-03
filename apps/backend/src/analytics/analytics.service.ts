@@ -3,7 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Inject } from '@nestjs/common';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
-import { Repository, SelectQueryBuilder, ObjectLiteral } from 'typeorm';
+import {
+  Repository,
+  SelectQueryBuilder,
+  ObjectLiteral,
+  MoreThanOrEqual,
+  IsNull,
+  Not,
+  In,
+} from 'typeorm';
 import { Property } from '../properties/entities/property.entity';
 import { Lead } from '../leads/entities/lead.entity';
 import { Deal } from '../deals/entities/deal.entity';
@@ -11,6 +19,8 @@ import { User } from '../users/entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Task } from '../tasks/entities/task.entity';
 import { LeadActivity } from '../leads/entities/lead-activity.entity';
+import { dateUtils } from '../common/date-utils';
+import { LeadStatus } from '../leads/enums/lead.enum';
 
 @Injectable()
 export class AnalyticsService {
@@ -69,10 +79,12 @@ export class AnalyticsService {
     const cached = await this.cacheManager.get(cacheKey);
     if (cached) {
       this.logger.debug(`Cache hit for dashboard: ${cacheKey}`);
-      return cached as ReturnType<typeof this.getDashboardStats>;
+      return cached as any;
     }
 
     const roleLevel = this.getRoleLevel(user);
+    const timezone = user.timezone || 'Asia/Kolkata';
+    const todayStart = dateUtils.getZonedStartOfDay(new Date(), timezone);
 
     const propQuery = this.propertyRepository.createQueryBuilder('property');
     const leadQuery = this.leadRepository.createQueryBuilder('lead');
@@ -85,6 +97,45 @@ export class AnalyticsService {
     const totalProperties = await propQuery.getCount();
     const totalLeads = await leadQuery.getCount();
     const totalDeals = await dealQuery.getCount();
+
+    // Operational metrics for the new card
+    const openLeadsQuery = this.leadRepository.createQueryBuilder('lead');
+    this.applyHierarchyFilters(openLeadsQuery, user, roleLevel, 'assignedToId');
+    const openLeads = await openLeadsQuery
+      .andWhere('lead.status NOT IN (:...closedStatuses)', {
+        closedStatuses: [LeadStatus.BOOKED, LeadStatus.LOST],
+      })
+      .getCount();
+
+    const unassignedLeadsQuery = this.leadRepository.createQueryBuilder('lead');
+    this.applyHierarchyFilters(
+      unassignedLeadsQuery,
+      user,
+      roleLevel,
+      'assignedToId',
+    );
+    // Unassigned only makes sense for Admins/Managers to see
+    const unassignedLeads = await unassignedLeadsQuery
+      .andWhere('lead.assignedToId IS NULL')
+      .getCount();
+
+    const todayClosedQuery = this.leadRepository.createQueryBuilder('lead');
+    this.applyHierarchyFilters(
+      todayClosedQuery,
+      user,
+      roleLevel,
+      'assignedToId',
+    );
+    const todayClosed = await todayClosedQuery
+      .andWhere('lead.status = :status', { status: LeadStatus.BOOKED })
+      .andWhere('lead.updatedAt >= :todayStart', { todayStart })
+      .getCount();
+
+    const todayNewQuery = this.leadRepository.createQueryBuilder('lead');
+    this.applyHierarchyFilters(todayNewQuery, user, roleLevel, 'assignedToId');
+    const todayNew = await todayNewQuery
+      .andWhere('lead.createdAt >= :todayStart', { todayStart })
+      .getCount();
 
     const dealsByStage = await dealQuery
       .select('deal.stage', 'stage')
@@ -107,6 +158,10 @@ export class AnalyticsService {
         totalRevenue: parseFloat(
           ((revenue as Record<string, unknown>)?.total as string) || '0',
         ),
+        openLeads,
+        unassignedLeads,
+        todayClosed,
+        todayNew,
       },
       dealsByStage,
     };

@@ -14,6 +14,8 @@ import Link from "next/link"
 import { useAuth } from "@/lib/auth-context"
 import { AgentDashboardView } from "@/components/dashboard/agent-dashboard-view"
 
+import { OperationsCard } from "@/components/dashboard/operations-card"
+
 export default function DashboardPage() {
     const { user } = useAuth()
 
@@ -46,7 +48,11 @@ export default function DashboardPage() {
         totalLeads: 0,
         totalProperties: 0,
         totalDeals: 0,
-        totalRevenue: 0
+        totalRevenue: 0,
+        openLeads: 0,
+        unassignedLeads: 0,
+        todayClosed: 0,
+        todayNew: 0
     }
 
     return (
@@ -122,16 +128,18 @@ export default function DashboardPage() {
                     <LeadFunnelWidget />
                 </div>
                 <div className="lg:col-span-4">
-                    <ActiveDealsWidget />
+                    <OperationsCard stats={{
+                        openLeads: overview.openLeads,
+                        unassignedLeads: overview.unassignedLeads,
+                        todayClosed: overview.todayClosed,
+                        todayNew: overview.todayNew
+                    }} />
                 </div>
             </div>
 
             <div className="grid gap-6 md:grid-cols-2">
                 <UpcomingTasksWidget />
-                <Card className="h-full flex flex-col justify-center items-center p-8 text-center text-muted-foreground border-dashed bg-card/20">
-                    <TrendingUp className="h-8 w-8 mb-2 opacity-20" />
-                    <p>Performance insights coming soon</p>
-                </Card>
+                <ActiveDealsWidget />
             </div>
         </div>
     )
