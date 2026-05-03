@@ -72,10 +72,22 @@ export async function POST(
 
   const token = await getTokenFromCookies()
   const tenantId = await getTenantIdFromCookies()
-  const body = await request.json().catch(() => ({}))
+  
+  const contentType = request.headers.get('content-type') || ''
+  const isMultipart = contentType.includes('multipart/form-data')
+  
+  let body: any
+  if (isMultipart) {
+    body = await request.formData().catch(() => null)
+  } else {
+    body = await request.json().catch(() => ({}))
+  }
 
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+  const headers: HeadersInit = {}
+  
+  // Only set application/json if it's not a multipart request
+  if (!isMultipart) {
+    headers['Content-Type'] = 'application/json'
   }
 
   if (token) {
@@ -90,7 +102,7 @@ export async function POST(
     const response = await fetch(url, {
       method: 'POST',
       headers,
-      body: JSON.stringify(body),
+      body: isMultipart ? body : JSON.stringify(body),
       credentials: 'include',
     })
 
@@ -115,10 +127,21 @@ export async function PATCH(
 
   const token = await getTokenFromCookies()
   const tenantId = await getTenantIdFromCookies()
-  const body = await request.json().catch(() => ({}))
+  
+  const contentType = request.headers.get('content-type') || ''
+  const isMultipart = contentType.includes('multipart/form-data')
+  
+  let body: any
+  if (isMultipart) {
+    body = await request.formData().catch(() => null)
+  } else {
+    body = await request.json().catch(() => ({}))
+  }
 
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
+  const headers: HeadersInit = {}
+
+  if (!isMultipart) {
+    headers['Content-Type'] = 'application/json'
   }
 
   if (token) {
@@ -133,7 +156,7 @@ export async function PATCH(
     const response = await fetch(url, {
       method: 'PATCH',
       headers,
-      body: JSON.stringify(body),
+      body: isMultipart ? body : JSON.stringify(body),
       credentials: 'include',
     })
 

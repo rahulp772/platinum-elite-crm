@@ -10,10 +10,13 @@ import {
   ParseUUIDPipe,
   UseInterceptors,
   UploadedFile,
+  InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
+import { memoryStorage } from 'multer';
 import { extname } from 'path';
+import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import {
   ApiTags,
   ApiOperation,
@@ -35,7 +38,17 @@ import {
 @UseGuards(JwtAuthGuard)
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  private s3Client: S3Client;
+
+  constructor(private readonly chatService: ChatService) {
+    this.s3Client = new S3Client({
+      region: process.env.AWS_REGION || 'us-east-1',
+      credentials: {
+        accessKeyId: process.env.AWS_ACCESS_KEY_ID || '',
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || '',
+      },
+    });
+  }
 
   @Get('conversations')
   @ApiOperation({ summary: 'Get all conversations for the current user' })
@@ -86,18 +99,9 @@ export class ChatController {
   })
   @UseInterceptors(
     FileInterceptor('file', {
-      storage: diskStorage({
-        destination: './public/uploads',
-        filename: (req, file, cb) => {
-          const randomName = Array(32)
-            .fill(null)
-            .map(() => Math.round(Math.random() * 16).toString(16))
-            .join('');
-          cb(null, `${randomName}${extname(file.originalname)}`);
-        },
-      }),
+      storage: memoryStorage(),
       fileFilter: (req, file, cb) => {
-        if (file.mimetype.match(/\/(jpg|jpeg|png|gif|pdf)$/)) {
+        if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
           cb(null, true);
         } else {
           cb(new Error('Only images and PDF files are allowed'), false);
@@ -108,13 +112,53 @@ export class ChatController {
       },
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
-    return {
-      url: `/uploads/${file.filename}`,
-      name: file.originalname,
-      size: file.size,
-      type: file.mimetype.includes('pdf') ? 'pdf' : 'image',
-    };
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body('conversationId') conversationId: string,
+    @Request() req,
+  ) {
+    if (!file) {
+      throw new BadRequestException('No file uploaded. This might happen if the file type is not allowed or if the form data was incorrectly formatted.');
+    }
+
+    const randomName = Array(32)
+      .fill(null)
+      .map(() => Math.round(Math.random() * 16).toString(16))
+      .join('');
+    const filename = `${randomName}${extname(file.originalname)}`;
+    const bucketName = process.env.AWS_S3_BUCKET_NAME || 'my-crm-bucket';
+    const tenantId = req.user?.tenantId || 'default-tenant';
+    
+    // Structure: chat/:tenantid/:chatid/:filename
+    const folder = conversationId ? `chat/${tenantId}/${conversationId}` : `chat/${tenantId}/general`;
+    const objectKey = `${folder}/${filename}`;
+
+    const command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: objectKey,
+      Body: file.buffer,
+      ContentType: file.mimetype,
+      // Removed ACL: 'public-read' to avoid AccessDenied on buckets with Object Ownership set to Bucket Owner Enforced
+    });
+
+    try {
+      await this.s3Client.send(command);
+      
+      const region = process.env.AWS_REGION || 'us-east-1';
+      const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${objectKey}`;
+
+      return {
+        url: fileUrl,
+        name: file.originalname,
+        size: file.size,
+        type: file.mimetype.includes('pdf') ? 'pdf' : 'image',
+      };
+    } catch (error: any) {
+      console.error('S3 Upload Error:', error);
+      throw new InternalServerErrorException(
+        `Failed to upload file to S3: ${error.message}`
+      );
+    }
   }
 
   @Post('conversations')

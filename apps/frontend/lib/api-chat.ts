@@ -91,10 +91,13 @@ export const chatApi = {
     }
   },
 
-  uploadFile: async (file: File): Promise<{ url: string, name: string, size: number, type: 'image' | 'pdf' | 'other' }> => {
+  uploadFile: async (file: File, conversationId?: string): Promise<{ url: string, name: string, size: number, type: 'image' | 'pdf' | 'other' }> => {
     try {
       const formData = new FormData();
       formData.append('file', file);
+      if (conversationId) {
+        formData.append('conversationId', conversationId);
+      }
       const response = await api.post('/chat/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',

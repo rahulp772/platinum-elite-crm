@@ -161,7 +161,7 @@ export function ChatWindow({
         if (selectedFiles.length > 0) {
             setIsUploading(true)
             try {
-                const uploadPromises = selectedFiles.map(file => chatApi.uploadFile(file))
+                const uploadPromises = selectedFiles.map(file => chatApi.uploadFile(file, conversation.id))
                 attachments = await Promise.all(uploadPromises)
             } catch (error) {
                 toast.error("Failed to upload files")
