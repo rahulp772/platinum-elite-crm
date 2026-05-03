@@ -27,16 +27,18 @@ import { useAuth } from "@/lib/auth-context"
 import { useNotifications } from "@/lib/notification-context"
 
 const navigation = [
-    { name: "Dashboard", href: "/", icon: LayoutDashboard },
-    { name: "Leads", href: "/leads", icon: Users },
-    { name: "Pipeline", href: "/pipeline", icon: Kanban },
-    { name: "Properties", href: "/properties", icon: Building2 },
-    { name: "Deals", href: "/deals", icon: Handshake },
-    { name: "Tasks", href: "/tasks", icon: CheckSquare },
-    { name: "Calendar", href: "/calendar", icon: Calendar },
-    { name: "Messages", href: "/messages", icon: MessageSquare, badge: 0 },
-    { name: "Analytics", href: "/analytics", icon: BarChart3 },
-    { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Dashboard", href: "/", icon: LayoutDashboard, permission: undefined },
+    { name: "Leads", href: "/leads", icon: Users, permission: "leads:read" },
+    { name: "Pipeline", href: "/pipeline", icon: Kanban, permission: "deals:read" },
+    { name: "Properties", href: "/properties", icon: Building2, permission: "properties:read" },
+    { name: "Deals", href: "/deals", icon: Handshake, permission: "deals:read" },
+    { name: "Builders", href: "/builders", icon: Building2, permission: "properties:read" },
+    { name: "Tasks", href: "/tasks", icon: CheckSquare, permission: "tasks:read" },
+
+    { name: "Calendar", href: "/calendar", icon: Calendar, permission: "tasks:read" },
+    { name: "Messages", href: "/messages", icon: MessageSquare, badge: 0, permission: undefined },
+    { name: "Analytics", href: "/analytics", icon: BarChart3, permission: "reports:read" },
+    { name: "Settings", href: "/settings", icon: Settings, permission: "settings:write" },
 ]
 
 interface SidebarProps {
@@ -47,13 +49,24 @@ interface SidebarProps {
 
 export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }: SidebarProps) {
     const pathname = usePathname()
-    const { user, logout } = useAuth()
+    const { user, logout, hasPermission } = useAuth()
     const { unreadMessages } = useNotifications()
     const [collapsed, setCollapsed] = React.useState(false)
     
-    const navItems = React.useMemo(() => navigation.map(item => 
-        item.name === "Messages" ? { ...item, badge: unreadMessages > 0 ? unreadMessages : undefined } : item
-    ), [unreadMessages])
+    const navItems = React.useMemo(() => {
+        return navigation
+            .filter(item => {
+                if (!item.permission) return true
+                if (user?.isSuperAdmin) return true
+                if (item.permission === "settings:write") {
+                    return user?.role?.level && user.role.level >= 100
+                }
+                return hasPermission(item.permission)
+            })
+            .map(item => 
+                item.name === "Messages" ? { ...item, badge: unreadMessages > 0 ? unreadMessages : undefined } : item
+            )
+    }, [unreadMessages, user, hasPermission])
 
     // When in mobile mode, just render the content - layout handles the Sheet wrapper
     // Note: We pass isMobile to disable expensive effects
@@ -74,7 +87,7 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
 }
 
 interface SidebarContentProps {
-    navItems: Array<{ name: string; href: string; icon: React.ElementType; badge?: number }>
+    navItems: Array<{ name: string; href: string; icon: React.ElementType; badge?: number; permission?: string }>
     collapsed: boolean
     setCollapsed: (v: boolean) => void
     pathname: string

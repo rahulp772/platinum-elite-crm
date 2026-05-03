@@ -13,6 +13,8 @@ import { Deal } from '../../deals/entities/deal.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { Team } from '../../teams/entities/team.entity';
+import { Builder } from '../../builders/entities/builder.entity';
+
 
 @Entity('tenants')
 export class Tenant {
@@ -48,6 +50,13 @@ export class Tenant {
 
   @OneToMany(() => Team, (team) => team.tenant)
   teams: Team[];
+
+  @OneToMany(() => Builder, (builder) => builder.tenant)
+  builders: Builder[];
+
+
+  @Column({ default: 'Asia/Kolkata' })
+  timezone: string;
 
   @CreateDateColumn()
   createdAt: Date;

@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
+import { toLocalISOString } from "@/lib/utils"
 import { useUpdateLead, useLogLeadActivity, useReassignLead, useUsers, useLeadSuggestion } from "@/hooks/use-leads"
 import { useAuth } from "@/lib/auth-context"
 import { Loader2, Phone, MessageCircle, Calendar, ArrowLeft, Send, Sparkles as SparkleIcon, User, ArrowRightLeft, Mic, MapPin, Eye } from "lucide-react"
@@ -17,7 +18,7 @@ import { MandatoryFollowUpModal } from "./mandatory-follow-up-modal"
 import { CallOutcomeModal } from "./call-outcome-modal"
 import { cn } from "@/lib/utils"
 import Link from "next/link"
-import { formatDateTimeInTimezone, getUserTimezone, toISOStringFromLocal } from "@/lib/date-utils"
+import { formatDateTimeInTimezone, formatDateOnly, getUserTimezone, toISOStringFromLocal } from "@/lib/date-utils"
 import { LeadStatus } from "@/types/lead"
 import { DateTimePicker } from "./date-time-picker"
 
@@ -72,8 +73,9 @@ function formatStatus(status: string): string {
     return statusMap[status] || status.replace(/_/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase())
 }
 
-function formatActivityContent(activity: any): { title: string; details: string } {
+function formatActivityContent(activity: any, timezone?: string): { title: string; details: string } {
     const { action, oldValue, newValue, description } = activity
+    const tz = timezone || "UTC"
 
     switch (action) {
         case "status_changed":
@@ -100,17 +102,19 @@ function formatActivityContent(activity: any): { title: string; details: string 
         case "followup_scheduled":
             return {
                 title: "Follow-up Scheduled",
-                details: newValue ? new Date(newValue).toLocaleDateString() : 'No date'
+                details: newValue 
+                    ? formatDateTimeInTimezone(newValue, tz)
+                    : 'No date'
             }
         case "site_visit_scheduled":
             return {
                 title: "Site Visit Scheduled",
-                details: newValue ? new Date(newValue).toLocaleDateString() : 'Scheduled'
+                details: newValue ? formatDateTimeInTimezone(newValue, tz) : 'Scheduled'
             }
         case "site_visit_done":
             return {
                 title: "Site Visit Completed",
-                details: newValue ? new Date(newValue).toLocaleDateString() : 'Completed'
+                details: newValue ? formatDateTimeInTimezone(newValue, tz) : 'Completed'
             }
         case "created":
             return {
@@ -195,7 +199,8 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const { data: suggestion, isLoading: isLoadingSuggestion } = useLeadSuggestion(leadId)
     const queryClient = useQueryClient()
 
-    const timezone = getUserTimezone(user)
+    const userTimezone = user ? getUserTimezone(user) : "UTC"
+    const timezone = userTimezone
 
     const filteredActivities = React.useMemo(() => {
         if (!activities) return []
@@ -274,11 +279,10 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     }
 
     const handleCallClick = () => {
-        window.open(`tel:${lead.phone}`)
         setShowCallOutcomeModal(true)
     }
 
-    const handleCallOutcomeComplete = (outcome: string, notes: string) => {
+    const handleCallOutcomeComplete = async (outcome: string, notes: string) => {
         const actionMap: Record<string, string> = {
             connected: "call_connected",
             not_connected: "call_not_connected",
@@ -286,12 +290,17 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
             will_callback: "call_made",
             wrong_number: "call_not_connected",
         }
-        logLeadActivity.mutate({ 
-            leadId: lead.id, 
-            action: actionMap[outcome] || "call_made", 
-            description: notes || outcome 
-        })
-        toast.success("Call logged")
+        try {
+            await logLeadActivity.mutateAsync({ 
+                leadId: lead.id, 
+                action: actionMap[outcome] || "call_made", 
+                description: notes || outcome 
+            })
+            toast.success("Call logged")
+        } catch (error) {
+            console.error("Failed to log call activity:", error)
+            toast.error("Failed to log call")
+        }
     }
 
     const handleWhatsAppClick = () => {
@@ -310,23 +319,13 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
             updateLead.mutate({ id: lead.id, followUpAt: undefined }, {
                 onSuccess: () => {
                     toast.success("Follow-up cleared")
-                    logLeadActivity.mutate({ 
-                        leadId: lead.id, 
-                        action: "followup_scheduled", 
-                        description: "Follow-up cleared" 
-                    })
                 }
             })
             return
         }
-        updateLead.mutate({ id: lead.id, followUpAt: pendingFollowUp.toISOString() }, {
+        updateLead.mutate({ id: lead.id, followUpAt: toLocalISOString(pendingFollowUp) }, {
             onSuccess: () => {
                 toast.success("Follow-up scheduled")
-                logLeadActivity.mutate({ 
-                    leadId: lead.id, 
-                    action: "followup_scheduled", 
-                    description: `Follow-up scheduled for ${pendingFollowUp.toLocaleDateString()}` 
-                })
                 setPendingFollowUp(undefined)
             }
         })
@@ -479,7 +478,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                             {activeTab === "activity" ? (
                                 <>
                                     {filteredActivities.map((activity: any) => {
-                                        const content = formatActivityContent(activity)
+                                        const content = formatActivityContent(activity, timezone)
                                         return (
                                         <div key={activity.id} className="flex gap-4">
                                             <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center shrink-0 mt-1">
@@ -768,7 +767,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
                                                     {activity.action === 'site_visit_done' ? 'Completed' : 'Scheduled'}
                                                 </span>
                                                 <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                                                    {activity.timestamp ? new Date(activity.timestamp).toLocaleDateString() : '-'}
+                                                    {activity.timestamp ? formatDateOnly(activity.timestamp, timezone) : '-'}
                                                 </span>
                                             </div>
                                             {activity.description && (

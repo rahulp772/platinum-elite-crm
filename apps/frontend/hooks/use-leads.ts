@@ -19,7 +19,9 @@ interface LeadsFilters {
     status?: string
     source?: string
     assignedToId?: string
+    builderId?: string
 }
+
 
 export function useLeads(filters?: LeadsFilters, queryKeyDeps?: unknown[]) {
     return useQuery({
@@ -166,8 +168,9 @@ export function useLogLeadActivity() {
             return { data, leadId }
         },
         onSuccess: ({ leadId }) => {
-            queryClient.invalidateQueries({ queryKey: ["lead-activities", leadId] })
+            queryClient.invalidateQueries({ queryKey: ["leads"] })
             queryClient.invalidateQueries({ queryKey: ["lead", leadId] })
+            queryClient.invalidateQueries({ queryKey: ["lead-activities", leadId] })
         },
     })
 }

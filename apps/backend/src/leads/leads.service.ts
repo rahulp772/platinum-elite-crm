@@ -31,6 +31,7 @@ import { LeadStatus, LeadSource } from './enums/lead.enum';
 import { TeamsService } from '../teams/teams.service';
 import { LeadScoringService } from './services/lead-scoring.service';
 import { LeadAssignmentService } from './services/lead-assignment.service';
+import { dateUtils } from '../common/date-utils';
 
 const ACTIVE_STATUSES = [
   LeadStatus.NEW,
@@ -244,7 +245,9 @@ export class LeadsService {
       status?: string;
       source?: string;
       assignedToId?: string;
+      builderId?: string;
     },
+
   ) {
     const { role, tenantId, isSuperAdmin } = user;
     const roleLevel = role?.level || 0;
@@ -256,7 +259,9 @@ export class LeadsService {
       status,
       source,
       assignedToId,
+      builderId,
     } = options || {};
+
 
     const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
 
@@ -277,7 +282,9 @@ export class LeadsService {
         .createQueryBuilder('lead')
         .leftJoinAndSelect('lead.assignedTo', 'assignedTo')
         .leftJoinAndSelect('assignedTo.role', 'role')
+        .leftJoinAndSelect('lead.builder', 'builder')
         .orderBy('lead.createdAt', 'DESC');
+
 
       if (isGlobalAdmin) {
         return qb;
@@ -322,6 +329,10 @@ export class LeadsService {
         assignedToId,
       });
     }
+    if (builderId && builderId !== 'all') {
+      query = query.andWhere('lead.builderId = :builderId', { builderId });
+    }
+
     if (search) {
       query = query.andWhere(
         '(lead.name ILIKE :search OR lead.email ILIKE :search OR lead.phone ILIKE :search)',
@@ -577,9 +588,9 @@ export class LeadsService {
   }
 
   async getUpcomingFollowUps(user: User) {
+    const timezone = user.timezone || 'Asia/Kolkata';
     const now = new Date();
-    const endOfDay = new Date(now);
-    endOfDay.setHours(23, 59, 59, 999);
+    const endOfDay = dateUtils.getZonedEndOfDay(now, timezone);
 
     return this.leadRepository.find({
       where: {
@@ -592,13 +603,14 @@ export class LeadsService {
   }
 
   async getOverdueFollowUps(user: User) {
+    const timezone = user.timezone || 'Asia/Kolkata';
     const now = new Date();
-    now.setHours(0, 0, 0, 0);
+    const startOfToday = dateUtils.getZonedStartOfDay(now, timezone);
 
     return this.leadRepository.find({
       where: {
         assignedToId: user.id,
-        followUpAt: LessThan(now),
+        followUpAt: LessThan(startOfToday),
         status: In(ACTIVE_STATUSES),
       },
       relations: ['assignedTo'],

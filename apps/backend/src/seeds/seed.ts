@@ -16,6 +16,8 @@ import {
 import { Deal } from '../deals/entities/deal.entity';
 import { Task } from '../tasks/entities/task.entity';
 import { TaskStatus, TaskPriority, TaskType } from '../tasks/enums/task.enum';
+import { Builder } from '../builders/entities/builder.entity';
+
 
 const BASE_PERMISSIONS = [
   'leads:read',
@@ -54,18 +56,23 @@ export class SeedService {
     private dealRepository: Repository<Deal>,
     @InjectRepository(Task)
     private taskRepository: Repository<Task>,
+    @InjectRepository(Builder)
+    private builderRepository: Repository<Builder>,
     private dataSource: DataSource,
   ) {}
+
 
   async seed() {
     console.log('🌱 Starting database seed...');
     await this.seedTenantsAndRoles();
     await this.seedSuperAdmin();
+    await this.seedBuilders();
     await this.seedLeads();
     await this.seedProperties();
     await this.seedTasks();
     console.log('✅ Seed completed successfully!');
   }
+
 
   private async clearDatabase() {
     console.log('🧹 Clearing database...');
@@ -76,7 +83,10 @@ export class SeedService {
     await this.dataSource.query('DELETE FROM deals');
     await this.dataSource.query('DELETE FROM leads');
     await this.dataSource.query('DELETE FROM properties');
+    await this.dataSource.query('DELETE FROM builders');
+
     await this.dataSource.query('DELETE FROM agent_profiles');
+
     await this.dataSource.query('DELETE FROM users');
     await this.dataSource.query('DELETE FROM roles');
     await this.dataSource.query('DELETE FROM tenants');
@@ -231,6 +241,80 @@ export class SeedService {
     console.log('   Tenants, roles, and users seeded.');
   }
 
+  private async seedBuilders() {
+    console.log('🏢 Seeding Indian builders...');
+    const tenants = await this.tenantRepository.find();
+    const tenantId = tenants[0].id;
+
+    const BUILDERS = [
+      {
+        name: 'Sobha Realty',
+        description: 'International luxury real estate developer with a reputation for quality.',
+        website: 'https://www.sobharealty.com',
+        foundedYear: 1976,
+        headquarters: 'Dubai / Bangalore',
+        totalProjects: 150,
+        completedProjects: 120,
+        ongoingProjects: 30,
+        logo: 'https://api.dicebear.com/7.x/initials/svg?seed=Sobha',
+      },
+      {
+        name: 'DLF Limited',
+        description: 'One of the largest real estate developers in India.',
+        website: 'https://www.dlf.in',
+        foundedYear: 1946,
+        headquarters: 'New Delhi',
+        totalProjects: 200,
+        completedProjects: 180,
+        ongoingProjects: 20,
+        logo: 'https://api.dicebear.com/7.x/initials/svg?seed=DLF',
+      },
+      {
+        name: 'Godrej Properties',
+        description: 'Brings the Godrej Group philosophy of innovation, sustainability, and excellence to the real estate industry.',
+        website: 'https://www.godrejproperties.com',
+        foundedYear: 1990,
+        headquarters: 'Mumbai',
+        totalProjects: 120,
+        completedProjects: 80,
+        ongoingProjects: 40,
+        logo: 'https://api.dicebear.com/7.x/initials/svg?seed=Godrej',
+      },
+      {
+        name: 'Lodha Group',
+        description: 'India\'s No.1 real estate developer by residential sales.',
+        website: 'https://www.lodhagroup.in',
+        foundedYear: 1980,
+        headquarters: 'Mumbai',
+        totalProjects: 100,
+        completedProjects: 70,
+        ongoingProjects: 30,
+        logo: 'https://api.dicebear.com/7.x/initials/svg?seed=Lodha',
+      },
+      {
+        name: 'Prestige Group',
+        description: 'Leading real estate developer in South India.',
+        website: 'https://www.prestigeconstructions.com',
+        foundedYear: 1986,
+        headquarters: 'Bangalore',
+        totalProjects: 250,
+        completedProjects: 210,
+        ongoingProjects: 40,
+        logo: 'https://api.dicebear.com/7.x/initials/svg?seed=Prestige',
+      },
+    ];
+
+    for (const builderData of BUILDERS) {
+      const builder = this.builderRepository.create({
+        ...builderData,
+        tenantId,
+      });
+      await this.builderRepository.save(builder);
+    }
+    console.log(`   Seeded ${BUILDERS.length} builders.`);
+  }
+
+
   private async seedSuperAdmin() {
     console.log('👑 Creating super admin...');
 
@@ -264,7 +348,9 @@ export class SeedService {
     const users = await this.userRepository.find({
       where: { tenantId: Not(IsNull()) },
     });
+    const builders = await this.builderRepository.find();
     const tenantId = tenants[0].id;
+
 
     const firstNames = [
       'James',
@@ -319,15 +405,16 @@ export class SeedService {
       'White',
     ];
     const locations = [
-      'Manhattan, NY',
-      'Brooklyn, NY',
-      'Queens, NY',
-      'Bronx, NY',
-      'Los Angeles, CA',
-      'Miami, FL',
-      'Chicago, IL',
-      'San Francisco, CA',
+      'Gurugram',
+      'Mumbai',
+      'Bangalore',
+      'Pune',
+      'Noida',
+      'Hyderabad',
+      'Chennai',
+      'Kolkata',
     ];
+
 
     for (let i = 0; i < 60; i++) {
       const firstName =
@@ -341,6 +428,8 @@ export class SeedService {
           ? users[Math.floor(Math.random() * users.length)]
           : null;
       const hasFollowUp = Math.random() > 0.5;
+      const builderId = Math.random() > 0.3 ? builders[Math.floor(Math.random() * builders.length)].id : undefined;
+
 
       const leadData: Partial<Lead> = {
         name: `${firstName} ${lastName}`,
@@ -374,7 +463,10 @@ export class SeedService {
         followUpAt: hasFollowUp
           ? new Date(Date.now() + Math.random() * 30 * 24 * 60 * 60 * 1000)
           : undefined,
+        builderId,
       };
+
+
 
       await this.leadRepository.save(leadData);
     }
@@ -389,6 +481,7 @@ export class SeedService {
     const users = await this.userRepository.find({
       where: { tenantId: Not(IsNull()) },
     });
+    const builders = await this.builderRepository.find();
     const tenantId = tenants[0].id;
     const agent = users.find((u) => u.name === 'Anjali Sharma') || users[0];
 
@@ -407,94 +500,116 @@ export class SeedService {
 
     const properties = [
       {
-        title: 'Modern Downtown Apartment',
-        description:
-          'Stunning 2-bedroom apartment in the heart of downtown with panoramic city views. Features modern finishes, stainless steel appliances, and hardwood floors throughout.',
-        price: 450000,
+        title: 'Sobha Zenith Sector 89',
+        description: 'Luxury 3 BHK apartment with world-class amenities and premium finishes.',
+        price: 25000000,
         status: PropertyStatus.AVAILABLE,
         type: PropertyType.APARTMENT,
-        address: '123 Broadway',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10001',
-        bedrooms: 2,
-        bathrooms: 2,
-        sqft: 1200,
-        images: sampleImages.slice(0, 4),
-        views: 245,
-        mlsId: 'MLS-2024-001',
-      },
-      {
-        title: 'Spacious Family Home',
-        description:
-          'Beautiful 4-bedroom colonial with updated kitchen, finished basement, and large backyard. Perfect for families. Located in top-rated school district.',
-        price: 850000,
-        status: PropertyStatus.AVAILABLE,
-        type: PropertyType.HOUSE,
-        address: '456 Oak Street',
-        city: 'Brooklyn',
-        state: 'NY',
-        zipCode: '11201',
-        bedrooms: 4,
+        address: 'Sector 89, New Gurgaon',
+        city: 'Gurugram',
+        state: 'Haryana',
+        zipCode: '122001',
+        bedrooms: 3,
         bathrooms: 3,
-        sqft: 2800,
-        images: sampleImages.slice(2, 6),
-        views: 189,
-        mlsId: 'MLS-2024-002',
+        sqft: 1850,
+        carpetArea: 1250,
+        superBuiltUpArea: 1850,
+        reraNumber: 'RC/REP/HARERA/GGM/789/2024',
+        reraAuthority: 'HARERA',
+        constructionStatus: 'Under Construction',
+        possessionDate: new Date('2026-12-31'),
+        builderId: builders.find(b => b.name === 'Sobha Realty')?.id,
+        images: sampleImages.slice(0, 4),
+        views: 450,
       },
       {
-        title: 'Luxury Penthouse Suite',
-        description:
-          'Exclusive penthouse with 360-degree views, private terrace, and premium amenities. Smart home technology throughout.',
-        price: 1250000,
+        title: 'DLF Ultima Phase 2',
+        description: 'Premium living in the heart of Gurgaon with lush green surroundings.',
+        price: 32000000,
+        status: PropertyStatus.AVAILABLE,
+        type: PropertyType.APARTMENT,
+        address: 'Sector 81, DLF Gardencity',
+        city: 'Gurugram',
+        state: 'Haryana',
+        zipCode: '122004',
+        bedrooms: 4,
+        bathrooms: 4,
+        sqft: 2200,
+        carpetArea: 1600,
+        superBuiltUpArea: 2200,
+        reraNumber: 'RC/REP/HARERA/GGM/456/2023',
+        reraAuthority: 'HARERA',
+        constructionStatus: 'Ready to Move',
+        possessionDate: new Date('2024-06-01'),
+        builderId: builders.find(b => b.name === 'DLF Limited')?.id,
+        images: sampleImages.slice(2, 6),
+        views: 890,
+      },
+      {
+        title: 'Godrej Woodsman Estate',
+        description: 'Experience the forest-themed luxury living in Bangalore.',
+        price: 18000000,
+        status: PropertyStatus.AVAILABLE,
+        type: PropertyType.APARTMENT,
+        address: 'Hebbal',
+        city: 'Bangalore',
+        state: 'Karnataka',
+        zipCode: '560024',
+        bedrooms: 3,
+        bathrooms: 2,
+        sqft: 1650,
+        carpetArea: 1100,
+        superBuiltUpArea: 1650,
+        reraNumber: 'PRM/KA/RERA/1251/309/PR/171014/000123',
+        reraAuthority: 'KRERA',
+        constructionStatus: 'Ready to Move',
+        builderId: builders.find(b => b.name === 'Godrej Properties')?.id,
+        images: sampleImages.slice(4, 8),
+        views: 320,
+      },
+      {
+        title: 'Lodha World One',
+        description: 'Iconic skyscraper in Mumbai offering unparalleled luxury.',
+        price: 85000000,
         status: PropertyStatus.AVAILABLE,
         type: PropertyType.CONDO,
-        address: '789 Park Avenue',
-        city: 'Manhattan',
-        state: 'NY',
-        zipCode: '10021',
-        bedrooms: 3,
-        bathrooms: 3.5,
-        sqft: 2200,
-        images: sampleImages.slice(4, 8),
-        views: 312,
-        mlsId: 'MLS-2024-003',
+        address: 'Upper Worli',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        zipCode: '400013',
+        bedrooms: 4,
+        bathrooms: 5,
+        sqft: 3500,
+        carpetArea: 2400,
+        superBuiltUpArea: 3500,
+        reraNumber: 'P51900008345',
+        reraAuthority: 'MahaRERA',
+        constructionStatus: 'Ready to Move',
+        builderId: builders.find(b => b.name === 'Lodha Group')?.id,
+        images: sampleImages.slice(6, 10),
+        views: 1250,
       },
       {
-        title: 'Cozy Studio Loft',
-        description:
-          'Perfect starter home or investment property. Open floor plan with high ceilings and tons of natural light.',
-        price: 275000,
+        title: 'Prestige Falcon City',
+        description: 'Mixed-use development with retail and residential spaces.',
+        price: 21000000,
         status: PropertyStatus.PENDING,
         type: PropertyType.APARTMENT,
-        address: '321 W 42nd St',
-        city: 'New York',
-        state: 'NY',
-        zipCode: '10036',
-        bedrooms: 1,
-        bathrooms: 1,
-        sqft: 650,
+        address: 'Kanakapura Road',
+        city: 'Bangalore',
+        state: 'Karnataka',
+        zipCode: '560062',
+        bedrooms: 2,
+        bathrooms: 2,
+        sqft: 1350,
+        carpetArea: 950,
+        superBuiltUpArea: 1350,
+        reraNumber: 'PRM/KA/RERA/1251/310/PR/170913/000114',
+        reraAuthority: 'KRERA',
+        constructionStatus: 'Ready to Move',
+        builderId: builders.find(b => b.name === 'Prestige Group')?.id,
         images: sampleImages.slice(0, 3),
-        views: 156,
-        mlsId: 'MLS-2024-004',
-      },
-      {
-        title: 'Beachfront Townhouse',
-        description:
-          'Wake up to ocean views in this beautifully renovated townhouse. Walking distance to the beach and boardwalk.',
-        price: 725000,
-        status: PropertyStatus.AVAILABLE,
-        type: PropertyType.TOWNHOUSE,
-        address: '55 Ocean Drive',
-        city: 'Miami',
-        state: 'FL',
-        zipCode: '33139',
-        bedrooms: 3,
-        bathrooms: 2.5,
-        sqft: 1800,
-        images: sampleImages.slice(6, 10),
-        views: 278,
-        mlsId: 'MLS-2024-005',
+        views: 210,
       },
     ];
 
@@ -503,14 +618,15 @@ export class SeedService {
         ...prop,
         agentId: agent?.id,
         tenantId,
-        features: ['Hardwood Floors', 'Central AC', 'Dishwasher', 'Parking'],
+        features: ['Clubhouse', 'Gym', 'Swimming Pool', 'Security', 'Power Backup'],
         listed: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000),
-        yearBuilt: 2015 + Math.floor(Math.random() * 10),
+        yearBuilt: 2020 + Math.floor(Math.random() * 4),
       });
     }
 
     console.log(`   Created 5 properties`);
   }
+
 
   private async seedTasks() {
     console.log('📋 Seeding tasks...');

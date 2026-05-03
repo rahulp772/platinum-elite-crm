@@ -6,6 +6,7 @@ import { TaskStatus } from './enums/task.enum';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { User } from '../users/entities/user.entity';
+import { dateUtils } from '../common/date-utils';
 
 export interface TaskQueryDto {
   page?: number;
@@ -126,34 +127,31 @@ export class TasksService {
 
   async count(
     currentUser: User,
-    status?: string,
   ): Promise<{
     total: number;
     overdue: number;
     today: number;
     tomorrow: number;
   }> {
+    const timezone = currentUser.timezone || 'Asia/Kolkata';
     const now = new Date();
-    now.setHours(0, 0, 0, 0);
-    const endOfToday = new Date(now);
-    endOfToday.setHours(23, 59, 59, 999);
-    const tomorrowStart = new Date(now);
-    tomorrowStart.setDate(tomorrowStart.getDate() + 1);
-    tomorrowStart.setHours(0, 0, 0, 0);
-    const tomorrowEnd = new Date(tomorrowStart);
-    tomorrowEnd.setHours(23, 59, 59, 999);
+    
+    const startOfToday = dateUtils.getZonedStartOfDay(now, timezone);
+    const endOfToday = dateUtils.getZonedEndOfDay(now, timezone);
+    const startOfTomorrow = dateUtils.getZonedStartOfDay(dateUtils.addDays(now, 1), timezone);
+    const endOfTomorrow = dateUtils.getZonedEndOfDay(dateUtils.addDays(now, 1), timezone);
 
     const overdue = await this.taskRepository
       .createQueryBuilder('task')
       .where('task.tenantId = :tenantId', { tenantId: currentUser.tenantId })
-      .andWhere('task.dueDate < :now', { now })
+      .andWhere('task.dueDate < :startOfToday', { startOfToday })
       .andWhere('task.status = :status', { status: TaskStatus.TODO })
       .getCount();
 
     const today = await this.taskRepository
       .createQueryBuilder('task')
       .where('task.tenantId = :tenantId', { tenantId: currentUser.tenantId })
-      .andWhere('task.dueDate >= :now', { now })
+      .andWhere('task.dueDate >= :startOfToday', { startOfToday })
       .andWhere('task.dueDate <= :endOfToday', { endOfToday })
       .andWhere('task.status = :status', { status: TaskStatus.TODO })
       .getCount();
@@ -161,8 +159,8 @@ export class TasksService {
     const tomorrowCount = await this.taskRepository
       .createQueryBuilder('task')
       .where('task.tenantId = :tenantId', { tenantId: currentUser.tenantId })
-      .andWhere('task.dueDate >= :tomorrowStart', { tomorrowStart })
-      .andWhere('task.dueDate <= :tomorrowEnd', { tomorrowEnd })
+      .andWhere('task.dueDate >= :startOfTomorrow', { startOfTomorrow })
+      .andWhere('task.dueDate <= :endOfTomorrow', { endOfTomorrow })
       .andWhere('task.status = :status', { status: TaskStatus.TODO })
       .getCount();
 

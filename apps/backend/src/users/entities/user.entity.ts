@@ -105,7 +105,7 @@ export class User {
   @OneToOne(() => AgentProfile, (profile) => profile.user)
   agentProfile: AgentProfile;
 
-  @Column({ nullable: true })
+  @Column({ default: 'Asia/Kolkata' })
   timezone: string;
 
   @Column({ default: 0 })

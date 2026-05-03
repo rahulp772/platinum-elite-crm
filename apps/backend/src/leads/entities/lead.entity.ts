@@ -17,6 +17,8 @@ import {
   LeadTier,
 } from '../enums/lead.enum';
 import { LeadActivity } from './lead-activity.entity';
+import { Builder } from '../../builders/entities/builder.entity';
+
 
 @Entity('leads')
 export class Lead {
@@ -137,7 +139,15 @@ export class Lead {
   @OneToMany(() => LeadActivity, (activity) => activity.lead)
   activities: LeadActivity[];
 
+  @Column({ nullable: true })
+  builderId: string;
+
+  @ManyToOne(() => Builder, { nullable: true })
+  @JoinColumn({ name: 'builderId' })
+  builder: Builder;
+
   @CreateDateColumn()
+
   createdAt: Date;
 
   @UpdateDateColumn()

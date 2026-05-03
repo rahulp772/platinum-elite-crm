@@ -12,6 +12,8 @@ import { Task } from '../tasks/entities/task.entity';
 import { Team } from '../teams/entities/team.entity';
 import { Conversation } from '../chat/entities/conversation.entity';
 import { Message } from '../chat/entities/message.entity';
+import { Builder } from '../builders/entities/builder.entity';
+
 
 @Global()
 @Module({
@@ -28,7 +30,9 @@ import { Message } from '../chat/entities/message.entity';
       Team,
       Conversation,
       Message,
+      Builder,
     ]),
+
   ],
   providers: [SeedService],
   exports: [SeedService],

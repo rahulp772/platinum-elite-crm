@@ -20,21 +20,25 @@ import { DealsService } from './deals.service';
 import { CreateDealDto } from './dto/create-deal.dto';
 import { UpdateDealDto } from './dto/update-deal.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PermissionsGuard } from '../auth/guards/permissions.guard';
+import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 
 @ApiTags('deals')
 @ApiBearerAuth()
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('deals')
 export class DealsController {
   constructor(private readonly dealsService: DealsService) {}
 
   @Post()
+  @RequirePermissions('deals:write')
   @ApiOperation({ summary: 'Create a new deal' })
   create(@Body() createDealDto: CreateDealDto, @Request() req) {
     return this.dealsService.create(createDealDto, req.user);
   }
 
   @Get()
+  @RequirePermissions('deals:read')
   @ApiOperation({ summary: 'Get all deals with pagination' })
   @ApiQuery({ name: 'page', type: Number, required: false })
   @ApiQuery({ name: 'limit', type: Number, required: false })
@@ -56,12 +60,14 @@ export class DealsController {
   }
 
   @Get(':id')
+  @RequirePermissions('deals:read')
   @ApiOperation({ summary: 'Get a deal by ID' })
   findOne(@Param('id') id: string, @Request() req) {
     return this.dealsService.findOne(id, req.user);
   }
 
   @Patch(':id')
+  @RequirePermissions('deals:write')
   @ApiOperation({ summary: 'Update a deal' })
   update(
     @Param('id') id: string,
@@ -72,18 +78,21 @@ export class DealsController {
   }
 
   @Delete(':id')
+  @RequirePermissions('deals:write')
   @ApiOperation({ summary: 'Delete a deal' })
   remove(@Param('id') id: string, @Request() req) {
     return this.dealsService.remove(id, req.user);
   }
 
   @Get(':id/activities')
+  @RequirePermissions('deals:read')
   @ApiOperation({ summary: 'Get deal activities' })
   getActivities(@Param('id') id: string, @Request() req) {
     return this.dealsService.getActivities(id, req.user);
   }
 
   @Post(':id/reassign')
+  @RequirePermissions('deals:write')
   @ApiOperation({ summary: 'Reassign deal to another user' })
   reassign(
     @Param('id') id: string,

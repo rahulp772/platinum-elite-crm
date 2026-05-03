@@ -103,6 +103,7 @@ export class UsersService {
       roleId,
       phone,
       tenantId: currentUser.tenantId,
+      timezone: 'Asia/Kolkata',
     });
 
     await this.userRepository.save(newUser);

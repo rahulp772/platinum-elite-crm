@@ -28,7 +28,36 @@ export interface Property {
         whatsapp?: string
         officeAddress?: string
     }
+    // RERA & India Specific Fields
+    builder?: {
+        id: string
+        name: string
+        logo?: string
+    }
+    builderId?: string
+    reraNumber?: string
+    reraAuthority?: string
+    reraWebsite?: string
+    landParcel?: string
+    surveyNumber?: string
+    carpetArea?: number
+    builtUpArea?: number
+    superBuiltUpArea?: number
+    basePrice?: number
+    pricePerSqft?: number
+    bookingAmount?: number
+    paymentPlan?: string
+    plc?: number
+    gst?: number
+    parking?: number
+    launchDate?: string
+    possessionDate?: string
+    constructionStatus?: string
+    ccUrl?: string
+    ocUrl?: string
+    // End RERA Fields
     listed: Date
     views: number
     favorited?: boolean
 }
+

@@ -21,7 +21,30 @@ export interface CreatePropertyInput {
   description: string
   features?: string[]
   images?: string[]
+  // RERA & India Specific Fields
+  builderId?: string
+  reraNumber?: string
+  reraAuthority?: string
+  reraWebsite?: string
+  landParcel?: string
+  surveyNumber?: string
+  carpetArea?: number
+  builtUpArea?: number
+  superBuiltUpArea?: number
+  basePrice?: number
+  pricePerSqft?: number
+  bookingAmount?: number
+  paymentPlan?: string
+  plc?: number
+  gst?: number
+  parking?: number
+  launchDate?: string
+  possessionDate?: string
+  constructionStatus?: string
+  ccUrl?: string
+  ocUrl?: string
 }
+
 
 export interface UpdatePropertyInput extends Partial<CreatePropertyInput> {
   id: string

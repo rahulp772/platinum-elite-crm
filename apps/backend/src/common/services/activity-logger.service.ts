@@ -84,6 +84,10 @@ export class ActivityLoggerService {
       viewed: LeadActivityAction.VIEWED,
       re_inquiry: LeadActivityAction.RE_INQUIRY,
       outcome_logged: LeadActivityAction.OUTCOME_LOGGED,
+      call_connected: LeadActivityAction.CALL_CONNECTED,
+      call_not_connected: LeadActivityAction.CALL_NOT_CONNECTED,
+      call_made: LeadActivityAction.CALL_MADE,
+      whatsapp_sent: LeadActivityAction.WHATSAPP_SENT,
     };
     return actionMap[action] || null;
   }

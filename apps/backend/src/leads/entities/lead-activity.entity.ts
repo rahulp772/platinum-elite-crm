@@ -23,6 +23,10 @@ export enum LeadActivityAction {
   RE_INQUIRY = 're_inquiry',
   VIEWED = 'viewed',
   OUTCOME_LOGGED = 'outcome_logged',
+  CALL_CONNECTED = 'call_connected',
+  CALL_NOT_CONNECTED = 'call_not_connected',
+  CALL_MADE = 'call_made',
+  WHATSAPP_SENT = 'whatsapp_sent',
 }
 
 @Entity('lead_activities')

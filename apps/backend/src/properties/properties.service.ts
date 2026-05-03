@@ -13,7 +13,9 @@ interface FindAllOptions {
   status?: string;
   type?: string;
   sortBy?: string;
+  builderId?: string;
 }
+
 
 @Injectable()
 export class PropertiesService {
@@ -32,13 +34,16 @@ export class PropertiesService {
   }
 
   async findAll(user: User, options: FindAllOptions) {
-    const { page, limit, search, status, type, sortBy } = options;
+    const { page, limit, search, status, type, sortBy, builderId } = options;
+
     const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
 
     const query = this.propertyRepository
       .createQueryBuilder('property')
       .leftJoin('property.agent', 'agent')
-      .select(['property', 'agent.id', 'agent.name', 'agent.email']);
+      .leftJoinAndSelect('property.builder', 'builder')
+      .select(['property', 'agent.id', 'agent.name', 'agent.email', 'builder']);
+
 
     if (!isGlobalAdmin) {
       query.where('property.tenantId = :tenantId', { tenantId: user.tenantId });
@@ -58,6 +63,11 @@ export class PropertiesService {
     if (type && type !== 'all') {
       query.andWhere('property.type = :type', { type });
     }
+    
+    if (builderId) {
+      query.andWhere('property.builderId = :builderId', { builderId });
+    }
+
 
     switch (sortBy) {
       case 'oldest':

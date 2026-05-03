@@ -8,6 +8,8 @@ import { AddLeadDialog } from "@/components/leads/add-lead-dialog"
 import { EditLeadDialog } from "@/components/leads/edit-lead-dialog"
 import { BulkActionsDialog } from "@/components/leads/bulk-actions-dialog"
 import { useLeads, useUpdateLead, useUsers } from "@/hooks/use-leads"
+import { useBuilders } from "@/hooks/use-builders"
+
 import { Card } from "@/components/ui/card"
 import { LoaderCircle, Users, Trash2, MessageSquare, UserPlus, Download, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -50,6 +52,8 @@ export default function LeadsPage() {
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [sourceFilter, setSourceFilter] = React.useState("all")
     const [assignedToFilter, setAssignedToFilter] = React.useState("all")
+    const [builderFilter, setBuilderFilter] = React.useState("all")
+
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null)
     const [selectedLeads, setSelectedLeads] = React.useState<Lead[]>([])
@@ -65,9 +69,12 @@ export default function LeadsPage() {
         ...(statusFilter !== 'all' ? { status: statusFilter } : {}),
         ...(sourceFilter !== 'all' ? { source: sourceFilter } : {}),
         ...(assignedToFilter !== 'all' ? { assignedToId: assignedToFilter } : {}),
-    }), [page, limit, searchQuery, statusFilter, sourceFilter, assignedToFilter])
+        ...(builderFilter !== 'all' ? { builderId: builderFilter } : {}),
+    }), [page, limit, searchQuery, statusFilter, sourceFilter, assignedToFilter, builderFilter])
 
-    const { data: leadsData, isLoading, isError, refetch } = useLeads(filters, [page, limit, searchQuery, statusFilter, sourceFilter, assignedToFilter])
+    const { data: leadsData, isLoading, isError, refetch } = useLeads(filters, [page, limit, searchQuery, statusFilter, sourceFilter, assignedToFilter, builderFilter])
+    const { data: builders } = useBuilders()
+
 
     const leads = leadsData?.data || []
     const metadata = leadsData?.metadata
@@ -153,8 +160,11 @@ export default function LeadsPage() {
                     onStatusChange={setStatusFilter}
                     onSourceChange={setSourceFilter}
                     onAssignedToChange={setAssignedToFilter}
+                    onBuilderChange={setBuilderFilter}
                     users={users}
+                    builders={builders}
                 />
+
             </Card>
 
             {/* Bulk Actions Toolbar */}

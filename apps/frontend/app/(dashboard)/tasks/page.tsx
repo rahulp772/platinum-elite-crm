@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Plus, Search, CalendarDays, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
 import { useInView } from "react-intersection-observer"
+import { useSearchParams } from "next/navigation"
+import { parseISO, isValid } from "date-fns"
 
 type DateFilter = "all" | "overdue" | "today" | "tomorrow" | "yesterday"
 type StatusFilter = "all" | "todo" | "done"
@@ -74,6 +76,19 @@ export default function TasksPage() {
     const [statusFilter, setStatusFilter] = React.useState<StatusFilter>("all")
     const [dateFilter, setDateFilter] = React.useState<DateFilter>("all")
     const [allTasks, setAllTasks] = React.useState<Task[]>([])
+    const searchParams = useSearchParams()
+
+    // Handle date filter from URL
+    React.useEffect(() => {
+        const dateParam = searchParams.get('date')
+        if (dateParam) {
+            const parsedDate = parseISO(dateParam)
+            if (isValid(parsedDate)) {
+                setSelectedDate(parsedDate)
+                setDateFilter("all")
+            }
+        }
+    }, [searchParams])
 
     const {
         data,

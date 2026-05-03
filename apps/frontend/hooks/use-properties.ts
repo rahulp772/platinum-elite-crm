@@ -9,7 +9,9 @@ export interface PropertiesFilters {
     status?: string
     type?: string
     sortBy?: string
+    builderId?: string
 }
+
 
 interface PaginatedResponse<T> {
     data: T[]

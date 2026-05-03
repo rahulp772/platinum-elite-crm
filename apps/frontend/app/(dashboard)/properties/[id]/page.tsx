@@ -361,7 +361,7 @@ export default function PropertyDetailPage() {
                                                 : "border-transparent opacity-50 hover:opacity-100"
                                         )}
                                     >
-                                        <button className="sr-only">Select image {idx + 1}</button>
+                                        <span className="sr-only">Select image {idx + 1}</span>
                                         <Image
                                             src={img}
                                             alt={`Thumbnail ${idx + 1}`}

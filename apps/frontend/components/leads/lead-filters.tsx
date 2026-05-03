@@ -29,8 +29,12 @@ interface LeadFiltersProps {
     onCreatedToChange?: (value: Date | undefined) => void
     onFollowUpFromChange?: (value: Date | undefined) => void
     onFollowUpToChange?: (value: Date | undefined) => void
+
+    onBuilderChange?: (value: string) => void
     users?: { id: string; name: string }[]
+    builders?: { id: string; name: string }[]
 }
+
 
 const statusOptions: LeadStatus[] = [
     "new", "contacted", "rnr", "qualified", "site_visit_scheduled",
@@ -60,8 +64,12 @@ export function LeadFilters({
     onCreatedToChange,
     onFollowUpFromChange,
     onFollowUpToChange,
+
+    onBuilderChange,
     users = [],
+    builders = [],
 }: LeadFiltersProps) {
+
     const [search, setSearch] = React.useState("")
     const [showAdvanced, setShowAdvanced] = React.useState(false)
     const [activeFilters, setActiveFilters] = React.useState<string[]>([])
@@ -76,6 +84,8 @@ export function LeadFilters({
     const [createdTo, setCreatedTo] = React.useState<Date | undefined>()
     const [followUpFrom, setFollowUpFrom] = React.useState<Date | undefined>()
     const [followUpTo, setFollowUpTo] = React.useState<Date | undefined>()
+    const [builderId, setBuilderId] = React.useState("all")
+
 
     const handleSearchChange = (value: string) => {
         setSearch(value)
@@ -144,6 +154,13 @@ export function LeadFilters({
         updateActiveFilters("followUpTo", !!date)
     }
 
+    const handleBuilderChange = (value: string) => {
+        setBuilderId(value)
+        onBuilderChange?.(value)
+        updateActiveFilters("builder", value !== "all")
+    }
+
+
     const updateActiveFilters = (filter: string, isActive: boolean) => {
         if (isActive && !activeFilters.includes(filter)) {
             setActiveFilters(prev => [...prev, filter])
@@ -170,7 +187,9 @@ export function LeadFilters({
         setCreatedTo(undefined)
         setFollowUpFrom(undefined)
         setFollowUpTo(undefined)
+        setBuilderId("all")
         setActiveFilters([])
+
 
         onSearchChange("")
         onStatusChange("all")
@@ -183,7 +202,9 @@ export function LeadFilters({
         onCreatedToChange?.(undefined)
         onFollowUpFromChange?.(undefined)
         onFollowUpToChange?.(undefined)
+        onBuilderChange?.("all")
     }
+
 
     const removeFilter = (filter: string) => {
         switch (filter) {
@@ -227,7 +248,12 @@ export function LeadFilters({
                 setFollowUpTo(undefined)
                 onFollowUpToChange?.(undefined)
                 break
+            case "builder":
+                setBuilderId("all")
+                onBuilderChange?.("all")
+                break
         }
+
         setActiveFilters(prev => prev.filter(f => f !== filter))
     }
 
@@ -298,7 +324,22 @@ export function LeadFilters({
                     )}
                     {showAdvanced ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
                 </Button>
+
+                <Select onValueChange={handleBuilderChange} value={builderId}>
+                    <SelectTrigger className="w-full sm:w-48">
+                        <SelectValue placeholder="Project / Builder" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="all">All Projects</SelectItem>
+                        {builders.map((b) => (
+                            <SelectItem key={b.id} value={b.id}>
+                                {b.name}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
+
 
             {/* Advanced Filters Panel */}
             {showAdvanced && (

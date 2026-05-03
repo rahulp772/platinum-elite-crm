@@ -1,3 +1,6 @@
+import { toZonedTime, fromZonedTime, formatInTimeZone } from 'date-fns-tz';
+import { startOfDay, endOfDay, addDays, addHours, differenceInDays } from 'date-fns';
+
 export const dateUtils = {
   toUTC(date: Date | string | null | undefined): Date | null {
     if (!date) return null;
@@ -12,11 +15,8 @@ export const dateUtils = {
         return isNaN(parsed.getTime()) ? null : parsed;
       }
 
-      const utcString = date.includes('T')
-        ? date.endsWith('Z')
-          ? date
-          : date + 'Z'
-        : date;
+      // No timezone indicator - treat as UTC
+      const utcString = date.includes('T') ? date + 'Z' : date;
       const parsedDate = new Date(utcString);
       return isNaN(parsedDate.getTime()) ? null : parsedDate;
     }
@@ -29,57 +29,32 @@ export const dateUtils = {
     return utcDate ? utcDate.toISOString() : null;
   },
 
-  toLocalDateTimeInput(isoDate: Date | string | null | undefined): string {
-    const utcDate = dateUtils.toUTC(isoDate);
-    if (!utcDate) return '';
+  /**
+   * Returns start of day for a given date in the target timezone, as a UTC Date object.
+   */
+  getZonedStartOfDay(date: Date | string, timezone: string): Date {
+    const utcDate = dateUtils.toUTC(date) || new Date();
+    const zonedDate = toZonedTime(utcDate, timezone);
+    const zonedStart = startOfDay(zonedDate);
+    return fromZonedTime(zonedStart, timezone);
+  },
 
-    return utcDate.toISOString().slice(0, 16);
+  /**
+   * Returns end of day for a given date in the target timezone, as a UTC Date object.
+   */
+  getZonedEndOfDay(date: Date | string, timezone: string): Date {
+    const utcDate = dateUtils.toUTC(date) || new Date();
+    const zonedDate = toZonedTime(utcDate, timezone);
+    const zonedEnd = endOfDay(zonedDate);
+    return fromZonedTime(zonedEnd, timezone);
   },
 
   addDays(date: Date, days: number): Date {
-    const result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
+    return addDays(date, days);
   },
 
   addHours(date: Date, hours: number): Date {
-    const result = new Date(date);
-    result.setHours(result.getHours() + hours);
-    return result;
-  },
-
-  startOfDay(date: Date): Date {
-    const result = new Date(date);
-    result.setHours(0, 0, 0, 0);
-    return result;
-  },
-
-  endOfDay(date: Date): Date {
-    const result = new Date(date);
-    result.setHours(23, 59, 59, 999);
-    return result;
-  },
-
-  isToday(date: Date): boolean {
-    const today = new Date();
-    return (
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  },
-
-  isSameDay(date1: Date, date2: Date): boolean {
-    return (
-      date1.getDate() === date2.getDate() &&
-      date1.getMonth() === date2.getMonth() &&
-      date1.getFullYear() === date2.getFullYear()
-    );
-  },
-
-  daysBetween(date1: Date, date2: Date): number {
-    const diffTime = Math.abs(date2.getTime() - date1.getTime());
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return addHours(date, hours);
   },
 
   isExpired(date: Date | string | null | undefined): boolean {
@@ -88,22 +63,8 @@ export const dateUtils = {
     return utcDate < new Date();
   },
 
-  formatRelative(date: Date | string | null | undefined): string {
-    const utcDate = dateUtils.toUTC(date);
-    if (!utcDate) return '';
-
-    const now = new Date();
-    const diffMs = now.getTime() - utcDate.getTime();
-    const diffSecs = Math.floor(diffMs / 1000);
-    const diffMins = Math.floor(diffSecs / 60);
-    const diffHours = Math.floor(diffMins / 60);
-    const diffDays = Math.floor(diffHours / 24);
-
-    if (diffSecs < 60) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    if (diffHours < 24) return `${diffHours}h ago`;
-    if (diffDays < 7) return `${diffDays}d ago`;
-
-    return utcDate.toLocaleDateString();
+  formatInTimezone(date: Date | string, timezone: string, formatStr: string): string {
+    const utcDate = dateUtils.toUTC(date) || new Date();
+    return formatInTimeZone(utcDate, timezone, formatStr);
   },
 };

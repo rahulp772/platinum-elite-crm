@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import Image from "next/image"
-import { Heart, Bed, Bath, Ruler, Eye, Camera, Map } from "lucide-react"
+import { Heart, Bed, Bath, Ruler, Eye, Camera, Map, ShieldCheck } from "lucide-react"
 import { Card, CardContent, CardFooter } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,16 +17,16 @@ function parsePropertyImages(images: string[] | string | undefined): string[] {
         'https://images.unsplash.photo/photo-1600607687939-ce8a6c25118c?w=800',
         'https://images.unsplash.com/photo-1600585154340-be6eb56a0c?w=800',
     ]
-    
+
     if (!images) return FALLBACK
     if (Array.isArray(images)) {
         const valid = images.filter(Boolean)
         return valid.length > 0 ? valid : FALLBACK
     }
-    
+
     if (typeof images === 'string') {
         let cleaned = images.trim()
-        
+
         // Try direct parse (normal JSON array)
         try {
             let parsed = JSON.parse(cleaned)
@@ -41,10 +41,10 @@ function parsePropertyImages(images: string[] | string | undefined): string[] {
                         const valid = parsed.filter(Boolean)
                         if (valid.length > 0) return valid
                     }
-                } catch {}
+                } catch { }
             }
-        } catch {}
-        
+        } catch { }
+
         // Try comma--separated format (TypeORM simple-array)
         if (cleaned.includes(',"') || cleaned.includes('",') || cleaned.includes(',')) {
             const parts = cleaned.split(',')
@@ -56,10 +56,10 @@ function parsePropertyImages(images: string[] | string | undefined): string[] {
             }).filter(Boolean)
             if (valid.length > 0) return valid
         }
-        
+
         return cleaned ? [cleaned] : FALLBACK
     }
-    
+
     return FALLBACK
 }
 
@@ -89,8 +89,8 @@ interface PropertyCardProps {
 function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "grid" }: PropertyCardProps) {
     const router = useRouter()
     const toggleFavorite = useToggleFavorite()
-    
-const handleClick = () => {
+
+    const handleClick = () => {
         if (onClick) {
             onClick(property)
         } else {
@@ -259,7 +259,15 @@ const handleClick = () => {
                         <span className="text-muted-foreground text-sm">No Image</span>
                     </div>
                 )}
-                
+
+                {/* RERA Badge */}
+                {property.reraNumber && (
+                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-realty-gold text-realty-navy text-[10px] sm:text-xs font-bold shadow-lg flex items-center gap-1">
+                        <ShieldCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                        <span>RERA Registered</span>
+                    </div>
+                )}
+
                 {/* Photo Count Badge */}
                 <div className="absolute top-2 right-2 sm:top-4 sm:right-4 flex items-center gap-1 px-2 py-1 sm:px-3 sm:py-1.5 rounded-full bg-black/60 text-white text-[10px] sm:text-xs font-medium">
                     <Camera className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
@@ -271,15 +279,23 @@ const handleClick = () => {
             {/* Details Section */}
             <CardContent className={cn("p-3 sm:p-4 md:p-5 pt-3 sm:pt-4 space-y-2 sm:space-y-3", isCompact ? "p-2 sm:p-3" : "")}>
                 <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                        <div className={cn(
-                            "w-2 h-2 rounded-full",
-                            property.status === 'available' ? "bg-realty-gold" : "bg-muted-foreground/30"
-                        )} />
-                        <span className="text-xs sm:text-sm font-semibold text-realty-gold capitalize">
-                            For {property.status === 'available' ? 'sale' : property.status.replace('_', ' ')}
-                        </span>
+                    <div className="flex flex-col">
+                        <div className="flex items-center gap-2">
+                            <div className={cn(
+                                "w-2 h-2 rounded-full",
+                                property.status === 'available' ? "bg-realty-gold" : "bg-muted-foreground/30"
+                            )} />
+                            <span className="text-xs sm:text-sm font-semibold text-realty-gold capitalize">
+                                For {property.status === 'available' ? 'sale' : property.status.replace('_', ' ')}
+                            </span>
+                        </div>
+                        {property.builder && (
+                            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest mt-1">
+                                {property.builder.name}
+                            </p>
+                        )}
                     </div>
+
                     <div className="flex items-center gap-1.5 sm:gap-2">
                         <Button
                             variant="outline"
@@ -346,8 +362,8 @@ const handleClick = () => {
 
 export const PropertyCard = React.memo(PropertyCardInner, (prevProps, nextProps) => {
     return prevProps.property.id === nextProps.property.id &&
-           prevProps.property.price === nextProps.property.price &&
-           prevProps.property.status === nextProps.property.status &&
-           prevProps.property.favorited === nextProps.property.favorited &&
-           prevProps.variant === nextProps.variant
+        prevProps.property.price === nextProps.property.price &&
+        prevProps.property.status === nextProps.property.status &&
+        prevProps.property.favorited === nextProps.property.favorited &&
+        prevProps.variant === nextProps.variant
 })

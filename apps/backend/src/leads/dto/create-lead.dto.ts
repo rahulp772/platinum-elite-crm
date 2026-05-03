@@ -96,7 +96,13 @@ export class CreateLeadDto {
   @IsString()
   @IsOptional()
   whatsappNumber?: string;
+
+  @ApiPropertyOptional()
+  @IsUUID()
+  @IsOptional()
+  builderId?: string;
 }
+
 
 export class UpdateLeadDto {
   @ApiPropertyOptional()
@@ -187,7 +193,13 @@ export class UpdateLeadDto {
   @IsString()
   @IsOptional()
   whatsappNumber?: string;
+
+  @ApiPropertyOptional()
+  @IsUUID()
+  @IsOptional()
+  builderId?: string;
 }
+
 
 export class LeadLookupDto {
   @ApiProperty()

@@ -2,8 +2,19 @@ import { format } from "date-fns";
 import { toZonedTime, formatInTimeZone, fromZonedTime } from "date-fns-tz";
 import { User } from "@/types/user";
 
-export function getUserTimezone(user: User | null): string {
-  if (user?.timezone) {
+export function getUserTimezone(user: User | null | undefined): string {
+  if (!user) {
+    if (typeof Intl !== "undefined" && Intl.DateTimeFormat) {
+      try {
+        const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        return detectedTimezone;
+      } catch {
+        return "UTC";
+      }
+    }
+    return "UTC";
+  }
+  if (user.timezone) {
     return user.timezone;
   }
   if (typeof Intl !== "undefined" && Intl.DateTimeFormat) {
@@ -17,31 +28,54 @@ export function getUserTimezone(user: User | null): string {
   return "UTC";
 }
 
+/**
+ * Converts a local date-time string (e.g. from an input[type="datetime-local"]) 
+ * and a timezone to a UTC ISO string.
+ */
 export function toISOString(dateTimeLocal: string, timezone?: string): string | null {
   if (!dateTimeLocal) return null;
   
-  const tz = timezone || getUserTimezone(null);
-  const date = new Date(dateTimeLocal);
-  
-  if (isNaN(date.getTime())) return null;
-  
-  return date.toISOString();
+  try {
+    // If it's already an ISO string with Z or offset, just parse it
+    if (dateTimeLocal.endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(dateTimeLocal)) {
+      const date = new Date(dateTimeLocal);
+      return isNaN(date.getTime()) ? null : date.toISOString();
+    }
+
+    const tz = timezone || getUserTimezone(null);
+    
+    // fromZonedTime takes a "local-looking" Date or string and interprets it in the given timezone
+    // Returns a UTC Date object
+    const utcDate = fromZonedTime(dateTimeLocal, tz);
+    
+    if (isNaN(utcDate.getTime())) return null;
+    
+    return utcDate.toISOString();
+  } catch (error) {
+    console.error("Error converting to ISO string:", error);
+    return null;
+  }
 }
 
+/**
+ * Legacy helper - prefer toISOString with explicit timezone
+ */
 export function toISOStringFromLocal(dateTimeLocal: string): string | null {
-  if (!dateTimeLocal) return null;
-  
-  const date = new Date(dateTimeLocal);
-  if (isNaN(date.getTime())) return null;
-  
-  return date.toISOString();
+  return toISOString(dateTimeLocal);
 }
 
-export function toLocalDateTimeInput(isoDate: Date | string | null | undefined): string {
+/**
+ * Converts an ISO date string (UTC) to a local-looking string for <input type="datetime-local">
+ * using the provided timezone.
+ */
+export function toLocalDateTimeInput(isoDate: Date | string | null | undefined, timezone?: string): string {
   const parsed = parseDate(isoDate);
   if (!parsed) return "";
   
-  return parsed.toISOString().slice(0, 16);
+  const tz = timezone || getUserTimezone(null);
+  const zonedDate = toZonedTime(parsed, tz);
+  
+  return format(zonedDate, "yyyy-MM-dd'T'HH:mm");
 }
 
 function parseDate(date: Date | string | null | undefined): Date | null {
@@ -52,14 +86,15 @@ function parseDate(date: Date | string | null | undefined): Date | null {
   }
 
   if (typeof date === "string") {
-    // If it's already an ISO string with Z or offset, parse it directly
+    // If already has timezone indicator (Z or +HH:MM), parse directly
     if (date.endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(date)) {
       const parsed = new Date(date);
       return isNaN(parsed.getTime()) ? null : parsed;
     }
     
-    // Otherwise, assume it's a UTC timestamp from the backend and append 'Z'
-    const utcString = date.includes('T') ? (date.endsWith('Z') ? date : date + 'Z') : date;
+    // No timezone indicator - treat as UTC (backend stores timestamps in UTC)
+    // append 'Z' to mark as UTC before parsing
+    const utcString = date.includes('T') ? date + 'Z' : date;
     const parsedDate = new Date(utcString);
     return isNaN(parsedDate.getTime()) ? null : parsedDate;
   }

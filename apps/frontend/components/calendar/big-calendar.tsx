@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { formatDateInTimezone, formatTimeOnly, getUserTimezone } from "@/lib/date-utils"
 import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
 
 interface BigCalendarProps {
     tasks: Task[]
@@ -17,6 +18,7 @@ interface BigCalendarProps {
 export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
     const [currentDate, setCurrentDate] = React.useState(new Date())
     const { user } = useAuth()
+    const router = useRouter()
     const timezone = getUserTimezone(user)
 
     const nextMonth = () => {
@@ -100,8 +102,8 @@ export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
                                 </Button>
                             </div>
 
-                            <div className="flex flex-col gap-1 flex-1 overflow-y-auto mt-1 custom-scrollbar">
-                                {dayTasks.map(task => (
+                            <div className="flex flex-col gap-1 flex-1 overflow-hidden mt-1">
+                                {dayTasks.slice(0, 3).map(task => (
                                     <div
                                         key={task.id}
                                         onClick={() => onTaskClick?.(task)}
@@ -116,6 +118,14 @@ export function BigCalendar({ tasks, onTaskClick }: BigCalendarProps) {
                                         {formatTimeOnly(task.dueDate, timezone)} {task.title}
                                     </div>
                                 ))}
+                                {dayTasks.length > 3 && (
+                                    <div 
+                                        onClick={() => router.push(`/tasks?date=${format(day, 'yyyy-MM-dd')}`)}
+                                        className="text-[10px] text-muted-foreground font-semibold px-2 py-0.5 bg-muted/50 rounded text-center cursor-pointer hover:bg-muted transition-colors"
+                                    >
+                                        +{dayTasks.length - 3} more
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )

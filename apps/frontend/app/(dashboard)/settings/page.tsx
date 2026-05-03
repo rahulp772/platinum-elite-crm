@@ -105,6 +105,9 @@ export default function SettingsPage() {
   const [editUser, setEditUser] = React.useState<User | null>(null)
   const [deleteUser, setDeleteUser] = React.useState<User | null>(null)
   const [editUserRoleId, setEditUserRoleId] = React.useState("")
+  const [editingRole, setEditingRole] = React.useState<Role | null>(null)
+
+  const isAdmin = currentUser?.isSuperAdmin || (currentUser?.role?.level && currentUser.role.level >= 100)
 
   const [roleName, setRoleName] = React.useState("")
   const [roleDescription, setRoleDescription] = React.useState("")
@@ -126,7 +129,7 @@ export default function SettingsPage() {
     queryFn: async () => {
       const res = await api.get("/roles")
       const allRoles = res.data as any[]
-      const uniqueByName = allRoles.filter((role, index, self) => 
+      const uniqueByName = allRoles.filter((role, index, self) =>
         index === self.findIndex((r: any) => r.name === role.name)
       )
       if (!currentUser?.isSuperAdmin) {
@@ -158,6 +161,23 @@ export default function SettingsPage() {
       setRoleName("")
       setRoleDescription("")
       setSelectedPermissions([])
+    },
+    onError: (error: Error) => {
+      setCreateRoleError(error.message)
+    },
+  })
+
+  const updateRoleMutation = useMutation({
+    mutationFn: async (data: { id: string; name: string; description?: string; permissions: string[]; level: number }) => {
+      const { id, ...updateData } = data
+      const res = await api.patch(`/roles/${id}`, updateData)
+      return res.data
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["roles"] })
+      setAddRoleOpen(false)
+      setEditingRole(null)
+      resetRoleForm()
     },
     onError: (error: Error) => {
       setCreateRoleError(error.message)
@@ -207,7 +227,23 @@ export default function SettingsPage() {
     e.preventDefault()
     setIsCreatingRole(true)
     setCreateRoleError(null)
-    createRoleMutation.mutate({ name: roleName, description: roleDescription, permissions: selectedPermissions, level: roleLevel })
+
+    if (editingRole) {
+      updateRoleMutation.mutate({
+        id: editingRole.id,
+        name: roleName,
+        description: roleDescription,
+        permissions: selectedPermissions,
+        level: roleLevel
+      })
+    } else {
+      createRoleMutation.mutate({
+        name: roleName,
+        description: roleDescription,
+        permissions: selectedPermissions,
+        level: roleLevel
+      })
+    }
   }
 
   const resetRoleForm = () => {
@@ -216,6 +252,7 @@ export default function SettingsPage() {
     setRoleLevel(10)
     setSelectedPermissions([])
     setCreateRoleError(null)
+    setIsCreatingRole(false)
   }
 
   return (
@@ -234,10 +271,12 @@ export default function SettingsPage() {
             <Users className="mr-2 h-4 w-4" />
             Team
           </TabsTrigger>
-          <TabsTrigger value="roles">
-            <Shield className="mr-2 h-4 w-4" />
-            Roles
-          </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="roles">
+              <Shield className="mr-2 h-4 w-4" />
+              Roles
+            </TabsTrigger>
+          )}
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
         </TabsList>
@@ -264,6 +303,7 @@ export default function SettingsPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead>Email</TableHead>
+                  <TableHead>Role</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Joined</TableHead>
                   <TableHead className="w-[50px]"></TableHead>
@@ -288,11 +328,15 @@ export default function SettingsPage() {
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
-                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                          user.status === 'suspended' 
-                            ? 'bg-red-900/30 text-red-400' 
-                            : 'bg-green-900/30 text-green-400'
-                        }`}>
+                        <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs">
+                          {roles?.find((r) => r.id === user.roleId)?.name || 'No Role'}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${user.status === 'suspended'
+                          ? 'bg-red-900/30 text-red-400'
+                          : 'bg-green-900/30 text-green-400'
+                          }`}>
                           {user.status === 'suspended' ? 'Suspended' : 'Active'}
                         </span>
                       </TableCell>
@@ -320,7 +364,7 @@ export default function SettingsPage() {
                             }}>
                               {user.status === 'suspended' ? 'Activate' : 'Suspend'}
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               className="text-red-600"
                               onClick={() => setDeleteUser(user)}
                             >
@@ -397,10 +441,10 @@ export default function SettingsPage() {
                 <Button variant="outline" onClick={() => setEditUser(null)}>
                   Cancel
                 </Button>
-                <Button 
-                  onClick={() => editUser && updateUserMutation.mutate({ 
-                    id: editUser.id, 
-                    roleId: editUserRoleId 
+                <Button
+                  onClick={() => editUser && updateUserMutation.mutate({
+                    id: editUser.id,
+                    roleId: editUserRoleId
                   })}
                   disabled={updateUserMutation.isPending}
                 >
@@ -501,11 +545,10 @@ export default function SettingsPage() {
                       </TableCell>
                       <TableCell>
                         <span
-                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                            role.isSystem
-                              ? "bg-amber-900/30 text-amber-400"
-                              : "bg-green-900/30 text-green-400"
-                          }`}
+                          className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${role.isSystem
+                            ? "bg-amber-900/30 text-amber-400"
+                            : "bg-green-900/30 text-green-400"
+                            }`}
                         >
                           {role.isSystem ? "System" : "Custom"}
                         </span>
@@ -519,7 +562,16 @@ export default function SettingsPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem>Edit</DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => {
+                                setEditingRole(role)
+                                setRoleName(role.name)
+                                setRoleDescription(role.description || "")
+                                setRoleLevel(role.level)
+                                setSelectedPermissions(role.permissions)
+                                setAddRoleOpen(true)
+                              }}>
+                                Edit
+                              </DropdownMenuItem>
                               <DropdownMenuItem
                                 className="text-red-600"
                                 onClick={() => setDeleteRole(role)}
@@ -539,15 +591,18 @@ export default function SettingsPage() {
           </div>
 
           <Dialog open={addRoleOpen} onOpenChange={(open) => {
-            if (!open) resetRoleForm()
+            if (!open) {
+              resetRoleForm()
+              setEditingRole(null)
+            }
             setAddRoleOpen(open)
           }}>
             <DialogContent className="sm:max-w-[500px]">
               <form onSubmit={handleCreateRole}>
                 <DialogHeader>
-                  <DialogTitle>Create Role</DialogTitle>
+                  <DialogTitle>{editingRole ? "Edit Role" : "Create Role"}</DialogTitle>
                   <DialogDescription>
-                    Create a new role and assign permissions.
+                    {editingRole ? "Update role details and permissions." : "Create a new role and assign permissions."}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
@@ -574,7 +629,10 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="role-level">Hierarchy Level (1-200)</Label>
+                    <Label htmlFor="role-level" className="flex items-center gap-2">
+                      Hierarchy Level (1-200)
+                      <span className="text-[10px] bg-red-500/10 text-red-500 px-2 py-0.5 rounded font-bold uppercase tracking-wider">Internal Only</span>
+                    </Label>
                     <Input
                       id="role-level"
                       type="number"
@@ -584,11 +642,8 @@ export default function SettingsPage() {
                       min={1}
                       max={200}
                       required
+                      disabled
                     />
-                    <p className="text-[10px] text-muted-foreground">
-                      Higher level roles can see data from lower level roles.
-                      (Admin: 100, Manager: 80, Team Lead: 50, Agent: 10)
-                    </p>
                   </div>
                   <div className="grid gap-2">
                     <Label>Permissions</Label>
@@ -619,11 +674,11 @@ export default function SettingsPage() {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isCreatingRole || createRoleMutation.isPending}>
-                    {(isCreatingRole || createRoleMutation.isPending) && (
+                  <Button type="submit" disabled={isCreatingRole || createRoleMutation.isPending || updateRoleMutation.isPending}>
+                    {(isCreatingRole || createRoleMutation.isPending || updateRoleMutation.isPending) && (
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     )}
-                    Create Role
+                    {editingRole ? "Save Changes" : "Create Role"}
                   </Button>
                 </DialogFooter>
               </form>

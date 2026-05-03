@@ -23,7 +23,8 @@ import {
 } from "@/components/ui/dialog"
 import { toast } from "sonner"
 import { api } from "@/lib/api"
-import { toISOStringFromLocal } from "@/lib/date-utils"
+import { toISOString, getUserTimezone } from "@/lib/date-utils"
+import { useAuth } from "@/lib/auth-context"
 
 interface ConvertToDealModalProps {
     open: boolean
@@ -44,6 +45,7 @@ export function ConvertToDealModal({
     lead,
     onSuccess,
 }: ConvertToDealModalProps) {
+    const { user } = useAuth()
     const [title, setTitle] = React.useState(`Deal - ${lead.name}`)
     const [value, setValue] = React.useState(lead.budgetMax?.toString() || "")
     const [stage, setStage] = React.useState("lead")
@@ -59,13 +61,14 @@ export function ConvertToDealModal({
         
         setIsSubmitting(true)
         try {
+            const timezone = getUserTimezone(user)
             await api.post("/deals", {
                 title,
                 value: parseFloat(value) || 0,
                 stage,
                 customerName: lead.name,
                 customerEmail: lead.email,
-                expectedCloseDate: toISOStringFromLocal(expectedCloseDate) || null,
+                expectedCloseDate: toISOString(expectedCloseDate, timezone) || null,
                 notes: notes || null,
             })
             

@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { useAuth } from "@/lib/auth-context"
 import { useCreateTask } from "@/hooks/use-tasks"
+import { getUserTimezone, toISOString } from "@/lib/date-utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -85,7 +86,8 @@ export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
     setError(null)
 
     try {
-      const dueDateTime = new Date(`${dueDate}T${dueTime}`)
+      const timezone = getUserTimezone(currentUser)
+      const dueDateTimeISO = toISOString(`${dueDate}T${dueTime}`, timezone)
       
       await createTask.mutateAsync({
         title,
@@ -94,7 +96,7 @@ export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
         priority,
         status: TaskStatus.Todo,
         assignedToId: assignedToId || undefined,
-        dueDate: dueDateTime,
+        dueDate: dueDateTimeISO ? new Date(dueDateTimeISO) : undefined,
       })
 
       onOpenChange(false)

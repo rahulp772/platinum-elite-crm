@@ -8,19 +8,22 @@ const pg = require('pg');
 const DEMO_PASSWORD = 'Admin@123';
 
 const DEMO_TENANT_NAMES = [
-  'MakeItCRM Realty',
-  'Luxury Homes Global',
-  'Apex Properties',
-  'Skyline Estates',
-  'Royal Heritage Realty',
+  'MakeItCRM Bharat Realty',
+  'Elite India Properties',
+  'Apex Bharat Estates',
+  'Varanasi Heritage Realty',
+  'Mumbai Elite Homes',
 ];
+
 
 const BASE_PERMISSIONS = [
   'leads:read', 'leads:write', 'deals:read', 'deals:write',
   'properties:read', 'properties:write', 'tasks:read', 'tasks:write',
   'reports:read', 'settings:write', 'users:read', 'users:write', 'roles:write',
   'chat:read', 'chat:write',
+  'builders:read', 'builders:write',
 ];
+
 
 async function main() {
   const args = process.argv.slice(2);
@@ -133,8 +136,8 @@ async function createDemoTenants(db, count) {
     }
 
     const tenantResult = await db.query(
-      'INSERT INTO tenants (name, domain, "isDemo") VALUES ($1, $2, true) RETURNING id',
-      [`${tenantName} (Demo)`, demoDomain]
+      'INSERT INTO tenants (name, domain, "isDemo", timezone) VALUES ($1, $2, true, $3) RETURNING id',
+      [`${tenantName} (Demo)`, demoDomain, 'Asia/Kolkata']
     );
     const tenantId = tenantResult.rows[0].id;
     console.log(`   ✅ Created demo tenant: ${tenantName}`);
@@ -201,25 +204,55 @@ async function seedDemoData(db, tenantId) {
   const agentIds = agents.rows.map(r => r.id);
   const userIds = allUsers.rows.map(r => r.id);
 
+  // Dynamic counts for this tenant (50-100 range)
+  const propertyCount = 50 + Math.floor(Math.random() * 51);
+  const leadCount = 80 + Math.floor(Math.random() * 71);
+  const taskCount = 60 + Math.floor(Math.random() * 61);
+  const dealCount = 15 + Math.floor(Math.random() * 16);
+
+  const MS_IN_DAY = 24 * 60 * 60 * 1000;
+  const THREE_MONTHS_MS = 90 * MS_IN_DAY;
+  const FOUR_MONTHS_MS = 120 * MS_IN_DAY;
+
+
   if (agentIds.length === 0) {
     console.log(`   ⚠️  No agents found for demo data seeding`);
     return;
   }
 
-  const propertyData = [
-    { title: 'Modern Downtown Apartment', price: 850000, type: 'apartment', beds: 2, baths: 2, sqft: 1200, city: 'Manhattan', state: 'NY', features: ['Gym', 'Pool', 'Doorman'] },
-    { title: 'Luxury Waterfront Villa', price: 4500000, type: 'house', beds: 5, baths: 6, sqft: 5200, city: 'Miami', state: 'FL', features: ['Pool', 'Ocean View'] },
-    { title: 'Cozy Urban Studio', price: 325000, type: 'apartment', beds: 1, baths: 1, sqft: 650, city: 'Brooklyn', state: 'NY', features: ['Rooftop', 'Laundry'] },
-    { title: 'Spacious Family Home', price: 875000, type: 'house', beds: 4, baths: 3, sqft: 2800, city: 'Westchester', state: 'NY', features: ['Backyard', 'Garage'] },
-    { title: 'Penthouse Suite', price: 2200000, type: 'condo', beds: 3, baths: 3, sqft: 2400, city: 'Manhattan', state: 'NY', features: ['Terrace', 'Concierge'] },
-    { title: 'Charming Townhouse', price: 975000, type: 'townhouse', beds: 3, baths: 2, sqft: 2200, city: 'Brooklyn', state: 'NY', features: ['Garden', 'Exposed Brick'] },
-    { title: 'Modern Loft', price: 695000, type: 'apartment', beds: 2, baths: 2, sqft: 1600, city: 'Queens', state: 'NY', features: ['High Ceilings'] },
-    { title: 'Waterfront Condo', price: 1150000, type: 'condo', beds: 2, baths: 2, sqft: 1450, city: 'Jersey City', state: 'NJ', features: ['Marina', 'Pool'] },
-    { title: 'Historic Brownstone', price: 1650000, type: 'townhouse', beds: 4, baths: 3, sqft: 3100, city: 'Manhattan', state: 'NY', features: ['Garden'] },
-    { title: 'Suburban Ranch', price: 545000, type: 'house', beds: 3, baths: 2, sqft: 1650, city: 'Hoboken', state: 'NJ', features: ['Backyard'] },
-    { title: 'Commercial Space', price: 2500000, type: 'commercial', beds: 0, baths: 2, sqft: 4500, city: 'Manhattan', state: 'NY', features: ['Parking'] },
-    { title: 'Executive Estate', price: 3500000, type: 'house', beds: 6, baths: 7, sqft: 8500, city: 'Greenwich', state: 'CT', features: ['Pool', 'Wine Cellar'] },
+  // Seed Builders
+  const buildersData = [
+    { name: 'Sobha Realty', description: 'One of the most respected developers in India, known for high quality.', website: 'https://www.sobha.com', headquarters: 'Bangalore' },
+    { name: 'DLF Limited', description: 'Leading commercial and residential developer with projects across India.', website: 'https://www.dlf.in', headquarters: 'Gurugram' },
+    { name: 'Godrej Properties', description: 'Bringing the Godrej Group philosophy of innovation, sustainability, and excellence.', website: 'https://www.godrejproperties.com', headquarters: 'Mumbai' },
+    { name: 'Lodha Group', description: 'Premier real estate developer in Mumbai and London.', website: 'https://www.lodhagroup.in', headquarters: 'Mumbai' },
+    { name: 'Prestige Group', description: 'Leading property developers in South India.', website: 'https://www.prestigeconstructions.com', headquarters: 'Bangalore' },
   ];
+
+  const builderIds = [];
+  for (const b of buildersData) {
+    const result = await db.query(
+      'INSERT INTO builders (name, description, website, headquarters, "tenantId", "totalProjects", "completedProjects") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      [b.name, b.description, b.website, b.headquarters, tenantId, 15 + Math.floor(Math.random() * 10), 10 + Math.floor(Math.random() * 5)]
+    );
+    builderIds.push(result.rows[0].id);
+  }
+  console.log(`      - Created 5 builders`);
+
+
+  const propertyData = [
+    { title: 'Sobha Zenith Luxury Apartment', price: 25000000, type: 'apartment', beds: 3, baths: 3, sqft: 1850, city: 'Gurugram', state: 'Haryana', rera: 'HRERA-PKL-78-2023' },
+    { title: 'DLF The Aralias', price: 150000000, type: 'house', beds: 4, baths: 5, sqft: 5000, city: 'Gurugram', state: 'Haryana', rera: 'HRERA-PKL-12-2022' },
+    { title: 'Godrej Skyview Highrise', price: 18000000, type: 'apartment', beds: 2, baths: 2, sqft: 1250, city: 'Mumbai', state: 'Maharashtra', rera: 'P51800001234' },
+    { title: 'Lodha World One Residence', price: 85000000, type: 'condo', beds: 3, baths: 4, sqft: 2800, city: 'Mumbai', state: 'Maharashtra', rera: 'P51900000001' },
+    { title: 'Prestige Lakeside Habitat', price: 21000000, type: 'apartment', beds: 3, baths: 3, sqft: 1650, city: 'Bangalore', state: 'Karnataka', rera: 'PRM/KA/RERA/1251/446/PR/170915' },
+    { title: 'Modern Studio in Pune', price: 6500000, type: 'apartment', beds: 1, baths: 1, sqft: 650, city: 'Pune', state: 'Maharashtra', rera: 'P52100000111' },
+    { title: 'Spacious Row House', price: 32000000, type: 'townhouse', beds: 4, baths: 4, sqft: 3200, city: 'Noida', state: 'Uttar Pradesh', rera: 'UPRERAPRJ1234' },
+    { title: 'Executive Villa in Hyderabad', price: 55000000, type: 'house', beds: 5, baths: 5, sqft: 4500, city: 'Hyderabad', state: 'Telangana', rera: 'P02400001234' },
+    { title: 'Chennai Coastal Apartment', price: 12000000, type: 'apartment', beds: 2, baths: 2, sqft: 1100, city: 'Chennai', state: 'Tamil Nadu', rera: 'TN/01/Building/0001/2023' },
+    { title: 'Kolkata Heritage Estate', price: 28000000, type: 'house', beds: 4, baths: 3, sqft: 2600, city: 'Kolkata', state: 'West Bengal', rera: 'WBRERA/P/KOL/2023/000123' },
+  ];
+
 
   const sampleImages = [
     'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800',
@@ -229,63 +262,84 @@ async function seedDemoData(db, tenantId) {
     'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800',
     'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800',
     'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800',
-    'https://images.unsplash.com/photo-1600210492493-0946911120ea?w=800',
-    'https://images.unsplash.com/photo-1600573472591-ee6981cf81c0?w=800',
+    'https://images.unsplash.com/photo-1613977257363-707ba9348227?w=800',
+    'https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800',
     'https://images.unsplash.com/photo-1484154218962-a197022b5858?w=800',
   ];
 
   const propertyIds = [];
-  for (let i = 0; i < propertyData.length; i++) {
-    const data = propertyData[i];
+  for (let i = 0; i < propertyCount; i++) {
+    const data = propertyData[i % propertyData.length];
     const agentId = agentIds[Math.floor(Math.random() * agentIds.length)];
+    const builderId = builderIds[Math.floor(Math.random() * builderIds.length)];
+    
+    // Randomize titles slightly
+    const variations = ['Classic', 'Elite', 'Premium', 'Royal', 'Grand', 'Supreme'];
+    const title = variations[Math.floor(Math.random() * variations.length)] + ' ' + data.title + ' ' + (i + 1);
+
     // Assign different images based on index
     const startIdx = (i * 2) % sampleImages.length;
     const propertyImages = sampleImages.slice(startIdx, startIdx + 4);
     if (propertyImages.length < 4) {
       propertyImages.push(...sampleImages.slice(0, 4 - propertyImages.length));
     }
+
+    const listedDate = new Date(Date.now() - (Math.random() * FOUR_MONTHS_MS));
+
     const result = await db.query(
-      `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, "yearBuilt", images, features, "agentId", "tenantId") 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING id`,
+      `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, "yearBuilt", images, features, "agentId", "tenantId", "reraNumber", "builderId", "carpetArea", "basePrice", listed) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17, $18, $19, $20, $21, $22) RETURNING id`,
       [
-        data.title,
-        `Beautiful ${data.title} in ${data.city}, ${data.state}.`,
-        data.price,
-        Math.random() > 0.2 ? 'available' : 'pending',
+        title,
+        `Beautiful ${title} in ${data.city}, ${data.state}. High quality finishes and prime location.`,
+        data.price + (Math.floor(Math.random() * 20 - 10) * 100000), // Variable price
+        Math.random() > 0.3 ? 'available' : Math.random() > 0.5 ? 'pending' : 'sold',
         data.type,
-        `${Math.floor(Math.random() * 999) + 1} Main Street`,
+        `${Math.floor(Math.random() * 999) + 1} Park Street`,
         data.city,
         data.state,
-        String(10000 + Math.floor(Math.random() * 90000)),
+        String(110001 + Math.floor(Math.random() * 9000)),
         data.beds,
         data.baths,
         data.sqft,
-        1990 + Math.floor(Math.random() * 35),
+        2010 + Math.floor(Math.random() * 15),
         propertyImages.join(','),
-        JSON.stringify(data.features),
+        JSON.stringify(['Gated Community', 'Power Backup', 'Security', 'Clubhouse']),
         agentId,
-        tenantId
+        tenantId,
+        data.rera + '-' + (i + 100),
+        builderId,
+        data.sqft * 0.8,
+        data.price * 0.9,
+        listedDate
       ]
     );
     propertyIds.push(result.rows[0].id);
   }
 
+
+
   const firstNames = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth'];
-  const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez'];
-  const locations = ['Manhattan, NY', 'Brooklyn, NY', 'Queens, NY', 'Miami, FL', 'Los Angeles, CA'];
+  const lastNames = ['Sharma', 'Verma', 'Gupta', 'Singh', 'Patel', 'Reddy', 'Iyer', 'Nair', 'Chopra', 'Malhotra'];
+  const locations = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Pune', 'Chennai', 'Kolkata', 'Gurugram'];
+
   const statuses = ['new', 'contacted', 'qualified', 'interested', 'negotiation'];
   const sources = ['website', 'referral', 'social', 'cold_call'];
 
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < leadCount; i++) {
     const firstName = firstNames[Math.floor(Math.random() * firstNames.length)];
     const lastName = lastNames[Math.floor(Math.random() * lastNames.length)];
     const userId = userIds[Math.floor(Math.random() * userIds.length)];
     const budgetMin = Math.floor(Math.random() * 10 + 1) * 100000;
     const budgetMax = budgetMin + Math.floor(Math.random() * 5 + 2) * 100000;
+    const createdAt = new Date(Date.now() - (Math.random() * THREE_MONTHS_MS));
+    const lastContact = new Date(createdAt.getTime() + (Math.random() * (Date.now() - createdAt.getTime())));
 
     await db.query(
-      `INSERT INTO leads (name, email, phone, status, source, "budgetMin", "budgetMax", "preferredLocation", "propertyType", notes, "assignedToId", "tenantId", "lastContact") 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+      `INSERT INTO leads (name, email, phone, status, source, "budgetMin", "budgetMax", "preferredLocation", "propertyType", notes, "assignedToId", "tenantId", "lastContact", "builderId", "createdAt") 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)`,
+
+
       [
         `${firstName} ${lastName}`,
         `${firstName.toLowerCase()}.${lastName.toLowerCase()}@email.com`,
@@ -299,36 +353,45 @@ async function seedDemoData(db, tenantId) {
         `Interested in real estate. Budget: $${budgetMin.toLocaleString()}-$${budgetMax.toLocaleString()}`,
         userId,
         tenantId,
-        new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000)
+        lastContact,
+        Math.random() > 0.4 ? builderIds[Math.floor(Math.random() * builderIds.length)] : null,
+        createdAt
       ]
     );
   }
+
+
 
   const stages = ['lead', 'negotiation', 'under_contract', 'closed'];
   const priorities = ['low', 'medium', 'high'];
   const customerNames = ['Alice Freeman', 'Bob Miller', 'Carol Smith', 'David Johnson', 'Emma Wilson', 'Frank Brown', 'Grace Lee', 'Henry Davis', 'Ivy Martinez', 'Jack Garcia'];
 
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < dealCount; i++) {
     const userId = userIds[Math.floor(Math.random() * userIds.length)];
-    const propId = propertyIds[Math.floor(Math.random() * Math.min(propertyIds.length, 5))];
+    const propId = propertyIds[Math.floor(Math.random() * propertyIds.length)];
+    const createdAt = new Date(Date.now() - (Math.random() * THREE_MONTHS_MS));
+    const customerName = customerNames[i % customerNames.length] + ' ' + (i + 1);
 
     await db.query(
-      `INSERT INTO deals (title, value, stage, "customerName", "customerEmail", "propertyId", "agentId", "tenantId", priority, "expectedCloseDate") 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+      `INSERT INTO deals (title, value, stage, "customerName", "customerEmail", "propertyId", "agentId", "tenantId", priority, "expectedCloseDate", "createdAt") 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+
       [
         `Property Purchase - Deal ${i + 1}`,
         500000 + Math.floor(Math.random() * 3000000),
         stages[Math.floor(Math.random() * stages.length)],
-        customerNames[i],
-        `${customerNames[i].toLowerCase().replace(' ', '.')}@email.com`,
+        customerName,
+        `${customerName.toLowerCase().replace(' ', '.')}@email.com`,
         propId,
         userId,
         tenantId,
         priorities[Math.floor(Math.random() * priorities.length)],
-        new Date(Date.now() + Math.random() * 90 * 24 * 60 * 60 * 1000)
+        new Date(Date.now() + Math.random() * 90 * MS_IN_DAY),
+        createdAt
       ]
     );
   }
+
 
   const taskTitles = [
     'Call lead about property viewing', 'Follow up on pending deal', 'Prepare contract for closing',
@@ -339,12 +402,15 @@ async function seedDemoData(db, tenantId) {
   ];
   const types = ['call', 'email', 'meeting', 'deadline', 'todo'];
 
-  for (let i = 0; i < 20; i++) {
+  for (let i = 0; i < taskCount; i++) {
     const userId = userIds[Math.floor(Math.random() * userIds.length)];
+    const createdAt = new Date(Date.now() - (Math.random() * THREE_MONTHS_MS));
+    const dueDate = new Date(createdAt.getTime() + (Math.random() * (FOUR_MONTHS_MS)));
 
     await db.query(
-      `INSERT INTO tasks (title, description, status, priority, type, "dueDate", "assignedToId", "createdById", "tenantId") 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      `INSERT INTO tasks (title, description, status, priority, type, "dueDate", "assignedToId", "createdById", "tenantId", "createdAt") 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+
       [
         taskTitles[i % taskTitles.length],
         `Task details for ${taskTitles[i % taskTitles.length]}. Follow up required.`,
@@ -354,13 +420,15 @@ async function seedDemoData(db, tenantId) {
         new Date(Date.now() + (Math.random() * 30 - 5) * 24 * 60 * 60 * 1000),
         userId,
         userId,
-        tenantId
+        tenantId,
+        createdAt
       ]
     );
   }
 
-  console.log(`      - Created 12 properties, 50 leads, 10 deals, 20 tasks`);
+  console.log(`      - Created ${propertyCount} properties, ${leadCount} leads, ${dealCount} deals, ${taskCount} tasks`);
 }
+
 
 async function refreshDemoTenants(db) {
   const tenants = await db.query('SELECT id, name FROM tenants WHERE "isDemo" = true');
@@ -380,6 +448,8 @@ async function refreshDemoTenants(db) {
     await db.query('DELETE FROM deals WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM leads WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM properties WHERE "tenantId" = $1', [tenant.id]);
+    await db.query('DELETE FROM builders WHERE "tenantId" = $1', [tenant.id]);
+
 
     await seedDemoData(db, tenant.id);
   }
@@ -403,6 +473,8 @@ async function deleteDemoTenants(db) {
     await db.query('DELETE FROM deals WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM leads WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM properties WHERE "tenantId" = $1', [tenant.id]);
+    await db.query('DELETE FROM builders WHERE "tenantId" = $1', [tenant.id]);
+
     await db.query('DELETE FROM users WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM roles WHERE "tenantId" = $1', [tenant.id]);
     await db.query('DELETE FROM tenants WHERE id = $1', [tenant.id]);

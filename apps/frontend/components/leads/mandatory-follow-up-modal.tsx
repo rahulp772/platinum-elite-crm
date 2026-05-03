@@ -19,7 +19,8 @@ import { useUpdateLead, useLogLeadActivity, useLeadProperties, useLeadActivities
 import { useAuth } from "@/lib/auth-context"
 import { LeadStatus } from "@/types/lead"
 import { toast } from "sonner"
-import { formatDateTimeInTimezone, getUserTimezone } from "@/lib/date-utils"
+import { formatDateTimeInTimezone, getUserTimezone, toISOString } from "@/lib/date-utils"
+import { toLocalISOString } from "@/lib/utils"
 import { DateTimePicker } from "./date-time-picker"
 
 interface MandatoryFollowUpModalProps {
@@ -92,7 +93,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                 await updateLead.mutateAsync({
                     id: leadId,
                     status,
-                    siteVisitScheduledAt: followUpAt.toISOString(),
+                    siteVisitScheduledAt: toISOString(toLocalISOString(followUpAt), timezone) || undefined,
                 })
 
                 const propertyDetails = selectedProperties.length > 0 
@@ -127,7 +128,7 @@ export function MandatoryFollowUpModal({ open, onOpenChange, leadId, currentStat
                 await updateLead.mutateAsync({
                     id: leadId,
                     status,
-                    followUpAt: followUpAt?.toISOString(),
+                    followUpAt: followUpAt ? toISOString(toLocalISOString(followUpAt), timezone) || undefined : undefined,
                 })
 
                 if (notes.trim()) {

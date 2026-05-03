@@ -89,7 +89,14 @@ export interface Lead {
     }
   }
   assignedToId?: string
+  builderId?: string
+  builder?: {
+    id: string
+    name: string
+    logo?: string
+  }
   createdAt: Date
+
   updatedAt?: Date
   lastContact?: Date
   followUpAt?: string | Date
