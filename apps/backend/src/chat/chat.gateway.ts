@@ -53,19 +53,33 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   async handleConnection(client: Socket) {
     try {
-      let token =
-        client.handshake.auth?.token ||
-        client.handshake.headers?.authorization?.replace('Bearer ', '');
+      let token = client.handshake.auth?.token as string | undefined;
+
+      if (!token) {
+        token = client.handshake.headers?.authorization?.replace('Bearer ', '');
+      }
 
       if (!token && client.handshake.headers?.cookie) {
         const cookieStr = client.handshake.headers.cookie;
-        const match = cookieStr.match(/(?:^| )token=([^;]+)/);
-        if (match) {
-          token = decodeURIComponent(match[1]);
+        const cookies = cookieStr.split(';').reduce((acc: Record<string, string>, cookie) => {
+          const [key, ...valueParts] = cookie.trim().split('=')
+          if (key) {
+            acc[key] = valueParts.join('=')
+          }
+          return acc
+        }, {})
+        
+        if (cookies['token']) {
+          try {
+            token = decodeURIComponent(cookies['token'])
+          } catch {
+            token = cookies['token']
+          }
         }
       }
 
       if (!token) {
+        console.log('[ChatGateway] No token provided, disconnecting client')
         client.disconnect();
         return;
       }
@@ -78,6 +92,7 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
 
       if (!user) {
+        console.log('[ChatGateway] User not found for token, disconnecting client')
         client.disconnect();
         return;
       }
@@ -86,7 +101,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       this.userSockets.set(user.id, client.id);
 
       client.join(`user:${user.id}`);
+      console.log(`[ChatGateway] Client connected: user ${user.id}`);
     } catch (error) {
+      console.log('[ChatGateway] Token verification failed, disconnecting client:', error)
       client.disconnect();
     }
   }

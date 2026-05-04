@@ -36,6 +36,23 @@ function getSocketUrl(): string {
   return `${protocol}//${hostname}:3001`
 }
 
+function getTokenFromCookies(): string | null {
+  if (typeof document === 'undefined') return null
+  
+  const cookies = document.cookie.split(';')
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=')
+    if (name === 'token') {
+      try {
+        return decodeURIComponent(value)
+      } catch {
+        return value
+      }
+    }
+  }
+  return null
+}
+
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { user, isAuthLoading } = useAuth()
   const notifications = useNotifications()
@@ -74,10 +91,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }
 
     const socketUrl = getSocketUrl()
-    console.log('[Socket] Connecting to:', socketUrl)
+    const token = getTokenFromCookies()
+    console.log('[Socket] Connecting to:', socketUrl, token ? '(with token)' : '(no token)')
 
     const socket = io(socketUrl, {
       withCredentials: true,
+      auth: {
+        token: token,
+      },
       reconnection: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 1000,
