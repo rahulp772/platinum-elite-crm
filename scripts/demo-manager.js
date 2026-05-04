@@ -159,25 +159,27 @@ async function createDemoTenants(db, count) {
     }
 
     const adminResult = await db.query(
-      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6) RETURNING id',
-      [`admin@${demoDomain}`, hashedPassword, 'Admin User', tenantId, rolesMap['Admin'], 'Asia/Kolkata']
+      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone, phone, "jobTitle", "isOnboardingComplete") VALUES ($1, $2, $3, $4, $5, false, $6, $7, $8, true) RETURNING id',
+      [`admin@${demoDomain}`, hashedPassword, 'Rahul Sharma', tenantId, rolesMap['Admin'], 'Asia/Kolkata', '+91 98765 43210', 'Admin']
     );
     await db.query(
-      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6) RETURNING id',
-      [`manager@${demoDomain}`, hashedPassword, 'Manager User', tenantId, rolesMap['Manager'], 'Asia/Kolkata']
+      'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone, phone, "jobTitle", "isOnboardingComplete") VALUES ($1, $2, $3, $4, $5, false, $6, $7, $8, true) RETURNING id',
+      [`manager@${demoDomain}`, hashedPassword, 'Priya Patel', tenantId, rolesMap['Manager'], 'Asia/Kolkata', '+91 98765 43211', 'Manager']
     );
 
+    const teamLeadNames = ['Vikram Singh', 'Anjali Kumar'];
     for (let j = 1; j <= 2; j++) {
       await db.query(
-        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6)',
-        [`lead${j}@${demoDomain}`, hashedPassword, `Team Lead ${j}`, tenantId, rolesMap['Team Lead'], 'Asia/Kolkata']
+        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone, phone, "jobTitle", "isOnboardingComplete") VALUES ($1, $2, $3, $4, $5, false, $6, $7, $8, true)',
+        [`lead${j}@${demoDomain}`, hashedPassword, teamLeadNames[j-1], tenantId, rolesMap['Team Lead'], 'Asia/Kolkata', `+91 98765 ${43220 + j}`, 'Team Lead']
       );
     }
 
+    const agentNames = ['Amit Gupta', 'Sneha Reddy', 'Raj Malhotra', 'Kavita Singh'];
     for (let j = 1; j <= 4; j++) {
       await db.query(
-        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone) VALUES ($1, $2, $3, $4, $5, false, $6)',
-        [`agent${j}@${demoDomain}`, hashedPassword, `Agent ${j}`, tenantId, rolesMap['Agent'], 'Asia/Kolkata']
+        'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone, phone, "jobTitle", "isOnboardingComplete") VALUES ($1, $2, $3, $4, $5, false, $6, $7, $8, true)',
+        [`agent${j}@${demoDomain}`, hashedPassword, agentNames[j-1], tenantId, rolesMap['Agent'], 'Asia/Kolkata', `+91 98765 ${43230 + j}`, 'Real Estate Agent']
       );
     }
 
