@@ -258,7 +258,7 @@ export default function MessagesPage() {
     }, [])
 
     React.useEffect(() => {
-        if (!selectedId || !socket) return
+        if (!selectedId) return
 
         if (selectedId.startsWith('new_')) {
             setMessages([])
@@ -270,16 +270,20 @@ export default function MessagesPage() {
 
         loadMessages(selectedId, 1)
 
-        socket.emit('join_conversation', { conversationId: selectedId })
-        socket.emit('mark_read', { conversationId: selectedId })
+        if (globalSocket?.connected) {
+            globalSocket.emit('join_conversation', { conversationId: selectedId })
+            globalSocket.emit('mark_read', { conversationId: selectedId })
+        }
 
         return () => {
-            socket.emit('leave_conversation', { conversationId: selectedId })
+            if (globalSocket?.connected) {
+                globalSocket.emit('leave_conversation', { conversationId: selectedId })
+            }
         }
-    }, [selectedId, socket, loadMessages])
+    }, [selectedId, loadMessages])
 
     const handleSendMessage = async (content: string, attachments?: any[]) => {
-        if (!selectedId || !socket || !user) return
+        if (!selectedId || !user) return
 
         const tempId = `temp_${Date.now()}`
         const optimisticMessage: Message = {
@@ -310,22 +314,36 @@ export default function MessagesPage() {
                     c.id === selectedId ? { ...c, id: newConv.id, isNewConversation: false } : c
                 ))
                 await new Promise(resolve => setTimeout(resolve, 100))
-                socket.emit('join_conversation', { conversationId: newConv.id })
-                socket.emit('send_message', {
-                    conversationId: newConv.id,
-                    content,
-                    attachments,
-                })
+                
+                if (globalSocket?.connected) {
+                    globalSocket.emit('join_conversation', { conversationId: newConv.id })
+                    globalSocket.emit('send_message', {
+                        conversationId: newConv.id,
+                        content,
+                        attachments,
+                    })
+                } else {
+                    await chatApi.sendMessage(newConv.id, content)
+                }
             } catch (error) {
                 setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
                 toast.error('Failed to send message. Please try again.')
             }
         } else {
-            socket.emit('send_message', {
-                conversationId: selectedId,
-                content,
-                attachments,
-            })
+            if (globalSocket?.connected) {
+                globalSocket.emit('send_message', {
+                    conversationId: selectedId,
+                    content,
+                    attachments,
+                })
+            } else {
+                try {
+                    await chatApi.sendMessage(selectedId, content)
+                } catch (error) {
+                    setMessages(prev => prev.filter(m => m.id !== optimisticMessage.id))
+                    toast.error('Failed to send message. Please try again.')
+                }
+            }
         }
     }
 
