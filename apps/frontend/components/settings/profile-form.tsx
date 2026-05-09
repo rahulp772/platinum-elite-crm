@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { AvatarUpload } from "./avatar-upload"
 import {
     Select,
     SelectContent,
@@ -116,15 +117,7 @@ export function ProfileForm() {
             </CardHeader>
             <CardContent>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-                    <div className="flex items-center gap-6">
-                        <Avatar className="h-24 w-24">
-                            <AvatarImage src={user?.avatar || ""} />
-                            <AvatarFallback>
-                                {form.watch("name")?.charAt(0)?.toUpperCase() || "?"}
-                            </AvatarFallback>
-                        </Avatar>
-                        <Button variant="outline">Change Avatar</Button>
-                    </div>
+                    <AvatarUpload />
 
                     <div className="grid gap-4">
                         <div className="grid gap-2">

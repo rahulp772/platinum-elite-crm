@@ -9,7 +9,6 @@ import { Lead } from '../leads/entities/lead.entity';
 import { Property } from '../properties/entities/property.entity';
 import { Deal } from '../deals/entities/deal.entity';
 import { Task } from '../tasks/entities/task.entity';
-import { Team } from '../teams/entities/team.entity';
 import { Conversation } from '../chat/entities/conversation.entity';
 import { Message } from '../chat/entities/message.entity';
 import { Builder } from '../builders/entities/builder.entity';
@@ -27,7 +26,6 @@ import { Builder } from '../builders/entities/builder.entity';
       Property,
       Deal,
       Task,
-      Team,
       Conversation,
       Message,
       Builder,

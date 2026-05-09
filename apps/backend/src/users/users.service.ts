@@ -83,6 +83,15 @@ export class UsersService {
     return { message: 'User deleted successfully' };
   }
 
+  async updateAvatar(userId: string, avatarUrl: string) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    user.avatar = avatarUrl;
+    return this.userRepository.save(user);
+  }
+
   async invite(inviteDto: InviteUserDto, currentUser: User) {
     const { email, name, roleId, phone } = inviteDto;
 

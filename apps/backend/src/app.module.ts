@@ -21,11 +21,11 @@ import { ChatModule } from './chat/chat.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { SearchModule } from './search/search.module';
 import { SeedsModule } from './seeds/seeds.module';
-import { TeamsModule } from './teams/teams.module';
 import { PortalWebhooksModule } from './portal-webhooks/portal-webhooks.module';
 import { AuditModule } from './audit/audit.module';
 import { BuildersModule } from './builders/builders.module';
 import { PlansModule } from './plans/plans.module';
+import { TransactionsModule } from './transactions/transactions.module';
 
 
 @Module({
@@ -85,10 +85,10 @@ import { PlansModule } from './plans/plans.module';
     ChatModule,
     AnalyticsModule,
     SearchModule,
-    TeamsModule,
     PortalWebhooksModule,
     BuildersModule,
     PlansModule,
+    TransactionsModule,
   ],
 
   controllers: [AppController],

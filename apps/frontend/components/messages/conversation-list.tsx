@@ -116,7 +116,7 @@ export function ConversationList({ conversations, selectedId, onSelect, currentU
                                                 {participant?.name || 'Unknown'}
                                             </span>
                                             {lastMsg && (
-                                                <span className="text-[10px] font-medium text-muted-foreground/70 uppercase">
+                                                <span className="text-[10px] font-medium text-muted-foreground/70">
                                                     {formatRelativeTime(lastMsg.timestamp, timezone)}
                                                 </span>
                                             )}
@@ -129,7 +129,7 @@ export function ConversationList({ conversations, selectedId, onSelect, currentU
                                                     : "text-muted-foreground font-medium"
                                             )}>
                                                 {lastMsg.senderId === currentUserId && (
-                                                    <span className="text-[10px] font-bold text-muted-foreground/50 mr-1 uppercase">You:</span>
+                                                    <span className="text-[10px] font-bold text-muted-foreground/50 mr-1">You:</span>
                                                 )}
                                                 {lastMsg.content || (lastMsg.attachments?.length ? "Sent an attachment" : "Message")}
                                             </p>

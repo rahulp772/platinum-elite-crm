@@ -1,12 +1,15 @@
 "use client"
 
 import * as React from "react"
+import { useSearchParams } from "next/navigation"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ProfileForm } from "@/components/settings/profile-form"
 import { NotificationsForm } from "@/components/settings/notifications-form"
 import { AppearanceForm } from "@/components/settings/appearance-form"
+import { CompanyForm } from "@/components/settings/company-form"
+import { BillingForm } from "@/components/settings/billing-form"
 import { AddMemberDialog } from "@/components/settings/add-member-dialog"
 import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
@@ -20,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Users, Shield, Plus, MoreHorizontal, Loader2, Trash2, UserCog } from "lucide-react"
+import { Users, Shield, Plus, MoreHorizontal, Loader2, Trash2, UserCog, Building2, CreditCard } from "lucide-react"
 import { formatDateOnly, getUserTimezone } from "@/lib/date-utils"
 import {
   Table,
@@ -96,7 +99,10 @@ interface Role {
 export default function SettingsPage() {
   const queryClient = useQueryClient()
   const { user: currentUser } = useAuth()
+  const searchParams = useSearchParams()
   const timezone = getUserTimezone(currentUser)
+
+  const defaultTab = searchParams.get('tab') || 'profile'
 
   const [teamPage, setTeamPage] = React.useState(1)
   const [addMemberOpen, setAddMemberOpen] = React.useState(false)
@@ -264,9 +270,19 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-4">
+      <Tabs defaultValue={defaultTab} className="space-y-4">
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
+          <TabsTrigger value="company">
+            <Building2 className="mr-2 h-4 w-4" />
+            Company
+          </TabsTrigger>
+          {isAdmin && (
+            <TabsTrigger value="billing">
+              <CreditCard className="mr-2 h-4 w-4" />
+              Billing
+            </TabsTrigger>
+          )}
           <TabsTrigger value="team">
             <Users className="mr-2 h-4 w-4" />
             Team
@@ -284,6 +300,16 @@ export default function SettingsPage() {
         <TabsContent value="profile" className="space-y-4">
           <ProfileForm />
         </TabsContent>
+
+        <TabsContent value="company" className="space-y-4">
+          <CompanyForm />
+        </TabsContent>
+
+        {isAdmin && (
+          <TabsContent value="billing" className="space-y-4">
+            <BillingForm />
+          </TabsContent>
+        )}
 
         <TabsContent value="team" className="space-y-4">
           <div className="flex items-center justify-between">

@@ -121,7 +121,7 @@ export class RolesService {
       {
         name: 'Manager',
         level: 80,
-        description: 'Manage teams and operations',
+        description: 'Manage operations and team members',
         permissions: [
           'leads:read', 'leads:write',
           'deals:read', 'deals:write',

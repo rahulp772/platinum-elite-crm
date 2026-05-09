@@ -211,7 +211,7 @@ export function ChatWindow({
                         </div>
                         <div>
                             <h2 className="text-sm font-bold text-foreground leading-none mb-1">{participant?.name || 'Unknown'}</h2>
-                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground uppercase tracking-wider font-medium">
+                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground tracking-wider font-medium">
                                 {participant?.status === "online" ? (
                                     <span className="text-teal-500 font-bold">Online Now</span>
                                 ) : (
@@ -256,7 +256,7 @@ export function ChatWindow({
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10">
                                     <div className="flex flex-col items-center gap-3 bg-card/50 backdrop-blur-sm p-6 rounded-3xl shadow-sm border border-border/50">
                                         <div className="h-8 w-8 rounded-full border-2 border-realty-gold border-t-transparent animate-spin" />
-                                        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Loading messages...</span>
+                                        <span className="text-[10px] font-bold text-muted-foreground tracking-widest">Loading messages...</span>
                                     </div>
                                 </div>
                             ) : conversation.messages.length === 0 ? (
@@ -277,7 +277,7 @@ export function ChatWindow({
                                 <>
                                     {hasMore && (
                                         <div className="flex justify-center py-4">
-                                            <Button variant="ghost" size="sm" onClick={onLoadMore} className="text-[10px] uppercase tracking-widest text-muted-foreground hover:text-realty-gold">
+                                            <Button variant="ghost" size="sm" onClick={onLoadMore} className="text-[10px] tracking-widest text-muted-foreground hover:text-realty-gold">
                                                 Load older messages
                                             </Button>
                                         </div>
@@ -302,7 +302,7 @@ export function ChatWindow({
                                                 {showDateSeparator && (
                                                     <div className="flex items-center justify-center my-6">
                                                         <div className="flex-1 h-px bg-border/50" />
-                                                        <span className="mx-4 px-3 py-1 rounded-full bg-muted/50 text-[10px] font-bold text-muted-foreground uppercase tracking-widest ring-1 ring-border/50 backdrop-blur-sm">
+                                                        <span className="mx-4 px-3 py-1 rounded-full bg-muted/50 text-[10px] font-bold text-muted-foreground tracking-widest ring-1 ring-border/50 backdrop-blur-sm">
                                                             {getDateLabel(msg.timestamp, timezone)}
                                                         </span>
                                                         <div className="flex-1 h-px bg-border/50" />
@@ -314,7 +314,7 @@ export function ChatWindow({
                                                     isFirstInGroup && "mt-1"
                                                 )}>
                                                     {isFirstInGroup && !isMe && (
-                                                        <span className="text-[10px] font-bold text-muted-foreground px-2 mb-1 uppercase tracking-tight">
+                                                        <span className="text-[10px] font-bold text-muted-foreground px-2 mb-1 tracking-tight">
                                                             {sender.name}
                                                         </span>
                                                     )}
@@ -400,7 +400,7 @@ export function ChatWindow({
                                                                 )}
                                                             </div>
                                                             {isLastInGroup && (
-                                                                <span className="text-[9px] font-medium text-muted-foreground/60 px-1 uppercase">
+                                                                <span className="text-[9px] font-medium text-muted-foreground/60 px-1">
                                                                     {formatTimeOnly(msg.timestamp, timezone)}
                                                                 </span>
                                                             )}
@@ -449,8 +449,8 @@ export function ChatWindow({
                             </div>
                         )}
 
-                        <div className="flex gap-3 items-end">
-                            <div className="flex gap-1 shrink-0 pb-1">
+                        <div className="flex gap-2 items-center">
+                            <div className="flex shrink-0">
                                 <input
                                     type="file"
                                     ref={fileInputRef}
@@ -463,7 +463,7 @@ export function ChatWindow({
                                     variant="ghost"
                                     size="icon"
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="h-9 w-9 text-muted-foreground hover:text-realty-gold hover:bg-realty-gold/10"
+                                    className="h-9 w-9 rounded-full bg-muted/50 text-muted-foreground hover:text-realty-gold hover:bg-realty-gold/10 transition-colors"
                                 >
                                     <Paperclip className="h-4 w-4" />
                                 </Button>
@@ -471,11 +471,12 @@ export function ChatWindow({
                             <div className="flex-1 relative">
                                 <Textarea
                                     ref={textareaRef}
+                                    rows={1}
                                     value={message}
                                     onChange={(e) => setMessage(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     placeholder="Type your message..."
-                                    className="min-h-[48px] max-h-[160px] py-3.5 px-5 resize-none bg-background/80 border-realty-gold/10 focus:border-realty-gold/50 focus:ring-realty-gold/20 rounded-[24px] shadow-inner transition-all text-sm scrollbar-none leading-relaxed"
+                                    className="min-h-[36px] max-h-[160px] py-2 px-5 resize-none bg-background/50 border-realty-gold/10 focus:border-realty-gold/30 focus:ring-realty-gold/10 rounded-full shadow-inner transition-all text-sm scrollbar-none leading-tight"
                                 />
                             </div>
                             <Button
@@ -483,7 +484,7 @@ export function ChatWindow({
                                 size="icon"
                                 disabled={(!message.trim() && selectedFiles.length === 0) || isUploading}
                                 className={cn(
-                                    "shrink-0 h-11 w-11 rounded-2xl shadow-lg transition-all active:scale-95",
+                                    "shrink-0 h-9 w-9 rounded-full shadow-lg transition-all active:scale-95",
                                     (message.trim() || selectedFiles.length > 0) && !isUploading
                                         ? "bg-realty-gold text-realty-navy hover:bg-realty-gold-light shadow-realty-gold/20"
                                         : "bg-muted text-muted-foreground"
@@ -518,21 +519,21 @@ export function ChatWindow({
                             </AvatarFallback>
                         </Avatar>
                         <h3 className="font-bold text-lg text-foreground tracking-tight">{participant?.name}</h3>
-                        <p className="text-xs font-medium text-realty-gold uppercase tracking-[0.2em] mt-1">Contact Details</p>
+                        <p className="text-xs font-medium text-realty-gold tracking-[0.2em] mt-1">Contact Details</p>
                     </div>
 
                     <ScrollArea className="flex-1">
                         <div className="p-6 space-y-8">
                             {/* Contact Info */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/30 pb-2">Information</h4>
+                                <h4 className="text-[10px] font-bold text-muted-foreground tracking-widest border-b border-border/30 pb-2">Information</h4>
                                 <div className="space-y-4">
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-medium text-muted-foreground uppercase">Email Address</span>
+                                        <span className="text-[10px] font-medium text-muted-foreground">Email Address</span>
                                         <span className="text-sm font-medium">{participant?.email || 'Not shared'}</span>
                                     </div>
                                     <div className="flex flex-col gap-1">
-                                        <span className="text-[10px] font-medium text-muted-foreground uppercase">Role</span>
+                                        <span className="text-[10px] font-medium text-muted-foreground">Role</span>
                                         <span className="text-sm font-medium">Team Member</span>
                                     </div>
                                 </div>
@@ -540,7 +541,7 @@ export function ChatWindow({
 
                             {/* Options */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/30 pb-2">Settings</h4>
+                                <h4 className="text-[10px] font-bold text-muted-foreground tracking-widest border-b border-border/30 pb-2">Settings</h4>
                                 <div className="grid gap-2">
                                     <Button variant="outline" className="justify-start gap-3 border-border/50 hover:bg-muted/50 text-xs h-10">
                                         <Search className="h-3.5 w-3.5 text-muted-foreground" />
@@ -555,7 +556,7 @@ export function ChatWindow({
 
                             {/* Shared Media Placeholder */}
                             <div className="space-y-4">
-                                <h4 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest border-b border-border/30 pb-2">Shared Photos</h4>
+                                <h4 className="text-[10px] font-bold text-muted-foreground tracking-widest border-b border-border/30 pb-2">Shared Photos</h4>
                                 <div className="grid grid-cols-3 gap-2">
                                     {[1, 2, 3].map(i => (
                                         <div key={i} className="aspect-square rounded-lg bg-muted/50 border border-border/30 flex items-center justify-center">

@@ -28,7 +28,6 @@ import {
   LeadActivityAction,
 } from './entities/lead-activity.entity';
 import { LeadStatus, LeadSource } from './enums/lead.enum';
-import { TeamsService } from '../teams/teams.service';
 import { LeadScoringService } from './services/lead-scoring.service';
 import { LeadAssignmentService } from './services/lead-assignment.service';
 import { dateUtils } from '../common/date-utils';
@@ -57,7 +56,6 @@ export class LeadsService {
     private activityRepository: Repository<LeadActivity>,
     @InjectRepository(AgentProfile)
     private agentProfileRepository: Repository<AgentProfile>,
-    private teamsService: TeamsService,
     private leadScoringService: LeadScoringService,
     private leadAssignmentService: LeadAssignmentService,
   ) {}
@@ -297,16 +295,9 @@ export class LeadsService {
       }
 
       if (roleLevel === 80 || roleLevel === 50) {
-        const teamMemberIds = await this.teamsService.getTeamLeadMembers(user);
-        if (teamMemberIds && teamMemberIds.length > 0) {
-          return qb.where(
-            '(lead.assignedToId = :currentUserId OR lead.assignedToId IN (:...teamMemberIds)) AND lead.tenantId = :tenantId',
-            { currentUserId, teamMemberIds, tenantId },
-          );
-        }
         return qb.where(
-          'lead.assignedToId = :currentUserId AND lead.tenantId = :tenantId',
-          { currentUserId, tenantId },
+          '(lead.assignedToId = :currentUserId OR (assignedTo.role.level < :roleLevel AND lead.tenantId = :tenantId))',
+          { currentUserId, roleLevel, tenantId },
         );
       }
 

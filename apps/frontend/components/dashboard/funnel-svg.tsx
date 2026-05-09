@@ -109,12 +109,7 @@ export function FunnelSVG({ data }: FunnelSVGProps) {
           ))}
         </defs>
 
-        {/* Background Decorative Grid */}
-        <g opacity="0.03">
-          {[...Array(10)].map((_, i) => (
-            <line key={i} x1="0" y1={i * 40} x2={width} y2={i * 40} stroke="currentColor" strokeWidth="1" />
-          ))}
-        </g>
+
 
         {segments.map((s, i) => (
           <g key={s.stage} className="group">
@@ -181,7 +176,7 @@ export function FunnelSVG({ data }: FunnelSVGProps) {
               <text
                 x={funnelWidth + 70}
                 y={s.centerTextY}
-                className="fill-slate-800 dark:fill-slate-200 font-bold text-[18px] tracking-tight"
+                className="fill-foreground font-bold text-[18px] tracking-tight"
                 dy=".3em"
               >
                 {s.count} <tspan className="text-[12px] opacity-50 uppercase font-medium">Leads</tspan>
@@ -197,15 +192,7 @@ export function FunnelSVG({ data }: FunnelSVGProps) {
                 ({s.conversion}%)
               </text>
 
-              <line
-                x1={funnelWidth + 185}
-                y1={s.topY + 5}
-                x2={funnelWidth + 185}
-                y2={s.bottomY - 5}
-                stroke="currentColor"
-                strokeWidth="1"
-                className="opacity-10"
-              />
+
             </motion.g>
           </g>
         ))}

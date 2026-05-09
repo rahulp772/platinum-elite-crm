@@ -174,7 +174,7 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                     collapsed && !isMobile && "justify-center mx-2 p-3"
                 )}>
                     <Avatar className={cn("ring-2 ring-primary/10 ring-offset-2 ring-offset-background", collapsed ? "h-10 w-10" : "h-11 w-11")}>
-                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
+                        <AvatarImage src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
                         <AvatarFallback className="bg-primary text-primary-foreground font-bold">
                             {user?.name?.split(' ').map((n: string) => n[0]).join('') || "IW"}
                         </AvatarFallback>
@@ -297,71 +297,63 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                     </Tooltip>
                 </div>
 
-                {!collapsed && subscriptionStatus && (
+                {!collapsed && subscriptionStatus && user?.role && user.role.level >= 80 && (
                     <div className="p-3">
                         {subscriptionStatus.isOnHighestPlan ? (
-                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-realty-gold/20 to-realty-gold/10 p-4 shadow-xl border border-realty-gold/20 group">
-                                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-realty-gold/10 blur-2xl group-hover:bg-realty-gold/20 transition-all duration-500" />
-                                <div className="relative flex items-center gap-2 mb-2">
-                                    <div className="p-1 rounded-md bg-realty-gold/20">
+                            <div className="rounded-lg border bg-card text-card-foreground p-3 border-realty-gold/30">
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
                                         <Sparkles className="h-3 w-3 text-realty-gold" />
+                                        <span className="text-xs font-semibold text-realty-gold uppercase tracking-wider">
+                                            {subscriptionStatus.planName || 'Enterprise'}
+                                        </span>
                                     </div>
-                                    <p className="text-xs font-bold text-realty-gold uppercase tracking-wider">{subscriptionStatus.planName || 'Enterprise'}</p>
+                                    <Badge variant="outline" className="text-[9px] h-5 border-realty-gold/40 text-realty-gold">PRO</Badge>
                                 </div>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-[10px] text-muted-foreground capitalize">
-                                        {subscriptionStatus.subscriptionStatus || 'Active'}
-                                    </p>
-                                    <Badge variant="outline" className="text-[9px] h-4 border-realty-gold/30 text-realty-gold px-1">PRO</Badge>
-                                </div>
+                                <p className="text-[10px] text-muted-foreground capitalize">
+                                    {subscriptionStatus.subscriptionStatus || 'Active'}
+                                </p>
                             </div>
                         ) : subscriptionStatus.isTrial ? (
-                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-600/10 p-4 shadow-xl border border-amber-500/20 group">
-                                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-amber-500/10 blur-2xl group-hover:bg-amber-500/20 transition-all duration-500" />
-                                <div className="relative flex items-center gap-2 mb-2">
-                                    <div className="p-1 rounded-md bg-amber-500/20">
-                                        <Sparkles className="h-3 w-3 text-amber-500" />
-                                    </div>
-                                    <p className="text-xs font-bold text-amber-500 uppercase tracking-wider">
+                            <div className="rounded-lg border bg-card text-card-foreground p-3 border-realty-gold/30">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Sparkles className="h-3 w-3 text-realty-gold" />
+                                    <span className="text-xs font-semibold text-realty-gold uppercase tracking-wider">
                                         {subscriptionStatus.planName ? `${subscriptionStatus.planName} Trial` : 'Free Trial'}
-                                    </p>
+                                    </span>
                                 </div>
                                 {subscriptionStatus.trialEndDate && (
                                     <p className="text-[10px] text-muted-foreground mb-3">
                                         {subscriptionStatus.isTrialExpired 
                                             ? `Expired ${subscriptionStatus.daysSinceExpiry} days ago`
-                                            : `${Math.ceil((new Date(subscriptionStatus.trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days remaining`
+                                            : `${Math.ceil((new Date(subscriptionStatus.trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days left`
                                         }
                                     </p>
                                 )}
                                 <Link href="/pricing">
-                                    <Button size="sm" className="w-full bg-amber-500 text-slate-950 hover:bg-amber-400 font-bold text-xs border-0 shadow-lg shadow-amber-500/20 h-8">
+                                    <Button size="sm" className="w-full h-7 text-xs bg-realty-gold text-realty-navy hover:bg-realty-gold-light font-semibold">
                                         Upgrade Now
                                     </Button>
                                 </Link>
                             </div>
                         ) : (
-                            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-realty-navy to-realty-navy-dark p-4 shadow-xl border border-realty-gold/20 group">
-                                <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-realty-gold/10 blur-2xl group-hover:bg-realty-gold/20 transition-all duration-500" />
-                                <div className="absolute -left-4 -bottom-4 h-20 w-20 rounded-full bg-realty-gold/5 blur-xl" />
-                                <div className="relative">
-                                    <div className="flex items-center gap-2 mb-2">
-                                        <p className="text-xs font-bold text-realty-gold-light uppercase tracking-wider">
-                                            {subscriptionStatus.planName || 'Elite Upgrade'}
-                                        </p>
-                                        {!subscriptionStatus.planName && <Badge className="text-[8px] h-3 bg-realty-gold text-realty-navy px-1 font-black">NEW</Badge>}
-                                    </div>
-                                    <p className="text-[10px] text-zinc-400 mb-3">
-                                        {subscriptionStatus.planName 
-                                            ? `${subscriptionStatus.subscriptionStatus || 'Active'} subscription`
-                                            : 'Unlock premium market intelligence'}
-                                    </p>
-                                    <Link href="/pricing">
-                                        <Button size="sm" className="w-full bg-realty-gold text-realty-navy hover:bg-realty-gold-light font-bold text-xs border-0 shadow-lg shadow-realty-gold/20 h-8">
-                                            {subscriptionStatus.planName ? 'Upgrade Plan' : 'Upgrade Now'}
-                                        </Button>
-                                    </Link>
+                            <div className="rounded-lg border bg-card text-card-foreground p-3 border-realty-navy/30 bg-gradient-to-br from-realty-navy/10 to-transparent">
+                                <div className="flex items-center gap-2 mb-2">
+                                    <Sparkles className="h-3 w-3 text-realty-gold" />
+                                    <span className="text-xs font-semibold text-realty-gold uppercase tracking-wider">
+                                        {subscriptionStatus.planName || 'Upgrade Plan'}
+                                    </span>
                                 </div>
+                                <p className="text-[10px] text-muted-foreground mb-3">
+                                    {subscriptionStatus.planName 
+                                        ? `${subscriptionStatus.subscriptionStatus || 'Active'} subscription`
+                                        : 'Unlock premium features'}
+                                </p>
+                                <Link href="/pricing">
+                                    <Button size="sm" className="w-full h-7 text-xs bg-realty-gold text-realty-navy hover:bg-realty-gold-light font-semibold">
+                                        {subscriptionStatus.planName ? 'Change Plan' : 'Upgrade Now'}
+                                    </Button>
+                                </Link>
                             </div>
                         )}
                     </div>

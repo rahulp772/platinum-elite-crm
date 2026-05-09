@@ -300,7 +300,7 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                             <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="relative h-9 w-9 rounded-full">
                                     <Avatar className="h-9 w-9">
-                                        <AvatarImage src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
+                                        <AvatarImage src={user?.avatar || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.name || "Indica"}`} />
                                         <AvatarFallback>{user?.name?.split(' ').map(n => n[0]).join('') || "IW"}</AvatarFallback>
                                     </Avatar>
                                 </Button>
@@ -314,7 +314,11 @@ export function Header({ onMobileMenuToggle }: HeaderProps) {
                                 </DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem onClick={() => router.push("/settings")}>Profile</DropdownMenuItem>
-                                <DropdownMenuItem>Billing</DropdownMenuItem>
+                                {user?.role && user.role.level !== undefined && user.role.level >= 100 && (
+                                    <DropdownMenuItem onClick={() => router.push("/settings?tab=billing")}>
+                                        Billing
+                                    </DropdownMenuItem>
+                                )}
                                 <DropdownMenuItem onClick={() => router.push("/messages")}>
                                     <div className="flex items-center justify-between w-full">
                                         <div className="flex items-center">

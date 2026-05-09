@@ -12,8 +12,8 @@ import { Lead } from '../../leads/entities/lead.entity';
 import { Deal } from '../../deals/entities/deal.entity';
 import { Task } from '../../tasks/entities/task.entity';
 import { Role } from '../../roles/entities/role.entity';
-import { Team } from '../../teams/entities/team.entity';
 import { Builder } from '../../builders/entities/builder.entity';
+import { Transaction } from '../../transactions/entities/transaction.entity';
 
 
 @Entity('tenants')
@@ -72,11 +72,23 @@ export class Tenant {
   @OneToMany(() => Role, (role) => role.tenant)
   roles: Role[];
 
-  @OneToMany(() => Team, (team) => team.tenant)
-  teams: Team[];
-
   @OneToMany(() => Builder, (builder) => builder.tenant)
   builders: Builder[];
+
+  @OneToMany(() => Transaction, (transaction) => transaction.tenant)
+  transactions: Transaction[];
+
+  @Column({ nullable: true })
+  address: string;
+
+  @Column({ nullable: true })
+  phone: string;
+
+  @Column({ nullable: true })
+  logo: string;
+
+  @Column({ nullable: true })
+  website: string;
 
 
   @Column({ default: 'Asia/Kolkata' })

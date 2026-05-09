@@ -110,14 +110,14 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <div className="px-8 pt-4 border-b border-border bg-accent/30">
                             <TabsList className="bg-transparent h-12 w-full justify-start gap-6 p-0">
-                                <TabsTrigger value="basic" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-realty-gold data-[state=active]:text-realty-navy h-full rounded-none px-2 font-bold">Basic Details</TabsTrigger>
-                                <TabsTrigger value="location" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-realty-gold data-[state=active]:text-realty-navy h-full rounded-none px-2 font-bold">Location</TabsTrigger>
-                                <TabsTrigger value="india" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-realty-gold data-[state=active]:text-realty-navy h-full rounded-none px-2 font-bold dark:data-[state=active]:text-realty-gold-light">RERA & India</TabsTrigger>
-                                <TabsTrigger value="financial" className="data-[state=active]:bg-transparent data-[state=active]:border-b-2 data-[state=active]:border-realty-gold data-[state=active]:text-realty-navy h-full rounded-none px-2 font-bold dark:data-[state=active]:text-realty-gold-light">Financials</TabsTrigger>
+                                <TabsTrigger value="basic" className="data-[state=active]:bg-transparent data-[state=active]:border-b-[3px] data-[state=active]:border-realty-gold data-[state=active]:text-realty-gold h-full rounded-none px-2 font-bold transition-all">Basic Details</TabsTrigger>
+                                <TabsTrigger value="location" className="data-[state=active]:bg-transparent data-[state=active]:border-b-[3px] data-[state=active]:border-realty-gold data-[state=active]:text-realty-gold h-full rounded-none px-2 font-bold transition-all">Location</TabsTrigger>
+                                <TabsTrigger value="india" className="data-[state=active]:bg-transparent data-[state=active]:border-b-[3px] data-[state=active]:border-realty-gold data-[state=active]:text-realty-gold h-full rounded-none px-2 font-bold transition-all">RERA & India</TabsTrigger>
+                                <TabsTrigger value="financial" className="data-[state=active]:bg-transparent data-[state=active]:border-b-[3px] data-[state=active]:border-realty-gold data-[state=active]:text-realty-gold h-full rounded-none px-2 font-bold transition-all">Financials</TabsTrigger>
                             </TabsList>
                         </div>
 
-                        <div className="px-8 py-6 h-[450px] overflow-y-auto custom-scrollbar">
+                        <div className="px-8 pt-6 pb-12 h-[520px] overflow-y-auto custom-scrollbar">
                             <TabsContent value="basic" className="mt-0 space-y-6">
                                 <div className="grid grid-cols-2 gap-4">
                                     <div className="space-y-2">
@@ -269,7 +269,7 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
                                     <div className="space-y-2">
                                         <Label htmlFor="carpetArea">Carpet Area (Sq.Ft) *</Label>
                                         <Input id="carpetArea" name="carpetArea" type="number" placeholder="1250" className="rounded-xl h-11" />
-                                        <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-wider">Mandatory under RERA</p>
+                                        <p className="text-[10px] text-muted-foreground font-bold tracking-wider">Mandatory under RERA</p>
                                     </div>
                                     <div className="space-y-2">
                                         <Label htmlFor="superBuiltUpArea">Super Built-up Area</Label>

@@ -19,7 +19,6 @@ import { Task } from '../../tasks/entities/task.entity';
 import { Message } from '../../chat/entities/message.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 import { Role } from '../../roles/entities/role.entity';
-import { Team } from '../../teams/entities/team.entity';
 import { AgentProfile } from './agent-profile.entity';
 
 @Entity('users')
@@ -101,12 +100,6 @@ export class User {
 
   @ManyToMany(() => Property, (property) => property.favoritedBy)
   favoriteProperties: Property[];
-
-  @ManyToMany(() => Team, (team) => team.members)
-  teams: Team[];
-
-  @OneToMany(() => Team, (team) => team.teamLead)
-  ledTeams: Team[];
 
   @OneToOne(() => AgentProfile, (profile) => profile.user)
   agentProfile: AgentProfile;

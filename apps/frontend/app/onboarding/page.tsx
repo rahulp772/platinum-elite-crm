@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
+import { api } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -54,6 +55,11 @@ export default function OnboardingPage() {
         jobTitle: jobTitle || undefined,
         isOnboardingComplete: true,
       })
+
+      if (user?.tenantId && companyName) {
+        await api.patch(`/tenants/${user.tenantId}`, { name: companyName })
+      }
+
       router.push('/')
     } catch (err: any) {
       setError(err.message || "Failed to complete onboarding. Please try again.")

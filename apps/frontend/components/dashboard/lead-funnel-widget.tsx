@@ -16,14 +16,14 @@ export function LeadFunnelWidget() {
     })
 
     return (
-        <Card className="h-full flex flex-col bg-white/80 dark:bg-[#050A15]/40 backdrop-blur-xl border-slate-200 dark:border-realty-gold/20 hover:shadow-md transition-all duration-300 overflow-hidden group">
+        <Card className="h-full flex flex-col bg-card/40 backdrop-blur-xl border-border/50 dark:border-realty-gold/20 hover:shadow-md transition-all duration-300 overflow-hidden group">
             <div className="absolute inset-0 bg-gradient-to-br from-realty-gold/5 via-transparent to-transparent pointer-events-none" />
             <CardHeader className="flex flex-row items-center justify-between space-y-0 relative z-10">
                 <div>
-                    <CardTitle className="text-2xl font-black text-slate-900 dark:text-realty-gold-light tracking-tight uppercase">
+                    <CardTitle className="text-2xl font-black text-foreground dark:text-realty-gold-light tracking-tight uppercase">
                         Lead Conversion Funnel
                     </CardTitle>
-                    <p className="text-xs text-slate-500 dark:text-muted-foreground mt-1 font-medium tracking-wide uppercase opacity-70">
+                    <p className="text-xs text-muted-foreground mt-1 font-medium tracking-wide uppercase opacity-70">
                         Prospect to Booked journey
                     </p>
                 </div>
