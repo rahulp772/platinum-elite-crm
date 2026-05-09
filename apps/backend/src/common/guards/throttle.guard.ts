@@ -1,5 +1,6 @@
 import { Injectable, ExecutionContext } from '@nestjs/common';
-import { ThrottlerGuard, ThrottlerOptions } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler';
+import { Request } from 'express';
 
 @Injectable()
 export class CustomThrottlerGuard extends ThrottlerGuard {
@@ -12,6 +13,14 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
     }
 
     return false;
+  }
+
+  protected async getTracker(req: Request): Promise<string> {
+    const user = req.user as { id?: string } | undefined;
+    if (user?.id) {
+      return `user:${user.id}`;
+    }
+    return req.ip || 'anonymous';
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
