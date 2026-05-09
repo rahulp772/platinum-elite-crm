@@ -37,20 +37,25 @@ import { TransactionsModule } from './transactions/transactions.module';
     }),
     ThrottlerModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        throttlers: [
-          {
-            name: 'default',
-            ttl: configService.get<number>('THROTTLE_TTL', 60000),
-            limit: configService.get<number>('THROTTLE_LIMIT', 100),
-          },
-          {
-            name: 'short',
-            ttl: configService.get<number>('THROTTLE_SHORT_TTL', 1000),
-            limit: configService.get<number>('THROTTLE_SHORT_LIMIT', 10),
-          },
-        ],
-      }),
+      useFactory: (configService: ConfigService) => {
+        const ttl = configService.get<number>('THROTTLE_TTL', 60000);
+        const limit = configService.get<number>('THROTTLE_LIMIT', 100);
+        console.log(`[Throttler] TTL: ${ttl}, LIMIT: ${limit}`);
+        return {
+          throttlers: [
+            {
+              name: 'default',
+              ttl: 60000,
+              limit: 2000,
+            },
+            {
+              name: 'short',
+              ttl: 1000,
+              limit: 100,
+            },
+          ],
+        };
+      },
       inject: [ConfigService],
     }),
     ScheduleModule.forRoot(),
