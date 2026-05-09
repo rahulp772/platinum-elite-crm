@@ -70,7 +70,7 @@
       "label": "AppModule",
       "file_type": "code",
       "source_file": "apps\\backend\\src\\app.module.ts",
-      "source_location": "L104",
+      "source_location": "L109",
       "id": "app_module_appmodule",
       "community": 80,
       "norm_label": "appmodule"
@@ -9711,7 +9711,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps\\backend\\src\\app.module.ts",
-      "source_location": "L104",
+      "source_location": "L109",
       "weight": 1.0,
       "_src": "apps_backend_src_app_module_ts",
       "_tgt": "app_module_appmodule",
