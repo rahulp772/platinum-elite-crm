@@ -26,6 +26,7 @@ export default function PropertiesPage() {
     const [statusFilter, setStatusFilter] = React.useState("all")
     const [typeFilter, setTypeFilter] = React.useState("all")
     const [sortBy, setSortBy] = React.useState("newest")
+    const [showFavorited, setShowFavorited] = React.useState(false)
     // Default to list view on mobile: 2-col grid forces two images side-by-side
     // with hover-transform compositing layers per card — list is ~60% faster to render.
     const [view, setView] = React.useState<"grid" | "list">(isMobile ? "list" : "grid")
@@ -39,7 +40,8 @@ export default function PropertiesPage() {
         status: statusFilter !== "all" ? statusFilter : undefined,
         type: typeFilter !== "all" ? typeFilter : undefined,
         sortBy,
-    }), [page, limit, searchQuery, statusFilter, typeFilter, sortBy])
+        favorited: showFavorited ? true : undefined,
+    }), [page, limit, searchQuery, statusFilter, typeFilter, sortBy, showFavorited])
 
 const { data: propertiesData, isLoading, isError } = useProperties(filters)
     const properties = propertiesData?.data || []
@@ -122,6 +124,8 @@ const { data: propertiesData, isLoading, isError } = useProperties(filters)
                 onStatusChange={setStatusFilter}
                 onTypeChange={setTypeFilter}
                 onSortChange={setSortBy}
+                showFavorited={showFavorited}
+                onFavoritedChange={setShowFavorited}
             />
 
             {/* Results Count */}

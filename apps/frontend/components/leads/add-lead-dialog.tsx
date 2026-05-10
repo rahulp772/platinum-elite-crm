@@ -116,7 +116,6 @@ export function AddLeadDialog() {
             await createLead(leadData)
             toast.success("Lead created successfully")
             setOpen(false)
-            e.currentTarget.reset()
         } catch (error) {
             console.error("Failed to create lead:", error)
             toast.error("Failed to create lead. Please try again.")

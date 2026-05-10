@@ -80,8 +80,9 @@ export function useToggleFavorite() {
             const { data } = await api.post<{ favorited: boolean }>(`/properties/${id}/favorite`)
             return data
         },
-        onSuccess: () => {
+        onSuccess: (_, id) => {
             queryClient.invalidateQueries({ queryKey: ["properties"] })
+            queryClient.invalidateQueries({ queryKey: ["properties", id] })
         },
     })
 }

@@ -14,6 +14,7 @@ import { Task } from '../../tasks/entities/task.entity';
 import { Role } from '../../roles/entities/role.entity';
 import { Builder } from '../../builders/entities/builder.entity';
 import { Transaction } from '../../transactions/entities/transaction.entity';
+import { Subscription } from '../../subscriptions/entities/subscription.entity';
 
 
 @Entity('tenants')
@@ -77,6 +78,9 @@ export class Tenant {
 
   @OneToMany(() => Transaction, (transaction) => transaction.tenant)
   transactions: Transaction[];
+
+  @OneToMany(() => Subscription, (subscription) => subscription.tenant)
+  subscriptions: Subscription[];
 
   @Column({ nullable: true })
   address: string;

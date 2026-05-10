@@ -1,91 +1,181 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Plan } from './entities/plan.entity';
 
-export interface Plan {
-  id: string;
-  name: string;
-  description: string;
-  monthlyPrice: number;
-  yearlyPrice: number;
-  maxUsers: number;
-  maxProperties: number;
-  maxLeads: number;
-  features: string[];
-  isPopular?: boolean;
-  level: number;
-}
+const DEFAULT_PLANS = [
+  {
+    name: 'lite',
+    displayName: 'Lite',
+    slug: 'lite',
+    monthlyPrice: 1299,
+    yearlyPrice: 12990,
+    userLimit: 3,
+    leadLimit: 5000,
+    features: [
+      'leads_management',
+      'properties_management',
+      'tasks_management',
+      'basic_reminders',
+      'mobile_responsive',
+      'basic_reports',
+      'whatsapp_click_to_chat',
+    ],
+    addOns: ['whatsapp_automation', 'ai_calling'],
+    sortOrder: 0,
+    recommended: false,
+    tagline: 'Perfect for solo brokers',
+    description: 'Everything you need to manage your deals efficiently',
+    ctaText: 'Start Free Trial',
+  },
+  {
+    name: 'team',
+    displayName: 'Team',
+    slug: 'team',
+    monthlyPrice: 2999,
+    yearlyPrice: 29990,
+    userLimit: 10,
+    leadLimit: 50000,
+    features: [
+      'leads_management',
+      'properties_management',
+      'tasks_management',
+      'basic_reminders',
+      'mobile_responsive',
+      'basic_reports',
+      'whatsapp_click_to_chat',
+      'team_dashboard',
+      'auto_lead_assignment',
+      'role_permissions',
+      'facebook_integration',
+      '99acres_sync',
+      'magicbricks_sync',
+      'whatsapp_automation',
+      'ai_calling',
+      'ai_lead_scoring',
+    ],
+    addOns: [],
+    sortOrder: 1,
+    recommended: true,
+    tagline: 'Most popular for growing agencies',
+    description: 'Scale your team with advanced automation and integrations',
+    ctaText: 'Start Free Trial',
+  },
+  {
+    name: 'scale',
+    displayName: 'Scale',
+    slug: 'scale',
+    monthlyPrice: 9999,
+    yearlyPrice: 99990,
+    userLimit: -1,
+    leadLimit: -1,
+    features: [
+      'leads_management',
+      'properties_management',
+      'tasks_management',
+      'basic_reminders',
+      'mobile_responsive',
+      'basic_reports',
+      'whatsapp_click_to_chat',
+      'team_dashboard',
+      'auto_lead_assignment',
+      'role_permissions',
+      'facebook_integration',
+      '99acres_sync',
+      'magicbricks_sync',
+      'whatsapp_automation',
+      'ai_calling',
+      'ai_lead_scoring',
+      'multi_branch',
+      'custom_branding',
+    ],
+    addOns: [],
+    sortOrder: 2,
+    recommended: false,
+    tagline: 'For large brokerages',
+    description: 'Unlimited power with multi-branch support and custom branding',
+    ctaText: 'Contact Sales',
+    ctaLink: '/contact',
+    minPrice: 9999,
+  },
+];
 
 @Injectable()
 export class PlansService {
-  private plans: Plan[] = [
-    {
-      id: 'starter',
-      name: 'Starter',
-      description: 'Perfect for individual agents starting their journey.',
-      monthlyPrice: 0,
-      yearlyPrice: 0,
-      maxUsers: 2,
-      maxProperties: 10,
-      maxLeads: 50,
-      features: [
-        'Basic CRM',
-        'Email Support',
-        'Mobile App Access',
-        'Up to 50 leads',
-        'Up to 10 properties',
-      ],
-      isPopular: false,
-      level: 0,
-    },
-    {
-      id: 'professional',
-      name: 'Professional',
-      description: 'Designed for high-performing teams and agencies.',
-      monthlyPrice: 49,
-      yearlyPrice: 470,
-      maxUsers: 10,
-      maxProperties: 100,
-      maxLeads: 500,
-      features: [
-        'Advanced CRM',
-        'Priority Support',
-        'Analytics Dashboard',
-        'Team Collaboration',
-        'Custom Workflows',
-        'Up to 500 leads',
-        'Up to 100 properties',
-      ],
-      isPopular: true,
-      level: 1,
-    },
-    {
-      id: 'enterprise',
-      name: 'Enterprise',
-      description: 'Custom solutions for large-scale real estate firms.',
-      monthlyPrice: 149,
-      yearlyPrice: 1430,
-      maxUsers: -1,
-      maxProperties: -1,
-      maxLeads: -1,
-      features: [
-        'White-label Branding',
-        '24/7 Dedicated Support',
-        'API Access',
-        'Custom Integrations',
-        'Advanced Security',
-        'Unlimited Users',
-        'Unlimited Leads',
-        'Unlimited Properties',
-      ],
-      isPopular: false,
-      level: 2,
-    },
-  ];
+  constructor(
+    @InjectRepository(Plan)
+    private planRepository: Repository<Plan>,
+  ) {}
 
-  findAll(): Plan[] {
-    return this.plans;
+  async onModuleInit() {
+    await this.seedDefaultPlans();
   }
 
-  findOne(id: string): Plan | undefined {
-    return this.plans.find((plan) => plan.id === id);
+  private async seedDefaultPlans() {
+    for (const planData of DEFAULT_PLANS) {
+      const existing = await this.planRepository.findOne({
+        where: { slug: planData.slug },
+      });
+      if (!existing) {
+        const plan = this.planRepository.create(planData);
+        await this.planRepository.save(plan);
+        console.log(`[Plans] Seeded plan: ${planData.displayName}`);
+      }
+    }
+  }
+
+  async findAll(): Promise<Plan[]> {
+    return this.planRepository.find({
+      where: { isActive: true },
+      order: { sortOrder: 'ASC' },
+    });
+  }
+
+  async findAllAdmin(): Promise<Plan[]> {
+    return this.planRepository.find({
+      order: { sortOrder: 'ASC' },
+    });
+  }
+
+  async findOne(id: string): Promise<Plan> {
+    const plan = await this.planRepository.findOne({ where: { id } });
+    if (!plan) {
+      throw new NotFoundException(`Plan with ID ${id} not found`);
+    }
+    return plan;
+  }
+
+  async findBySlug(slug: string): Promise<Plan> {
+    const plan = await this.planRepository.findOne({ where: { slug } });
+    if (!plan) {
+      throw new NotFoundException(`Plan with slug ${slug} not found`);
+    }
+    return plan;
+  }
+
+  async create(data: Partial<Plan>): Promise<Plan> {
+    const plan = this.planRepository.create(data);
+    return this.planRepository.save(plan);
+  }
+
+  async update(id: string, data: Partial<Plan>): Promise<Plan> {
+    const plan = await this.findOne(id);
+    Object.assign(plan, data);
+    return this.planRepository.save(plan);
+  }
+
+  async delete(id: string): Promise<void> {
+    const plan = await this.findOne(id);
+    await this.planRepository.remove(plan);
+  }
+
+  async toggleActive(id: string): Promise<Plan> {
+    const plan = await this.findOne(id);
+    plan.isActive = !plan.isActive;
+    return this.planRepository.save(plan);
   }
 }

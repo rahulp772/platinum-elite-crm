@@ -27,6 +27,11 @@ import { AuditModule } from './audit/audit.module';
 import { BuildersModule } from './builders/builders.module';
 import { PlansModule } from './plans/plans.module';
 import { TransactionsModule } from './transactions/transactions.module';
+import { FloorPlansModule } from './floor-plans/floor-plans.module';
+import { NearbyInfrastructuresModule } from './nearby-infrastructure/nearby-infrastructures.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { AddonsModule } from './addons/addons.module';
+import { EntitlementsModule } from './entitlements/entitlements.module';
 
 
 @Module({
@@ -95,6 +100,11 @@ import { TransactionsModule } from './transactions/transactions.module';
     BuildersModule,
     PlansModule,
     TransactionsModule,
+    FloorPlansModule,
+    NearbyInfrastructuresModule,
+    SubscriptionsModule,
+    AddonsModule,
+    EntitlementsModule,
   ],
 
   controllers: [AppController],

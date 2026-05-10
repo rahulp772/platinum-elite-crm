@@ -74,6 +74,13 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
             superBuiltUpArea: Number(formData.get('superBuiltUpArea')) || undefined,
             possessionDate: formData.get('possessionDate') as string || undefined,
             constructionStatus: formData.get('constructionStatus') as string || undefined,
+            // New plot/project fields
+            totalLandArea: Number(formData.get('totalLandArea')) || undefined,
+            unitCount: Number(formData.get('unitCount')) || undefined,
+            minPlotSize: Number(formData.get('minPlotSize')) || undefined,
+            maxPlotSize: Number(formData.get('maxPlotSize')) || undefined,
+            ratePerSqft: Number(formData.get('ratePerSqft')) || undefined,
+            dtcpApproval: formData.get('dtcpApproval') as string || undefined,
             images: ["https://images.unsplash.com/photo-1600585154340-be6199f7a096?q=80&w=2070&auto=format&fit=crop"],
             features: ["Modern Kitchen", "Hardwood Floors"],
         }
@@ -288,6 +295,7 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
                                                 <SelectItem value="under_construction">Under Construction</SelectItem>
                                                 <SelectItem value="ready_to_move">Ready to Move (OC Received)</SelectItem>
                                                 <SelectItem value="new_launch">New Launch</SelectItem>
+                                                <SelectItem value="ready_to_construct">Ready to Construct (Plots)</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
@@ -297,6 +305,49 @@ export function AddPropertyDialog({ open, onOpenChange }: AddPropertyDialogProps
                                             Expected Possession
                                         </Label>
                                         <Input id="possessionDate" name="possessionDate" type="date" className="rounded-xl h-11" />
+                                    </div>
+                                </div>
+
+                                {/* Plot/Project Specific Fields */}
+                                <div className="border-l-4 border-teal-500 pl-4 bg-teal-500/5 py-4 rounded-r-2xl mt-4">
+                                    <h4 className="font-semibold text-sm text-teal-700 mb-4">Plot / Project Details (for Plotted Developments)</h4>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="totalLandArea">Total Land (Acres)</Label>
+                                            <Input id="totalLandArea" name="totalLandArea" type="number" step="0.01" placeholder="4.68" className="rounded-xl h-11" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="unitCount">Total Units/Plots</Label>
+                                            <Input id="unitCount" name="unitCount" type="number" placeholder="31" className="rounded-xl h-11" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="dtcpApproval">DTCP/CMDA Approval</Label>
+                                            <Select name="dtcpApproval">
+                                                <SelectTrigger className="rounded-xl h-11">
+                                                    <SelectValue placeholder="Select Approval" />
+                                                </SelectTrigger>
+                                                <SelectContent className="rounded-2xl">
+                                                    <SelectItem value="CMDA">CMDA Approved</SelectItem>
+                                                    <SelectItem value="DTCP">DTCP Approved</SelectItem>
+                                                    <SelectItem value="DTCP & RERA">DTCP & RERA</SelectItem>
+                                                    <SelectItem value="NA">Not Applicable (Pre-RERA)</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                    </div>
+                                    <div className="grid grid-cols-3 gap-4 mt-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="minPlotSize">Min Plot Size (sqft)</Label>
+                                            <Input id="minPlotSize" name="minPlotSize" type="number" placeholder="2400" className="rounded-xl h-11" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="maxPlotSize">Max Plot Size (sqft)</Label>
+                                            <Input id="maxPlotSize" name="maxPlotSize" type="number" placeholder="3045" className="rounded-xl h-11" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="ratePerSqft">Rate per Sq.Ft (₹)</Label>
+                                            <Input id="ratePerSqft" name="ratePerSqft" type="number" placeholder="10883" className="rounded-xl h-11" />
+                                        </div>
                                     </div>
                                 </div>
                             </TabsContent>

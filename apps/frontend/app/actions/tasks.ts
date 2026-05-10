@@ -65,7 +65,6 @@ export async function updateTask(data: UpdateTaskInput) {
   
   revalidatePath('/tasks')
   revalidatePath('/calendar')
-  revalidatePath(`/tasks/${id}`)
   
   return task
 }
@@ -132,7 +131,6 @@ export async function assignTask(taskId: string, assignedToId: string) {
   const task = await response.json()
   
   revalidatePath('/tasks')
-  revalidatePath(`/tasks/${taskId}`)
   
   return task
 }

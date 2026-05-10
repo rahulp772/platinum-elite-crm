@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Search, SlidersHorizontal } from "lucide-react"
+import { Search, SlidersHorizontal, Heart } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import {
@@ -11,12 +11,15 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
+import { cn } from "@/lib/utils"
 
 interface PropertyFiltersProps {
     onSearchChange: (value: string) => void
     onStatusChange: (value: string) => void
     onTypeChange: (value: string) => void
     onSortChange: (value: string) => void
+    showFavorited?: boolean
+    onFavoritedChange?: (value: boolean) => void
 }
 
 export function PropertyFilters({
@@ -24,6 +27,8 @@ export function PropertyFilters({
     onStatusChange,
     onTypeChange,
     onSortChange,
+    showFavorited = false,
+    onFavoritedChange,
 }: PropertyFiltersProps) {
     const [search, setSearch] = React.useState("")
     const searchInputRef = React.useRef<HTMLInputElement>(null)
@@ -99,6 +104,22 @@ export function PropertyFilters({
                     <SelectItem value="views">Most Viewed</SelectItem>
                 </SelectContent>
             </Select>
+
+            {/* Liked Properties Filter */}
+            {onFavoritedChange && (
+                <Button
+                    variant={showFavorited ? "default" : "outline"}
+                    size="sm"
+                    className={cn(
+                        "w-full sm:w-auto gap-2",
+                        showFavorited && "bg-realty-gold text-realty-navy hover:bg-realty-gold/90"
+                    )}
+                    onClick={() => onFavoritedChange(!showFavorited)}
+                >
+                    <Heart className={cn("h-4 w-4", showFavorited && "fill-current")} />
+                    Liked
+                </Button>
+            )}
         </div>
     )
 }

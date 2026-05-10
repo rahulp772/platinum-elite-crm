@@ -47,6 +47,7 @@ export class PropertiesController {
   @ApiQuery({ name: 'type', type: String, required: false })
   @ApiQuery({ name: 'sortBy', type: String, required: false })
   @ApiQuery({ name: 'builderId', type: String, required: false })
+  @ApiQuery({ name: 'favorited', type: Boolean, required: false })
   findAll(
     @Request() req,
     @Query('page') page?: number,
@@ -56,6 +57,7 @@ export class PropertiesController {
     @Query('type') type?: string,
     @Query('sortBy') sortBy?: string,
     @Query('builderId') builderId?: string,
+    @Query('favorited') favorited?: string,
   ) {
     return this.propertiesService.findAll(req.user, {
       page: page ? Number(page) : 1,
@@ -65,6 +67,7 @@ export class PropertiesController {
       type,
       sortBy,
       builderId,
+      favorited: favorited === 'true' ? true : undefined,
     });
   }
 
@@ -78,7 +81,7 @@ export class PropertiesController {
 
   @Get(':id')
   @RequirePermissions('properties:read')
-  @ApiOperation({ summary: 'Get a property by ID' })
+  @ApiOperation({ summary: 'Get a property by ID with builder, floor plans and nearby infrastructure' })
   findOne(@Param('id') id: string, @Request() req) {
     return this.propertiesService.findOne(id, req.user);
   }
@@ -106,5 +109,27 @@ export class PropertiesController {
   @ApiOperation({ summary: 'Toggle favorite status for a property' })
   toggleFavorite(@Param('id') id: string, @Request() req) {
     return this.propertiesService.toggleFavorite(id, req.user);
+  }
+
+  @Post(':id/floor-plans')
+  @RequirePermissions('properties:write')
+  @ApiOperation({ summary: 'Add floor plans to a property' })
+  addFloorPlans(
+    @Param('id') id: string,
+    @Body() dtos: { plotSize: number; price: number; label?: string; planImage?: string }[],
+    @Request() req,
+  ) {
+    return this.propertiesService.addFloorPlans(id, dtos, req.user);
+  }
+
+  @Post(':id/nearby-infrastructures')
+  @RequirePermissions('properties:write')
+  @ApiOperation({ summary: 'Add nearby infrastructure entries to a property' })
+  addNearbyInfrastructures(
+    @Param('id') id: string,
+    @Body() dtos: { category: string; name: string; distance?: string }[],
+    @Request() req,
+  ) {
+    return this.propertiesService.addNearbyInfrastructures(id, dtos, req.user);
   }
 }

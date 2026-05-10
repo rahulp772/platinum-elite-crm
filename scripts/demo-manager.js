@@ -243,16 +243,22 @@ async function seedDemoData(db, tenantId) {
 
 
   const propertyData = [
-    { title: 'Sobha Zenith Luxury Apartment', price: 25000000, type: 'apartment', beds: 3, baths: 3, sqft: 1850, city: 'Gurugram', state: 'Haryana', rera: 'HRERA-PKL-78-2023' },
-    { title: 'DLF The Aralias', price: 150000000, type: 'house', beds: 4, baths: 5, sqft: 5000, city: 'Gurugram', state: 'Haryana', rera: 'HRERA-PKL-12-2022' },
-    { title: 'Godrej Skyview Highrise', price: 18000000, type: 'apartment', beds: 2, baths: 2, sqft: 1250, city: 'Mumbai', state: 'Maharashtra', rera: 'P51800001234' },
-    { title: 'Lodha World One Residence', price: 85000000, type: 'condo', beds: 3, baths: 4, sqft: 2800, city: 'Mumbai', state: 'Maharashtra', rera: 'P51900000001' },
-    { title: 'Prestige Lakeside Habitat', price: 21000000, type: 'apartment', beds: 3, baths: 3, sqft: 1650, city: 'Bangalore', state: 'Karnataka', rera: 'PRM/KA/RERA/1251/446/PR/170915' },
-    { title: 'Modern Studio in Pune', price: 6500000, type: 'apartment', beds: 1, baths: 1, sqft: 650, city: 'Pune', state: 'Maharashtra', rera: 'P52100000111' },
-    { title: 'Spacious Row House', price: 32000000, type: 'townhouse', beds: 4, baths: 4, sqft: 3200, city: 'Noida', state: 'Uttar Pradesh', rera: 'UPRERAPRJ1234' },
-    { title: 'Executive Villa in Hyderabad', price: 55000000, type: 'house', beds: 5, baths: 5, sqft: 4500, city: 'Hyderabad', state: 'Telangana', rera: 'P02400001234' },
-    { title: 'Chennai Coastal Apartment', price: 12000000, type: 'apartment', beds: 2, baths: 2, sqft: 1100, city: 'Chennai', state: 'Tamil Nadu', rera: 'TN/01/Building/0001/2023' },
-    { title: 'Kolkata Heritage Estate', price: 28000000, type: 'house', beds: 4, baths: 3, sqft: 2600, city: 'Kolkata', state: 'West Bengal', rera: 'WBRERA/P/KOL/2023/000123' },
+    { title: 'Sobha Zenith Luxury Apartment', price: 25000000, type: 'apartment', beds: 3, baths: 3, sqft: 1850, city: 'Gurugram', state: 'Haryana', rera: 'HRERA-PKL-78-2023', ratePerSqft: 13514 },
+    { title: 'DLF The Aralias', price: 150000000, type: 'house', beds: 4, baths: 5, sqft: 5000, city: 'Gurugram', state: 'Haryana', rera: 'HRERA-PKL-12-2022', ratePerSqft: 30000 },
+    { title: 'Godrej Skyview Highrise', price: 18000000, type: 'apartment', beds: 2, baths: 2, sqft: 1250, city: 'Mumbai', state: 'Maharashtra', rera: 'P51800001234', ratePerSqft: 14400 },
+    { title: 'Lodha World One Residence', price: 85000000, type: 'condo', beds: 3, baths: 4, sqft: 2800, city: 'Mumbai', state: 'Maharashtra', rera: 'P51900000001', ratePerSqft: 30357 },
+    { title: 'Prestige Lakeside Habitat', price: 21000000, type: 'apartment', beds: 3, baths: 3, sqft: 1650, city: 'Bangalore', state: 'Karnataka', rera: 'PRM/KA/RERA/1251/446/PR/170915', ratePerSqft: 12727 },
+    { title: 'Modern Studio in Pune', price: 6500000, type: 'apartment', beds: 1, baths: 1, sqft: 650, city: 'Pune', state: 'Maharashtra', rera: 'P52100000111', ratePerSqft: 10000 },
+    { title: 'Spacious Row House', price: 32000000, type: 'townhouse', beds: 4, baths: 4, sqft: 3200, city: 'Noida', state: 'Uttar Pradesh', rera: 'UPRERAPRJ1234', ratePerSqft: 10000 },
+    { title: 'Executive Villa in Hyderabad', price: 55000000, type: 'house', beds: 5, baths: 5, sqft: 4500, city: 'Hyderabad', state: 'Telangana', rera: 'P02400001234', ratePerSqft: 12222 },
+    { title: 'Chennai Coastal Apartment', price: 12000000, type: 'apartment', beds: 2, baths: 2, sqft: 1100, city: 'Chennai', state: 'Tamil Nadu', rera: 'TN/01/Building/0001/2023', ratePerSqft: 10909 },
+    { title: 'Kolkata Heritage Estate', price: 28000000, type: 'house', beds: 4, baths: 3, sqft: 2600, city: 'Kolkata', state: 'West Bengal', rera: 'WBRERA/P/KOL/2023/000123', ratePerSqft: 10769 },
+    // Land/Plot type properties (5 samples)
+    { title: 'G Square Orchid Ville Plots', price: 26000000, type: 'land', beds: null, baths: null, sqft: 2400, city: 'Chennai', state: 'Tamil Nadu', rera: 'TN/29/Layout/0227/2022', totalLandArea: 4.68, unitCount: 31, minPlotSize: 2400, maxPlotSize: 3045, ratePerSqft: 10833, dtcpApproval: 'CMDA', constructionStatus: 'Ready to Construct' },
+    { title: 'Emerald River Plots', price: 15000000, type: 'land', beds: null, baths: null, sqft: 1800, city: 'Bangalore', state: 'Karnataka', rera: 'PRM/KA/RERA/1251/447', totalLandArea: 2.5, unitCount: 15, minPlotSize: 1200, maxPlotSize: 2400, ratePerSqft: 8333, dtcpApproval: 'DTCP', constructionStatus: 'Ready to Construct' },
+    { title: 'Coastal Paradise Township', price: 8500000, type: 'land', beds: null, baths: null, sqft: 1000, city: 'Mumbai', state: 'Maharashtra', rera: 'P51800005678', totalLandArea: 10.5, unitCount: 85, minPlotSize: 1000, maxPlotSize: 2000, ratePerSqft: 8500, dtcpApproval: 'DTCP & RERA', constructionStatus: 'Under Construction' },
+    { title: 'Sunrise Valley Plots', price: 4500000, type: 'land', beds: null, baths: null, sqft: 800, city: 'Pune', state: 'Maharashtra', rera: 'P52100004567', totalLandArea: 1.8, unitCount: 22, minPlotSize: 800, maxPlotSize: 1500, ratePerSqft: 5625, dtcpApproval: 'CMDA', constructionStatus: 'Ready to Construct' },
+    { title: 'Green Valley Residential Plots', price: 12000000, type: 'land', beds: null, baths: null, sqft: 2000, city: 'Hyderabad', state: 'Telangana', rera: 'P02400006789', totalLandArea: 3.2, unitCount: 20, minPlotSize: 2000, maxPlotSize: 3000, ratePerSqft: 6000, dtcpApproval: 'DTCP & RERA', constructionStatus: 'Ready to Construct' },
   ];
 
 
@@ -287,39 +293,133 @@ async function seedDemoData(db, tenantId) {
     }
 
     const listedDate = new Date(Date.now() - (Math.random() * FOUR_MONTHS_MS));
+    const ratePerSqft = data.ratePerSqft || Math.round(data.price / data.sqft);
+    const computedCarpetArea = data.beds ? data.sqft * 0.8 : null;
+    const computedBasePrice = data.price * 0.9;
 
     const result = await db.query(
-      `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, "yearBuilt", images, features, "agentId", "tenantId", "reraNumber", "builderId", "carpetArea", "basePrice", listed) 
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17, $18, $19, $20, $21, $22) RETURNING id`,
+      `INSERT INTO properties (title, description, price, status, type, address, city, state, "zipCode", bedrooms, bathrooms, sqft, "yearBuilt", images, features, "agentId", "tenantId", "reraNumber", "builderId", "carpetArea", "basePrice", "pricePerSqft", "totalLandArea", "unitCount", "minPlotSize", "maxPlotSize", "ratePerSqft", "dtcpApproval", "constructionStatus", listed) 
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30) RETURNING id`,
       [
         title,
-        `Beautiful ${title} in ${data.city}, ${data.state}. High quality finishes and prime location.`,
-        data.price + (Math.floor(Math.random() * 20 - 10) * 100000), // Variable price
+        data.type === 'land' 
+          ? `Premium residential plot in ${data.city}, ${data.state}. CMDA approved gated community with world-class amenities. Excellent connectivity and location.`
+          : `Beautiful ${title} in ${data.city}, ${data.state}. High quality finishes and prime location.`,
+        data.price + (Math.floor(Math.random() * 20 - 10) * 100000),
         Math.random() > 0.3 ? 'available' : Math.random() > 0.5 ? 'pending' : 'sold',
         data.type,
         `${Math.floor(Math.random() * 999) + 1} Park Street`,
         data.city,
         data.state,
         String(110001 + Math.floor(Math.random() * 9000)),
-        data.beds,
-        data.baths,
+        data.beds || null,
+        data.baths || null,
         data.sqft,
-        2010 + Math.floor(Math.random() * 15),
+        data.type !== 'land' ? 2010 + Math.floor(Math.random() * 15) : null,
         propertyImages.join(','),
-        JSON.stringify(['Gated Community', 'Power Backup', 'Security', 'Clubhouse']),
+        data.type === 'land' 
+          ? JSON.stringify(['24x7 Security', 'CCTV Surveillance', 'Black Top Roads', 'Street Lights', 'Rain Water Harvesting', 'Garden', 'Play Area', 'Clubhouse'])
+          : JSON.stringify(['Gated Community', 'Power Backup', 'Security', 'Clubhouse']),
         agentId,
         tenantId,
         data.rera + '-' + (i + 100),
         builderId,
-        data.sqft * 0.8,
-        data.price * 0.9,
+        computedCarpetArea,
+        computedBasePrice,
+        ratePerSqft,
+        data.totalLandArea || null,
+        data.unitCount || null,
+        data.minPlotSize || null,
+        data.maxPlotSize || null,
+        ratePerSqft,
+        data.dtcpApproval || null,
+        data.constructionStatus || null,
         listedDate
       ]
     );
     propertyIds.push(result.rows[0].id);
   }
 
+  // Create floor plans for land/plot type properties
+  console.log('      - Creating floor plans for plot properties...');
+  const floorPlanTemplates = [
+    { plotSize: 1000, price: 8500000, label: 'Type A' },
+    { plotSize: 1200, price: 10200000, label: 'Type B' },
+    { plotSize: 1500, price: 12750000, label: 'Type C' },
+    { plotSize: 1800, price: 15300000, label: 'Type D' },
+    { plotSize: 2000, price: 17000000, label: 'Type E' },
+    { plotSize: 2400, price: 20400000, label: 'Type F' },
+    { plotSize: 3000, price: 25500000, label: 'Type G' },
+    { plotSize: 3045, price: 25900000, label: 'Premium' },
+  ];
 
+  // Get all land type property IDs
+  const landPropertyIds = [];
+  for (let i = 0; i < propertyCount; i++) {
+    const data = propertyData[i % propertyData.length];
+    if (data.type === 'land') {
+      landPropertyIds.push(propertyIds[i]);
+    }
+  }
+
+  // Insert floor plans for land properties
+  for (const propId of landPropertyIds) {
+    const numFloorPlans = 3 + Math.floor(Math.random() * 3); // 3-5 floor plans per property
+    const shuffled = floorPlanTemplates.sort(() => 0.5 - Math.random());
+    
+    for (let j = 0; j < numFloorPlans; j++) {
+      const fp = shuffled[j];
+      await db.query(
+        `INSERT INTO floor_plans ("propertyId", "plotSize", "price", label, "tenantId") VALUES ($1, $2, $3, $4, $5)`,
+        [propId, fp.plotSize, fp.price, fp.label, tenantId]
+      );
+    }
+  }
+
+  // Create nearby infrastructure for properties
+  console.log('      - Creating nearby infrastructure...');
+  const nearbyInfrastructureData = [
+    // Schools
+    { category: 'school', name: 'Delhi Public School', distance: '2 km' },
+    { category: 'school', name: 'KV Army School', distance: '3 km' },
+    { category: 'school', name: 'Mount Carmel College', distance: '1.5 km' },
+    { category: 'school', name: 'Little Flowers School', distance: '800 m' },
+    // Hospitals
+    { category: 'hospital', name: 'Apollo Hospital', distance: '4 km' },
+    { category: 'hospital', name: 'Fortis Healthcare', distance: '5 km' },
+    { category: 'hospital', name: 'Medanta Hospital', distance: '6 km' },
+    { category: 'hospital', name: 'City Hospital', distance: '1 km' },
+    // Transit
+    { category: 'transit', name: 'Metro Station', distance: '1 km' },
+    { category: 'transit', name: 'Bus Stand', distance: '500 m' },
+    { category: 'transit', name: 'Railway Station', distance: '3 km' },
+    { category: 'transit', name: 'Airport', distance: '15 km' },
+    // Restaurants
+    { category: 'restaurant', name: 'The Taj Hotel', distance: '5 km' },
+    { category: 'restaurant', name: 'Dominos Pizza', distance: '1 km' },
+    { category: 'restaurant', name: 'Hotel Udupi', distance: '800 m' },
+    // Shopping
+    { category: 'shopping', name: 'Mall of India', distance: '3 km' },
+    { category: 'shopping', name: 'Local Market', distance: '500 m' },
+    { category: 'shopping', name: 'Reliance Fresh', distance: '1 km' },
+    // Resorts
+    { category: 'resort', name: 'Beach Resort', distance: '8 km' },
+    { category: 'resort', name: 'Hill View Resort', distance: '12 km' },
+  ];
+
+  // Add nearby infrastructure for land properties (showcase feature)
+  for (const propId of landPropertyIds) {
+    const numEntries = 5 + Math.floor(Math.random() * 6); // 5-10 entries per property
+    const shuffled = nearbyInfrastructureData.sort(() => 0.5 - Math.random());
+    
+    for (let j = 0; j < numEntries; j++) {
+      const ni = shuffled[j];
+      await db.query(
+        `INSERT INTO nearby_infrastructures ("propertyId", category, name, distance, "tenantId") VALUES ($1, $2, $3, $4, $5)`,
+        [propId, ni.category, ni.name, ni.distance, tenantId]
+      );
+    }
+  }
 
   const firstNames = ['James', 'Mary', 'John', 'Patricia', 'Robert', 'Jennifer', 'Michael', 'Linda', 'William', 'Elizabeth'];
   const lastNames = ['Sharma', 'Verma', 'Gupta', 'Singh', 'Patel', 'Reddy', 'Iyer', 'Nair', 'Chopra', 'Malhotra'];

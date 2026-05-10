@@ -71,7 +71,6 @@ export async function createProperty(data: CreatePropertyInput) {
   const property = await response.json()
   
   revalidatePath('/properties')
-  revalidatePath('/properties/[id]')
   
   return property
 }
@@ -98,7 +97,6 @@ export async function updateProperty(data: UpdatePropertyInput) {
   const property = await response.json()
   
   revalidatePath('/properties')
-  revalidatePath(`/properties/${id}`)
   
   return property
 }

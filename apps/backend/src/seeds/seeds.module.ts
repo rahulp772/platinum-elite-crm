@@ -12,6 +12,9 @@ import { Task } from '../tasks/entities/task.entity';
 import { Conversation } from '../chat/entities/conversation.entity';
 import { Message } from '../chat/entities/message.entity';
 import { Builder } from '../builders/entities/builder.entity';
+import { Subscription } from '../subscriptions/entities/subscription.entity';
+import { Plan } from '../plans/entities/plan.entity';
+import { Addon } from '../addons/entities/addon.entity';
 
 
 @Global()
@@ -29,6 +32,9 @@ import { Builder } from '../builders/entities/builder.entity';
       Conversation,
       Message,
       Builder,
+      Subscription,
+      Plan,
+      Addon,
     ]),
 
   ],

@@ -26,7 +26,7 @@ export class CreatePropertyDto {
   @Min(0)
   price: number;
 
-  @ApiProperty({ enum: PropertyStatus })
+  @ApiPropertyOptional({ enum: PropertyStatus })
   @IsEnum(PropertyStatus)
   @IsOptional()
   status?: PropertyStatus;
@@ -98,4 +98,139 @@ export class CreatePropertyDto {
   @IsNumber()
   @IsOptional()
   rating?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  builderId?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  reraNumber?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  reraAuthority?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  reraWebsite?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  landParcel?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  surveyNumber?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  carpetArea?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  builtUpArea?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  superBuiltUpArea?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  basePrice?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  pricePerSqft?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  bookingAmount?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  paymentPlan?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  plc?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  gst?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  parking?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  launchDate?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  possessionDate?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  constructionStatus?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  ccUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  ocUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  totalLandArea?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  unitCount?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  minPlotSize?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  maxPlotSize?: number;
+
+  @ApiPropertyOptional()
+  @IsNumber()
+  @IsOptional()
+  ratePerSqft?: number;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  dtcpApproval?: string;
 }

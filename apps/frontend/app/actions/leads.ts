@@ -47,7 +47,7 @@ export async function createLead(data: CreateLeadInput) {
   
   // Revalidate the leads page to reflect new data
   revalidatePath('/leads')
-  revalidatePath('/leads/[id]')
+  revalidatePath('/leads', 'page')
   
   return lead
 }
@@ -75,7 +75,6 @@ export async function updateLead(data: UpdateLeadInput) {
   
   // Revalidate relevant pages
   revalidatePath('/leads')
-  revalidatePath(`/leads/${id}`)
   
   return lead
 }
@@ -119,7 +118,6 @@ export async function assignLead(leadId: string, assignedToId: string) {
   const lead = await response.json()
   
   revalidatePath('/leads')
-  revalidatePath(`/leads/${leadId}`)
   
   return lead
 }
@@ -171,7 +169,6 @@ export async function updateLeadStatus(leadId: string, status: string, followUpA
   const lead = await response.json()
   
   revalidatePath('/leads')
-  revalidatePath(`/leads/${leadId}`)
   
   return lead
 }

@@ -98,10 +98,11 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
         }
     }
 
-    const formattedPrice = React.useMemo(() => new Intl.NumberFormat("en-US", {
+    const formattedPrice = React.useMemo(() => new Intl.NumberFormat("en-IN", {
         style: "currency",
-        currency: "USD",
+        currency: "INR",
         minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
     }).format(property.price), [property.price])
 
     const propertyImages = React.useMemo(() => parsePropertyImages(property.images), [property.images])
@@ -170,7 +171,7 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
 
                     {/* Column 3: Specs (3 cols) */}
                     <div className="md:col-span-3 flex items-center gap-6 w-full md:border-l md:pl-6 border-border">
-                        {property.bedrooms && (
+                        {property.type !== 'land' && property.bedrooms && (
                             <div className="flex flex-col items-start">
                                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Beds</span>
                                 <div className="flex items-center gap-1.5 mt-1">
@@ -179,7 +180,7 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                                 </div>
                             </div>
                         )}
-                        {property.bathrooms && (
+                        {property.type !== 'land' && property.bathrooms && (
                             <div className="flex flex-col items-start">
                                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Baths</span>
                                 <div className="flex items-center gap-1.5 mt-1">
@@ -189,12 +190,20 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                             </div>
                         )}
                         <div className="flex flex-col items-start">
-                            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Sqft</span>
+                            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{property.type === 'land' ? 'Plot Size' : 'Sqft'}</span>
                             <div className="flex items-center gap-1.5 mt-1">
                                 <Ruler className="h-3.5 w-3.5 text-muted-foreground" />
                                 <span className="text-sm font-bold text-foreground tracking-tight">{property.sqft.toLocaleString()}</span>
                             </div>
                         </div>
+                        {property.type === 'land' && property.ratePerSqft && (
+                            <div className="flex flex-col items-start">
+                                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Rate</span>
+                                <div className="flex items-center gap-1.5 mt-1">
+                                    <span className="text-sm font-bold text-realty-gold tracking-tight">₹{property.ratePerSqft.toLocaleString()}/sqft</span>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Column 4: Actions (2 cols) */}
@@ -320,7 +329,7 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                                 toggleFavorite.mutate(property.id)
                             }}
                         >
-                            <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            <Heart className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", property.favorited && "fill-current")} />
                         </Button>
                     </div>
                 </div>
@@ -332,13 +341,13 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-4 text-muted-foreground text-xs sm:text-sm">
-                    {property.bedrooms && (
+                    {property.type !== 'land' && property.bedrooms && (
                         <div className="flex items-center gap-1">
                             <Bed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             <span className="font-medium"><span className="font-bold text-foreground">{property.bedrooms}</span> bed</span>
                         </div>
                     )}
-                    {property.bathrooms && (
+                    {property.type !== 'land' && property.bathrooms && (
                         <div className="flex items-center gap-1">
                             <Bath className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             <span className="font-medium"><span className="font-bold text-foreground">{property.bathrooms}</span> bath</span>
@@ -346,8 +355,16 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                     )}
                     <div className="flex items-center gap-1">
                         <Ruler className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                        <span className="font-medium"><span className="font-bold text-foreground">{property.sqft.toLocaleString()}</span> sqft</span>
+                        <span className="font-medium">
+                            <span className="font-bold text-foreground">{property.sqft.toLocaleString()}</span> 
+                            {property.type === 'land' ? ' sqft plot' : ' sqft'}
+                        </span>
                     </div>
+                    {property.type === 'land' && property.ratePerSqft && (
+                        <div className="text-realty-gold font-medium text-xs">
+                            ₹{property.ratePerSqft.toLocaleString()}/sqft
+                        </div>
+                    )}
                 </div>
 
                 <p className="text-muted-foreground text-xs sm:text-sm leading-relaxed line-clamp-2">

@@ -65,7 +65,6 @@ export async function updateDeal(data: UpdateDealInput) {
   
   revalidatePath('/deals')
   revalidatePath('/pipeline')
-  revalidatePath(`/deals/${id}`)
   
   return deal
 }
@@ -132,7 +131,6 @@ export async function reassignDeal(dealId: string, assignedToId: string) {
   const deal = await response.json()
   
   revalidatePath('/deals')
-  revalidatePath(`/deals/${dealId}`)
   
   return deal
 }

@@ -31,6 +31,7 @@ import { InviteUserDto } from './dto/invite-user.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
+import { UserLimitGuard } from '../entitlements/user-limit.guard';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -58,7 +59,7 @@ export class UsersController {
 
   @Post('invite')
   @RequirePermissions('users:write')
-  @UseGuards(PermissionsGuard)
+  @UseGuards(PermissionsGuard, UserLimitGuard)
   @ApiOperation({ summary: 'Invite a new team member' })
   invite(@Body() inviteDto: InviteUserDto, @Request() req) {
     return this.usersService.invite(inviteDto, req.user);

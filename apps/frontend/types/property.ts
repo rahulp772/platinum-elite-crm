@@ -1,3 +1,6 @@
+import { FloorPlan } from './floor-plan'
+import { NearbyInfrastructure } from './nearby-infrastructure'
+
 export type PropertyStatus = "available" | "pending" | "sold" | "off_market"
 export type PropertyType = "apartment" | "house" | "condo" | "townhouse" | "commercial" | "land"
 
@@ -27,12 +30,14 @@ export interface Property {
         phone?: string
         whatsapp?: string
         officeAddress?: string
+        email?: string
     }
-    // RERA & India Specific Fields
     builder?: {
         id: string
         name: string
         logo?: string
+        description?: string
+        website?: string
     }
     builderId?: string
     reraNumber?: string
@@ -55,9 +60,15 @@ export interface Property {
     constructionStatus?: string
     ccUrl?: string
     ocUrl?: string
-    // End RERA Fields
+    totalLandArea?: number
+    unitCount?: number
+    minPlotSize?: number
+    maxPlotSize?: number
+    ratePerSqft?: number
+    dtcpApproval?: string
+    floorPlans?: FloorPlan[]
+    nearbyInfrastructures?: NearbyInfrastructure[]
     listed: Date
     views: number
     favorited?: boolean
 }
-

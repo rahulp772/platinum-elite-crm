@@ -8,11 +8,14 @@ import {
   ManyToMany,
   JoinTable,
   JoinColumn,
+  OneToMany,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
 import { PropertyStatus, PropertyType } from '../enums/property.enum';
 import { Builder } from '../../builders/entities/builder.entity';
+import { FloorPlan } from '../../floor-plans/entities/floor-plan.entity';
+import { NearbyInfrastructure } from '../../nearby-infrastructure/entities/nearby-infrastructure.entity';
 
 @Entity('properties')
 export class Property {
@@ -144,12 +147,38 @@ export class Property {
   @Column({ nullable: true })
   ocUrl: string;
 
+  @OneToMany(() => FloorPlan, (fp) => fp.property, { cascade: true })
+  floorPlans: FloorPlan[];
+
+  @OneToMany(() => NearbyInfrastructure, (ni) => ni.property, { cascade: true })
+  nearbyInfrastructures: NearbyInfrastructure[];
+
   @ManyToOne(() => Builder, (builder) => builder.properties, { nullable: true })
   @JoinColumn({ name: 'builderId' })
   builder: Builder;
 
   @Column({ nullable: true })
   builderId: string;
+
+  // --- Project Details ---
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  totalLandArea: number;
+
+  @Column({ nullable: true })
+  unitCount: number;
+
+  @Column({ nullable: true })
+  minPlotSize: number;
+
+  @Column({ nullable: true })
+  maxPlotSize: number;
+
+  @Column('decimal', { precision: 12, scale: 2, nullable: true })
+  ratePerSqft: number;
+
+  @Column({ nullable: true })
+  dtcpApproval: string;
+
   // --- End RERA Fields ---
 
   @ManyToOne(() => User, (user) => user.properties)
