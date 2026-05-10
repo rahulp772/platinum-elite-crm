@@ -11,6 +11,7 @@ import * as bcrypt from 'bcryptjs';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Tenant } from '../tenants/entities/tenant.entity';
+import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { AuditService } from '../audit/audit.service';
@@ -25,6 +26,8 @@ export class AuthService {
     private roleRepository: Repository<Role>,
     @InjectRepository(Tenant)
     private tenantRepository: Repository<Tenant>,
+    @InjectRepository(Subscription)
+    private subscriptionRepository: Repository<Subscription>,
     private jwtService: JwtService,
     private configService: ConfigService,
     private auditService: AuditService,
@@ -323,22 +326,43 @@ export class AuthService {
       starter: 0,
       professional: 1,
       enterprise: 2,
+      lite: 0,
+      team: 1,
+      scale: 2,
     };
     const planNameLower = tenant.planName?.toLowerCase() || '';
     const planTier = planTierMap[planNameLower] ?? -1;
-    const isOnHighestPlan = planNameLower === 'enterprise';
+
+    // Check actual subscription in database
+    const subscription = await this.subscriptionRepository.findOne({
+      where: { tenantId: tenant.id },
+      relations: ['plan'],
+      order: { createdAt: 'DESC' },
+    });
+
+    // Determine if user has an active subscription
+    const hasActiveSubscription = subscription && 
+      ['active', 'trial'].includes(subscription.status.toLowerCase());
+    
+    // isOnHighestPlan only if there's an active subscription on the highest tier
+    const isOnHighestPlan = hasActiveSubscription && planTier === 2;
+
+    // Use plan from subscription if available, otherwise fall back to tenant planName
+    const displayPlanName = subscription?.plan?.displayName || tenant.planName || null;
 
     return {
       isTrial: tenant.isTrial,
       isTrialExpired,
       daysSinceExpiry,
       trialEndDate: tenant.trialEndDate,
-      planName: tenant.planName,
-      subscriptionStatus: tenant.subscriptionStatus,
-      subscriptionStartDate: tenant.subscriptionStartDate,
-      subscriptionEndDate: tenant.subscriptionEndDate,
+      planName: displayPlanName,
+      subscriptionStatus: subscription?.status || tenant.subscriptionStatus,
+      subscriptionStartDate: subscription?.currentPeriodStart || tenant.subscriptionStartDate,
+      subscriptionEndDate: subscription?.currentPeriodEnd || tenant.subscriptionEndDate,
       planTier,
       isOnHighestPlan,
+      hasSubscription: !!subscription,
+      subscriptionId: subscription?.id || null,
     };
   }
 }

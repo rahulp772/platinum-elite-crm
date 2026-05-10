@@ -8,7 +8,7 @@ import { AuthProvider } from "@/lib/auth-context"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "MakeItCRM - Real Estate Management Platform",
+  title: "MakeitCRM - Real Estate Management Platform",
   description: "The all-in-one CRM for real estate professionals. Manage leads, deals, properties, and team collaboration.",
 }
 

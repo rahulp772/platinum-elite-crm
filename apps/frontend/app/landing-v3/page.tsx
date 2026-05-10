@@ -57,11 +57,10 @@ const Navbar = () => {
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled 
-          ? "bg-background/80 backdrop-blur-xl border-b border-border py-3" 
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+          ? "bg-background/80 backdrop-blur-xl border-b border-border py-3"
           : "bg-transparent py-5"
-      }`}
+        }`}
     >
       <div className="container mx-auto flex items-center justify-between px-6">
         <Link href="/landing-v3" className="flex items-center gap-2 group">
@@ -75,8 +74,8 @@ const Navbar = () => {
 
         <div className="hidden md:flex items-center gap-8">
           {["Modules", "Security", "Pricing"].map((item) => (
-            <Link 
-              key={item} 
+            <Link
+              key={item}
               href={`#${item.toLowerCase()}`}
               className="text-sm font-medium text-muted-foreground hover:text-[#D4AF37] transition-colors"
             >
@@ -86,9 +85,9 @@ const Navbar = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
-            size="icon" 
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             className="text-muted-foreground hover:text-foreground"
           >
@@ -149,7 +148,7 @@ const HeroSection = () => {
             for Growth
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl mb-8 leading-relaxed">
-            Manage leads, deals, properties, and team collaboration — all from one platform. 
+            Manage leads, deals, properties, and team collaboration — all from one platform.
             Built with multi-tenant security and role-based access control for teams of any size.
           </p>
 
@@ -347,7 +346,7 @@ const DashboardV2Section = () => {
               <span className="text-[#D4AF37]">Dashboard v2</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              A fully customizable dashboard with draggable widgets. Choose from 20+ widget types 
+              A fully customizable dashboard with draggable widgets. Choose from 20+ widget types
               to build your perfect view. Track what matters most to your business.
             </p>
             <div className="grid grid-cols-2 gap-4">
@@ -419,8 +418,8 @@ const SecuritySection = () => {
               <span className="text-[#D4AF37]">Architecture</span>
             </h2>
             <p className="text-muted-foreground text-lg mb-8 leading-relaxed">
-              Built for agencies and teams of any size. Each tenant gets isolated data with 
-              complete role-based access control. Super admins can manage multiple organizations 
+              Built for agencies and teams of any size. Each tenant gets isolated data with
+              complete role-based access control. Super admins can manage multiple organizations
               from a single platform.
             </p>
 
@@ -517,11 +516,10 @@ const PricingSection = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.1 }}
               viewport={{ once: true }}
-              className={`relative p-8 rounded-[32px] border ${
-                plan.isPopular 
-                  ? "bg-slate-900 border-[#D4AF37] shadow-[0_20px_50px_rgba(212,175,55,0.15)]" 
+              className={`relative p-8 rounded-[32px] border ${plan.isPopular
+                  ? "bg-slate-900 border-[#D4AF37] shadow-[0_20px_50px_rgba(212,175,55,0.15)]"
                   : "bg-card border-border"
-              }`}
+                }`}
             >
               {plan.isPopular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 text-xs font-black px-4 py-1.5 rounded-full uppercase tracking-widest">
@@ -548,12 +546,11 @@ const PricingSection = () => {
               </div>
 
               <Link href={getAppUrl("/register")}>
-                <Button 
-                  className={`w-full h-12 rounded-xl font-semibold ${
-                    plan.isPopular 
-                      ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02]" 
+                <Button
+                  className={`w-full h-12 rounded-xl font-semibold ${plan.isPopular
+                      ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02]"
                       : "bg-accent hover:bg-accent/80 text-foreground"
-                  }`}
+                    }`}
                 >
                   Get Started
                 </Button>
@@ -570,7 +567,7 @@ const FinalCTA = () => {
   return (
     <section className="py-32 bg-background">
       <div className="container mx-auto px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
@@ -585,7 +582,7 @@ const FinalCTA = () => {
             Ready to <span className="text-[#D4AF37]">grow</span> your business?
           </h2>
           <p className="text-muted-foreground text-lg max-w-xl mx-auto mb-10 relative z-10">
-            Join real estate professionals who trust MakeItCRM to manage their leads, deals, and team collaboration.
+            Join real estate professionals who trust MakeitCRM to manage their leads, deals, and team collaboration.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 relative z-10">
             <Link href={getAppUrl("/register")}>
@@ -615,7 +612,7 @@ const Footer = () => {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#D4AF37]">
                 <Building2 className="h-5 w-5 text-slate-950" />
               </div>
-              <span className="text-lg font-bold text-foreground">MakeItCRM</span>
+              <span className="text-lg font-bold text-foreground">MakeitCRM</span>
             </Link>
             <p className="text-muted-foreground text-sm leading-relaxed">
               The CRM built for real estate teams. Manage leads, deals, properties, and collaboration — all in one platform.
@@ -641,7 +638,7 @@ const Footer = () => {
         </div>
 
         <div className="pt-8 border-t border-border flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-muted-foreground text-xs">&copy; 2026 MakeItCRM. All rights reserved.</p>
+          <p className="text-muted-foreground text-xs">&copy; 2026 MakeitCRM. All rights reserved.</p>
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <Shield className="h-4 w-4 text-emerald-500" />
             <span>Secure & Compliant</span>

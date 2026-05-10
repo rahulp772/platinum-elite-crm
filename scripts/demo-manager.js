@@ -8,7 +8,7 @@ const pg = require('pg');
 const DEMO_PASSWORD = 'Admin@123';
 
 const DEMO_TENANT_NAMES = [
-  'MakeItCRM Bharat Realty',
+  'MakeitCRM Bharat Realty',
   'Elite India Properties',
   'Apex Bharat Estates',
   'Varanasi Heritage Realty',
@@ -171,7 +171,7 @@ async function createDemoTenants(db, count) {
     for (let j = 1; j <= 2; j++) {
       await db.query(
         'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone, phone, "jobTitle", "isOnboardingComplete") VALUES ($1, $2, $3, $4, $5, false, $6, $7, $8, true)',
-        [`lead${j}@${demoDomain}`, hashedPassword, teamLeadNames[j-1], tenantId, rolesMap['Team Lead'], 'Asia/Kolkata', `+91 98765 ${43220 + j}`, 'Team Lead']
+        [`lead${j}@${demoDomain}`, hashedPassword, teamLeadNames[j - 1], tenantId, rolesMap['Team Lead'], 'Asia/Kolkata', `+91 98765 ${43220 + j}`, 'Team Lead']
       );
     }
 
@@ -179,7 +179,7 @@ async function createDemoTenants(db, count) {
     for (let j = 1; j <= 4; j++) {
       await db.query(
         'INSERT INTO users (email, password, name, "tenantId", "roleId", "isSuperAdmin", timezone, phone, "jobTitle", "isOnboardingComplete") VALUES ($1, $2, $3, $4, $5, false, $6, $7, $8, true)',
-        [`agent${j}@${demoDomain}`, hashedPassword, agentNames[j-1], tenantId, rolesMap['Agent'], 'Asia/Kolkata', `+91 98765 ${43230 + j}`, 'Real Estate Agent']
+        [`agent${j}@${demoDomain}`, hashedPassword, agentNames[j - 1], tenantId, rolesMap['Agent'], 'Asia/Kolkata', `+91 98765 ${43230 + j}`, 'Real Estate Agent']
       );
     }
 
@@ -280,7 +280,7 @@ async function seedDemoData(db, tenantId) {
     const data = propertyData[i % propertyData.length];
     const agentId = agentIds[Math.floor(Math.random() * agentIds.length)];
     const builderId = builderIds[Math.floor(Math.random() * builderIds.length)];
-    
+
     // Randomize titles slightly
     const variations = ['Classic', 'Elite', 'Premium', 'Royal', 'Grand', 'Supreme'];
     const title = variations[Math.floor(Math.random() * variations.length)] + ' ' + data.title + ' ' + (i + 1);
@@ -302,7 +302,7 @@ async function seedDemoData(db, tenantId) {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15::jsonb, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30) RETURNING id`,
       [
         title,
-        data.type === 'land' 
+        data.type === 'land'
           ? `Premium residential plot in ${data.city}, ${data.state}. CMDA approved gated community with world-class amenities. Excellent connectivity and location.`
           : `Beautiful ${title} in ${data.city}, ${data.state}. High quality finishes and prime location.`,
         data.price + (Math.floor(Math.random() * 20 - 10) * 100000),
@@ -317,7 +317,7 @@ async function seedDemoData(db, tenantId) {
         data.sqft,
         data.type !== 'land' ? 2010 + Math.floor(Math.random() * 15) : null,
         propertyImages.join(','),
-        data.type === 'land' 
+        data.type === 'land'
           ? JSON.stringify(['24x7 Security', 'CCTV Surveillance', 'Black Top Roads', 'Street Lights', 'Rain Water Harvesting', 'Garden', 'Play Area', 'Clubhouse'])
           : JSON.stringify(['Gated Community', 'Power Backup', 'Security', 'Clubhouse']),
         agentId,
@@ -366,7 +366,7 @@ async function seedDemoData(db, tenantId) {
   for (const propId of landPropertyIds) {
     const numFloorPlans = 3 + Math.floor(Math.random() * 3); // 3-5 floor plans per property
     const shuffled = floorPlanTemplates.sort(() => 0.5 - Math.random());
-    
+
     for (let j = 0; j < numFloorPlans; j++) {
       const fp = shuffled[j];
       await db.query(
@@ -411,7 +411,7 @@ async function seedDemoData(db, tenantId) {
   for (const propId of landPropertyIds) {
     const numEntries = 5 + Math.floor(Math.random() * 6); // 5-10 entries per property
     const shuffled = nearbyInfrastructureData.sort(() => 0.5 - Math.random());
-    
+
     for (let j = 0; j < numEntries; j++) {
       const ni = shuffled[j];
       await db.query(

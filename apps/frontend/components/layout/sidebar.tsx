@@ -64,7 +64,7 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
                 .catch(console.error)
         }
     }, [user?.tenantId])
-    
+
     const navItems = React.useMemo(() => {
         return navigation
             .filter(item => {
@@ -75,7 +75,7 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
                 }
                 return hasPermission(item.permission)
             })
-            .map(item => 
+            .map(item =>
                 item.name === "Messages" ? { ...item, badge: unreadMessages > 0 ? unreadMessages : undefined } : item
             )
     }, [unreadMessages, user, hasPermission])
@@ -84,10 +84,10 @@ export function Sidebar({ isMobile = false, mobileOpen = false, onMobileClose }:
     // Note: We pass isMobile to disable expensive effects
     return (
         <TooltipProvider delayDuration={0}>
-            <SidebarContent 
-                navItems={navItems} 
-                collapsed={isMobile ? false : collapsed} 
-                setCollapsed={setCollapsed} 
+            <SidebarContent
+                navItems={navItems}
+                collapsed={isMobile ? false : collapsed}
+                setCollapsed={setCollapsed}
                 pathname={pathname}
                 user={user}
                 logout={logout}
@@ -162,7 +162,7 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                         </div>
                         {!collapsed && (
                             <div className="flex flex-col">
-                                <span className="text-sm font-bold text-foreground tracking-tight">MakeItCRM</span>
+                                <span className="text-sm font-bold text-foreground tracking-tight">MakeitCRM</span>
                                 <span className="text-[10px] font-medium text-realty-gold uppercase tracking-[0.2em]">Real Estate Intelligence</span>
                             </div>
                         )}
@@ -324,7 +324,7 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                                 </div>
                                 {subscriptionStatus.trialEndDate && (
                                     <p className="text-[10px] text-muted-foreground mb-3">
-                                        {subscriptionStatus.isTrialExpired 
+                                        {subscriptionStatus.isTrialExpired
                                             ? `Expired ${subscriptionStatus.daysSinceExpiry} days ago`
                                             : `${Math.ceil((new Date(subscriptionStatus.trialEndDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))} days left`
                                         }
@@ -345,7 +345,7 @@ function SidebarContent({ navItems, collapsed, setCollapsed, pathname, user, log
                                     </span>
                                 </div>
                                 <p className="text-[10px] text-muted-foreground mb-3">
-                                    {subscriptionStatus.planName 
+                                    {subscriptionStatus.planName
                                         ? `${subscriptionStatus.subscriptionStatus || 'Active'} subscription`
                                         : 'Unlock premium features'}
                                 </p>

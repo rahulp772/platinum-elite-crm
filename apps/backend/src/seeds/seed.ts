@@ -58,7 +58,7 @@ export class SeedService {
     @InjectRepository(Builder)
     private builderRepository: Repository<Builder>,
     private dataSource: DataSource,
-  ) {}
+  ) { }
 
   async seed() {
     console.log('🌱 Starting database seed...');
@@ -94,7 +94,7 @@ export class SeedService {
     console.log('🏢 Creating tenants, roles, and users...');
 
     const TENANTS = [
-      { name: 'MakeItCRM Realty', domain: 'makeitcrm.com' },
+      { name: 'MakeitCRM Realty', domain: 'makeitcrm.com' },
       { name: 'Luxury Homes Global', domain: 'luxury-homes.com' },
       { name: 'Apex Properties', domain: 'apex-props.com' },
       { name: 'Skyline Estates', domain: 'skyline-estates.com' },

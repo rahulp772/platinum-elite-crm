@@ -85,6 +85,15 @@ export function BillingForm() {
     enabled: !!user?.tenantId,
   })
 
+  const { data: subStatus } = useQuery<any>({
+    queryKey: ['subscriptionStatus', user?.tenantId],
+    queryFn: async () => {
+      const res = await api.get('/auth/subscription')
+      return res.data
+    },
+    enabled: !!user?.tenantId,
+  })
+
   const { data: entitlements, isLoading: entLoading } = useQuery<Entitlements>({
     queryKey: ['entitlements', user?.tenantId],
     queryFn: async () => {
@@ -177,24 +186,24 @@ export function BillingForm() {
   return (
     <div className="space-y-6">
       {isNearLimit && (
-        <Card className="border-amber-500/50 bg-amber-500/5">
-          <CardContent className="pt-6">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5" />
-              <div>
-                <h4 className="font-semibold text-amber-500">You&apos;re nearing your limit</h4>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {userUsagePercent >= 80 && `You&apos;ve used ${entitlements?.currentUsers} of ${entitlements?.userLimit} user slots. `}
-                  {leadUsagePercent >= 80 && `You&apos;ve used ${entitlements?.currentLeads} of ${entitlements?.leadLimit} leads.`}
-                  {' '}Consider upgrading your plan.
-                </p>
-                <Link href="/pricing" className="inline-block mt-3">
-                  <Button size="sm" variant="outline" className="border-amber-500/50 text-amber-500 hover:bg-amber-500/10">
-                    Upgrade Plan <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                </Link>
-              </div>
+        <Card className="border-realty-gold/30 bg-gradient-to-r from-realty-gold/5 to-transparent">
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-realty-gold" />
+              <CardTitle className="text-lg text-realty-gold">You're nearing your limit</CardTitle>
             </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">
+              {userUsagePercent >= 80 && `You've used ${entitlements?.currentUsers} of ${entitlements?.userLimit} user slots. `}
+              {leadUsagePercent >= 80 && `You've used ${entitlements?.currentLeads} of ${entitlements?.leadLimit} leads.`}
+              {' '}Consider upgrading your plan.
+            </p>
+            <Link href="/pricing">
+              <Button size="sm" className="bg-realty-gold text-realty-navy hover:bg-realty-gold-light">
+                Upgrade Plan <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
           </CardContent>
         </Card>
       )}
@@ -218,30 +227,35 @@ export function BillingForm() {
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="text-lg font-semibold">
-                    {subscription?.plan?.displayName || 'No Plan'}
+                    {subscription?.plan?.displayName || subStatus?.planName || 'No Plan'}
                   </h3>
-                  {subscription && (
+                  {(subscription || subStatus?.subscriptionStatus) && (
                     <Badge className={
-                      subscription.status === 'active' 
+                      subscription?.status === 'active' 
                         ? 'bg-green-500/20 text-green-500'
-                        : subscription.status === 'trial'
+                        : subscription?.status === 'trial' || subStatus?.subscriptionStatus === 'trial'
                           ? 'bg-amber-500/20 text-amber-500'
-                          : 'bg-gray-500/20 text-gray-500'
+                          : subscription?.status === 'cancelled'
+                            ? 'bg-red-500/20 text-red-500'
+                            : subStatus?.subscriptionStatus === 'active'
+                              ? 'bg-green-500/20 text-green-500'
+                              : 'bg-gray-500/20 text-gray-500'
                     }>
-                      {subscription.status}
+                      {subscription?.status || subStatus?.subscriptionStatus || 'Unknown'}
                     </Badge>
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {subscription?.billingCycle === 'yearly' ? 'Billed yearly' : 'Billed monthly'}
                   {subscription?.autoRenew && ' • Auto-renew enabled'}
+                  {!subscription && subStatus?.hasSubscription && ' • Active'}
                 </p>
               </div>
             </div>
 
             <Link href="/pricing">
               <Button className="bg-realty-gold text-realty-navy hover:bg-realty-gold-light">
-                {subscription ? 'Change Plan' : 'Choose Plan'}
+                {subStatus?.hasSubscription ? 'Change Plan' : 'Choose Plan'}
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

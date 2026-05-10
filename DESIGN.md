@@ -1,5 +1,5 @@
 ---
-name: MakeItCRM
+name: MakeitCRM
 colors:
   primary: "#C5A059"
   secondary: "#1E293B"
@@ -20,7 +20,7 @@ rounded:
 # Design System
 
 ## Overview
-A premium, sophisticated **MakeItCRM** interface designed for high-end real estate management. 
+A premium, sophisticated **MakeitCRM** interface designed for high-end real estate management. 
 It features a deep navy palette with champagne gold accents, glassmorphism, and subtle glow effects to convey luxury and exclusivity.
 
 ## Colors

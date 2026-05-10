@@ -95,7 +95,7 @@ export default function LoginPage() {
           <div className="p-3 rounded-xl bg-gradient-to-br from-realty-gold to-realty-gold-dark mb-4 shadow-lg shadow-realty-gold/20">
             <Building2 className="h-8 w-8 text-realty-navy" />
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">MakeItCRM</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight text-foreground">MakeitCRM</CardTitle>
           <CardDescription className="text-muted-foreground">
             Enter your credentials to access your dashboard
           </CardDescription>
@@ -161,7 +161,7 @@ export default function LoginPage() {
               Try Demo Account
             </Button>
             <div className="text-sm text-center text-muted-foreground">
-              Don&apos;t have an account?{" "}
+              Don't have an account?{" "}
               <Link
                 href="/register"
                 className="text-realty-gold hover:text-realty-gold-light font-medium transition-colors"

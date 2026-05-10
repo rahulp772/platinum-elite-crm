@@ -8,13 +8,14 @@ import { AuthController } from './auth.controller';
 import { User } from '../users/entities/user.entity';
 import { Role } from '../roles/entities/role.entity';
 import { Tenant } from '../tenants/entities/tenant.entity';
+import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuditModule } from '../audit/audit.module';
 import { RolesModule } from '../roles/roles.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Role, Tenant]),
+    TypeOrmModule.forFeature([User, Role, Tenant, Subscription]),
     PassportModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { LeadsTable } from "@/components/leads/leads-table"
 import { LeadFilters } from "@/components/leads/lead-filters"
 import { AddLeadDialog } from "@/components/leads/add-lead-dialog"
@@ -50,12 +50,29 @@ const LeadsTableSection = React.memo(function LeadsTableSection({
 
 export default function LeadsPage() {
     const router = useRouter()
+    const searchParams = useSearchParams()
     const { data: users } = useUsers()
+    
+    // Initialize filters from URL params
     const [searchQuery, setSearchQuery] = React.useState("")
-    const [statusFilter, setStatusFilter] = React.useState("open")
-    const [sourceFilter, setSourceFilter] = React.useState("all")
-    const [assignedToFilter, setAssignedToFilter] = React.useState("all")
+    const [statusFilter, setStatusFilter] = React.useState(searchParams.get("status") || 
+        (searchParams.get("closedToday") ? "booked" : 
+         searchParams.get("createdToday") ? "new" : "open"))
+    const [sourceFilter, setSourceFilter] = React.useState(searchParams.get("source") || "all")
+    const [assignedToFilter, setAssignedToFilter] = React.useState(searchParams.get("unassigned") === "true" ? "" : 
+        (searchParams.get("assignedToId") || "all"))
     const [builderFilter, setBuilderFilter] = React.useState("all")
+    const [fromUrlDate, setFromUrlDate] = React.useState<Date | undefined>(() => {
+        const dateParam = searchParams.get("date")
+        if (dateParam === "today" || searchParams.get("closedToday") || searchParams.get("createdToday")) {
+            return new Date()
+        }
+        if (dateParam) {
+            const parsed = new Date(dateParam)
+            return isNaN(parsed.getTime()) ? new Date() : parsed
+        }
+        return undefined
+    })
 
     const [editDialogOpen, setEditDialogOpen] = React.useState(false)
     const [selectedLead, setSelectedLead] = React.useState<Lead | null>(null)
@@ -67,8 +84,10 @@ export default function LeadsPage() {
 
     // Date filtering state
     const { user } = useAuth()
-    const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(new Date())
-    const [isAllTime, setIsAllTime] = React.useState(true) // Default to true for Admins/Managers
+    const [selectedDate, setSelectedDate] = React.useState<Date | undefined>(fromUrlDate || new Date())
+    const [isAllTime, setIsAllTime] = React.useState(() => {
+        return !fromUrlDate
+    })
     const [hasInitializedDate, setHasInitializedDate] = React.useState(false)
 
     // Set default view based on role

@@ -1,6 +1,6 @@
 # Setup Requirements
 
-This document outlines the prerequisites, skills, and step-by-step instructions to set up and run the MakeItCRM project.
+This document outlines the prerequisites, skills, and step-by-step instructions to set up and run the MakeitCRM project.
 
 ---
 

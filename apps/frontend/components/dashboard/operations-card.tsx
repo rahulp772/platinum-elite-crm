@@ -30,7 +30,7 @@ export function OperationsCard({ stats }: OperationsCardProps) {
             icon: UserMinus,
             color: "text-amber-600",
             bg: "bg-amber-50",
-            href: "/leads?assignedToId=unassigned"
+            href: "/leads?unassigned=true"
         },
         {
             label: "Today Closed",
@@ -38,7 +38,7 @@ export function OperationsCard({ stats }: OperationsCardProps) {
             icon: CheckCircle2,
             color: "text-emerald-600",
             bg: "bg-emerald-50",
-            href: "/leads?status=booked"
+            href: "/leads?status=booked&closedToday=true"
         },
         {
             label: "Today New",
@@ -46,7 +46,7 @@ export function OperationsCard({ stats }: OperationsCardProps) {
             icon: PlusCircle,
             color: "text-indigo-600",
             bg: "bg-indigo-50",
-            href: "/leads?date=today"
+            href: "/leads?status=new&createdToday=true"
         }
     ]
 

@@ -15024,8 +15024,8 @@
       "source_file": "apps\\backend\\src\\entitlements\\feature.guard.ts",
       "source_location": "L36",
       "weight": 1.0,
-      "_src": "feature_guard_featureguard_canactivate",
-      "_tgt": "entitlements_service_entitlementsservice_gettenantentitlements",
+      "_src": "entitlements_service_entitlementsservice_gettenantentitlements",
+      "_tgt": "feature_guard_featureguard_canactivate",
       "source": "entitlements_service_entitlementsservice_gettenantentitlements",
       "target": "feature_guard_featureguard_canactivate"
     },
@@ -15048,8 +15048,8 @@
       "source_file": "apps\\backend\\src\\entitlements\\user-limit.guard.ts",
       "source_location": "L28",
       "weight": 1.0,
-      "_src": "user_limit_guard_userlimitguard_canactivate",
-      "_tgt": "entitlements_service_entitlementsservice_canadduser",
+      "_src": "entitlements_service_entitlementsservice_canadduser",
+      "_tgt": "user_limit_guard_userlimitguard_canactivate",
       "source": "entitlements_service_entitlementsservice_canadduser",
       "target": "user_limit_guard_userlimitguard_canactivate"
     },
@@ -15072,8 +15072,8 @@
       "source_file": "apps\\backend\\src\\entitlements\\feature.guard.ts",
       "source_location": "L46",
       "weight": 1.0,
-      "_src": "feature_guard_featureguard_canactivate",
-      "_tgt": "entitlements_service_entitlementsservice_hasfeature",
+      "_src": "entitlements_service_entitlementsservice_hasfeature",
+      "_tgt": "feature_guard_featureguard_canactivate",
       "source": "entitlements_service_entitlementsservice_hasfeature",
       "target": "feature_guard_featureguard_canactivate"
     },

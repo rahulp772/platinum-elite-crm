@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Users, Shield, Plus, MoreHorizontal, Loader2, Trash2, UserCog, Building2, CreditCard } from "lucide-react"
+import { Users, Shield, Plus, MoreHorizontal, Loader2, Trash2, UserCog, Building2, CreditCard, AlertTriangle } from "lucide-react"
 import { formatDateOnly, getUserTimezone } from "@/lib/date-utils"
 import {
   Table,
@@ -106,6 +106,7 @@ export default function SettingsPage() {
 
   const [teamPage, setTeamPage] = React.useState(1)
   const [addMemberOpen, setAddMemberOpen] = React.useState(false)
+  const [upgradeWarningOpen, setUpgradeWarningOpen] = React.useState(false)
   const [addRoleOpen, setAddRoleOpen] = React.useState(false)
   const [deleteRole, setDeleteRole] = React.useState<Role | null>(null)
   const [editUser, setEditUser] = React.useState<User | null>(null)
@@ -146,6 +147,15 @@ export default function SettingsPage() {
       }
       return uniqueByName
     },
+  })
+
+  const { data: entitlements } = useQuery({
+    queryKey: ["entitlements", currentUser?.tenantId],
+    queryFn: async () => {
+      const res = await api.get("/entitlements/my")
+      return res.data
+    },
+    enabled: !!currentUser?.tenantId,
   })
 
   const paginatedUsers = React.useMemo(() => {
@@ -317,7 +327,17 @@ export default function SettingsPage() {
               <h2 className="text-xl font-semibold">Team Members</h2>
               <p className="text-sm text-muted-foreground">Manage your team members</p>
             </div>
-            <Button onClick={() => setAddMemberOpen(true)}>
+            <Button onClick={() => {
+              const userLimit = entitlements?.userLimit ?? -1
+              const currentUsers = entitlements?.currentUsers ?? 0
+              const isUnlimited = entitlements?.isUnlimited
+              
+              if (!isUnlimited && userLimit > 0 && currentUsers >= userLimit) {
+                setUpgradeWarningOpen(true)
+              } else {
+                setAddMemberOpen(true)
+              }
+            }}>
               <Plus className="mr-2 h-4 w-4" />
               Add Member
             </Button>
@@ -437,6 +457,40 @@ export default function SettingsPage() {
             onOpenChange={setAddMemberOpen}
             onSuccess={() => refetchUsers()}
           />
+
+          {/* Upgrade Warning Dialog */}
+          <Dialog open={upgradeWarningOpen} onOpenChange={setUpgradeWarningOpen}>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2 text-amber-600">
+                  <AlertTriangle className="h-5 w-5" />
+                  User Limit Reached
+                </DialogTitle>
+                <DialogDescription>
+                  Your current plan ({entitlements?.planName || 'Plan'}) allows {entitlements?.userLimit || 0} users. 
+                  You've already reached this limit.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-muted">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Current Usage</span>
+                    <span className="font-medium">
+                      {entitlements?.currentUsers || 0} / {entitlements?.isUnlimited ? '∞' : (entitlements?.userLimit || 0)} users
+                    </span>
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setUpgradeWarningOpen(false)}>
+                    Close
+                  </Button>
+                  <Button asChild className="bg-realty-gold text-realty-navy hover:bg-realty-gold-light">
+                    <a href="/pricing">Upgrade Plan</a>
+                  </Button>
+                </DialogFooter>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <Dialog open={!!editUser} onOpenChange={(open) => !open && setEditUser(null)}>
             <DialogContent className="sm:max-w-[425px]">

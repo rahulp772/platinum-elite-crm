@@ -58,7 +58,7 @@ export function TrialBanner() {
           <AlertTriangle className="h-16 w-16 text-destructive mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-foreground mb-2">Trial Expired</h2>
           <p className="text-muted-foreground mb-6">
-            Your 7-day trial has ended. Please upgrade to continue using MakeItCRM.
+            Your 7-day trial has ended. Please upgrade to continue using MakeitCRM.
           </p>
           <Button
             onClick={() => router.push('/pricing')}

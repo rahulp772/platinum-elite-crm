@@ -29,6 +29,14 @@ interface Plan {
   minPrice?: number
 }
 
+interface SubscriptionStatus {
+  hasSubscription: boolean
+  subscriptionId: string | null
+  planName: string | null
+  subscriptionStatus: string | null
+  isOnHighestPlan: boolean
+}
+
 const FEATURE_LABELS: Record<string, string> = {
   leads_management: 'Lead Management',
   properties_management: 'Property Inventory',
@@ -61,6 +69,7 @@ function PricingContent() {
   const [isPurchasing, setIsPurchasing] = React.useState<string | null>(null)
   const [showWelcome, setShowWelcome] = React.useState(false)
   const [purchasedPlanName, setPurchasedPlanName] = React.useState('')
+  const [subscriptionStatus, setSubscriptionStatus] = React.useState<SubscriptionStatus | null>(null)
   const searchParams = useSearchParams()
 
   React.useEffect(() => {
@@ -76,8 +85,20 @@ function PricingContent() {
         setIsLoading(false)
       }
     }
+
+    const fetchSubscriptionStatus = async () => {
+      if (!user?.tenantId) return
+      try {
+        const res = await api.get('/auth/subscription')
+        setSubscriptionStatus(res.data)
+      } catch (error) {
+        console.error('Failed to fetch subscription status:', error)
+      }
+    }
+
     fetchPlans()
-  }, [])
+    fetchSubscriptionStatus()
+  }, [user?.tenantId])
 
   const handleSubscribe = async (planId: string) => {
     if (!user?.tenantId) {
@@ -85,10 +106,39 @@ function PricingContent() {
       return
     }
 
+    const plan = plans.find(p => p.id === planId)
+    if (!plan) return
+
+    // If user has subscription and it's not the Scale plan (custom pricing), try upgrade first
+    if (subscriptionStatus?.hasSubscription && plan.monthlyPrice > 0) {
+      setIsPurchasing(planId)
+      try {
+        await api.post('/subscriptions/upgrade', { planId })
+        setPurchasedPlanName(plan.displayName || '')
+        setShowWelcome(true)
+      } catch (error: any) {
+        // If upgrade fails (e.g., not allowed), try subscribe as fallback
+        if (error?.response?.status === 400 && error?.response?.data?.message?.includes('upgrade')) {
+          try {
+            await api.post('/subscriptions/subscribe', { planId })
+            setPurchasedPlanName(plan.displayName || '')
+            setShowWelcome(true)
+          } catch (subscribeError) {
+            console.error('Subscribe error after upgrade failed:', subscribeError)
+          }
+        } else {
+          console.error('Upgrade error:', error)
+        }
+      } finally {
+        setIsPurchasing(null)
+      }
+      return
+    }
+
     setIsPurchasing(planId)
     try {
       await api.post('/subscriptions/subscribe', { planId })
-      setPurchasedPlanName(plans.find(p => p.id === planId)?.displayName || '')
+      setPurchasedPlanName(plan.displayName || '')
       setShowWelcome(true)
     } catch (error) {
       console.error('Subscribe error:', error)
@@ -256,12 +306,25 @@ function PricingContent() {
                       : "bg-muted hover:bg-muted/80 text-foreground"
                   }`}
                   onClick={() => handleSubscribe(plan.id)}
-                  disabled={isPurchasing === plan.id}
+                  disabled={isPurchasing === plan.id || (subscriptionStatus?.hasSubscription && plan.displayName.toLowerCase() === subscriptionStatus?.planName?.toLowerCase())}
                 >
                   {isPurchasing === plan.id ? (
                     <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
                   ) : (
-                    plan.ctaText || 'Get Started'
+                    (() => {
+                      // Check if this specific plan is the current plan
+                      const isCurrentPlan = subscriptionStatus?.hasSubscription && 
+                        subscriptionStatus.planName && 
+                        plan.displayName.toLowerCase() === subscriptionStatus.planName.toLowerCase()
+                      
+                      if (isCurrentPlan) {
+                        return 'Current Plan'
+                      }
+                      if (subscriptionStatus?.hasSubscription) {
+                        return 'Upgrade'
+                      }
+                      return plan.ctaText || 'Get Started'
+                    })()
                   )}
                 </Button>
               </motion.div>

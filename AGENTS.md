@@ -1,4 +1,4 @@
-# 🤖 MakeItCRM: Full-Stack Architecture Documentation
+# 🤖 MakeitCRM: Full-Stack Architecture Documentation
 
 This document provides a comprehensive overview of the Real Estate CRM project, designed for developers and AI agents to understand the system's architecture, data models, and implementation patterns.
 
@@ -7,7 +7,7 @@ This document provides a comprehensive overview of the Real Estate CRM project, 
 ## 🏗️ System Overview
 The Real Estate CRM is a full-stack application designed to streamline property management, lead tracking, and deal closure for real estate agencies.
 
-- **Frontend**: Next.js 15 (React) with the premium **MakeItCRM** design system.
+- **Frontend**: Next.js 15 (React) with the premium **MakeitCRM** design system.
 - **Backend**: NestJS (Node.js) with TypeORM and PostgreSQL.
 - **Authentication**: JWT-based with Dynamic Roles & Permissions (Multi-Tenant).
 
@@ -175,7 +175,7 @@ Internal and client communication.
 
 ## 🎨 Frontend Architecture (Next.js)
 
-### Design System: **MakeItCRM**
+### Design System: **MakeitCRM**
 - **Palette**: Navy Blue (`#0A192F`) and Champagne Gold (`#D4AF37`).
 - **Components**: Built on [Shadcn UI](https://ui.shadcn.com/) and Radix UI.
 - **Animations**: Subtle micro-animations using Framer Motion.
