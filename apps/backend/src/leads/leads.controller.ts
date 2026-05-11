@@ -78,7 +78,7 @@ export class LeadsController {
     });
   }
 
-  @Get('my')
+  @Get('my-leads')
   @RequirePermissions('leads:read')
   @ApiOperation({ summary: 'Get my leads' })
   getMyLeads(@Request() req) {

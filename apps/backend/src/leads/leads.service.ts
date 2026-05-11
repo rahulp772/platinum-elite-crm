@@ -293,7 +293,7 @@ export class LeadsService {
 
       if (roleLevel === 80 || roleLevel === 50) {
         return qb.where(
-          '(lead.assignedToId = :currentUserId OR (assignedTo.role.level < :roleLevel AND lead.tenantId = :tenantId))',
+          '(lead.assignedToId = :currentUserId OR (role.level < :roleLevel AND lead.tenantId = :tenantId))',
           { currentUserId, roleLevel, tenantId },
         );
       }
