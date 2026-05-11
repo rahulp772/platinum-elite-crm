@@ -16,7 +16,6 @@ import { Builder } from '../../builders/entities/builder.entity';
 import { Transaction } from '../../transactions/entities/transaction.entity';
 import { Subscription } from '../../subscriptions/entities/subscription.entity';
 
-
 @Entity('tenants')
 export class Tenant {
   @PrimaryGeneratedColumn('uuid')
@@ -93,7 +92,6 @@ export class Tenant {
 
   @Column({ nullable: true })
   website: string;
-
 
   @Column({ default: 'Asia/Kolkata' })
   timezone: string;

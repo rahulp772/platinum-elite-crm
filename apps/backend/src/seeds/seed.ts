@@ -58,7 +58,7 @@ export class SeedService {
     @InjectRepository(Builder)
     private builderRepository: Repository<Builder>,
     private dataSource: DataSource,
-  ) { }
+  ) {}
 
   async seed() {
     console.log('🌱 Starting database seed...');

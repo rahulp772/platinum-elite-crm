@@ -10,4 +10,4 @@ import { Builder } from './entities/builder.entity';
   providers: [BuildersService],
   exports: [BuildersService],
 })
-export class BuildersModule { }
+export class BuildersModule {}

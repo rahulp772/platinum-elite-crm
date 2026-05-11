@@ -147,12 +147,14 @@ export class UsersController {
     try {
       await this.s3Client.send(command);
       const avatarUrl = `https://${bucketName}.s3.amazonaws.com/${objectKey}`;
-      
+
       await this.usersService.updateAvatar(userId, avatarUrl);
 
       return { data: { avatarUrl }, success: true };
     } catch (error) {
-      throw new BadRequestException(`Failed to upload avatar: ${error.message}`);
+      throw new BadRequestException(
+        `Failed to upload avatar: ${error.message}`,
+      );
     }
   }
 }

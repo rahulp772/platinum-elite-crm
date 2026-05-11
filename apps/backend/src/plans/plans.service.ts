@@ -97,7 +97,8 @@ const DEFAULT_PLANS = [
     sortOrder: 2,
     recommended: false,
     tagline: 'For large brokerages',
-    description: 'Unlimited power with multi-branch support and custom branding',
+    description:
+      'Unlimited power with multi-branch support and custom branding',
     ctaText: 'Contact Sales',
     ctaLink: '/contact',
     minPrice: 9999,

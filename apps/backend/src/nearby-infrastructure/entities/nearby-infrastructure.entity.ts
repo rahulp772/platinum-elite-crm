@@ -36,7 +36,9 @@ export class NearbyInfrastructure {
   @Column()
   propertyId: string;
 
-  @ManyToOne(() => Property, (property) => property.nearbyInfrastructures, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Property, (property) => property.nearbyInfrastructures, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'propertyId' })
   property: Property;
 

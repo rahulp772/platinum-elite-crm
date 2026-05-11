@@ -101,7 +101,10 @@ export class ChatController {
     FileInterceptor('file', {
       storage: memoryStorage(),
       fileFilter: (req, file, cb) => {
-        if (file.mimetype.startsWith('image/') || file.mimetype === 'application/pdf') {
+        if (
+          file.mimetype.startsWith('image/') ||
+          file.mimetype === 'application/pdf'
+        ) {
           cb(null, true);
         } else {
           cb(new Error('Only images and PDF files are allowed'), false);
@@ -118,7 +121,9 @@ export class ChatController {
     @Request() req,
   ) {
     if (!file) {
-      throw new BadRequestException('No file uploaded. This might happen if the file type is not allowed or if the form data was incorrectly formatted.');
+      throw new BadRequestException(
+        'No file uploaded. This might happen if the file type is not allowed or if the form data was incorrectly formatted.',
+      );
     }
 
     const randomName = Array(32)
@@ -128,9 +133,11 @@ export class ChatController {
     const filename = `${randomName}${extname(file.originalname)}`;
     const bucketName = process.env.AWS_S3_BUCKET_NAME || 'my-crm-bucket';
     const tenantId = req.user?.tenantId || 'default-tenant';
-    
+
     // Structure: chat/:tenantid/:chatid/:filename
-    const folder = conversationId ? `chat/${tenantId}/${conversationId}` : `chat/${tenantId}/general`;
+    const folder = conversationId
+      ? `chat/${tenantId}/${conversationId}`
+      : `chat/${tenantId}/general`;
     const objectKey = `${folder}/${filename}`;
 
     const command = new PutObjectCommand({
@@ -143,7 +150,7 @@ export class ChatController {
 
     try {
       await this.s3Client.send(command);
-      
+
       const region = process.env.AWS_REGION || 'us-east-1';
       const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${objectKey}`;
 
@@ -156,7 +163,7 @@ export class ChatController {
     } catch (error: any) {
       console.error('S3 Upload Error:', error);
       throw new InternalServerErrorException(
-        `Failed to upload file to S3: ${error.message}`
+        `Failed to upload file to S3: ${error.message}`,
       );
     }
   }

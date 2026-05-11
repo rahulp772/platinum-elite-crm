@@ -37,7 +37,9 @@ export class EntitlementsService {
     private tenantRepository: Repository<Tenant>,
   ) {}
 
-  async getTenantEntitlements(tenantId: string): Promise<TenantEntitlements | null> {
+  async getTenantEntitlements(
+    tenantId: string,
+  ): Promise<TenantEntitlements | null> {
     const subscription = await this.subscriptionRepository.findOne({
       where: { tenantId },
       relations: ['plan'],
@@ -67,11 +69,16 @@ export class EntitlementsService {
     };
   }
 
-  async canAddUser(tenantId: string): Promise<{ allowed: boolean; message?: string }> {
+  async canAddUser(
+    tenantId: string,
+  ): Promise<{ allowed: boolean; message?: string }> {
     const entitlements = await this.getTenantEntitlements(tenantId);
 
     if (!entitlements) {
-      return { allowed: true, message: 'No subscription - using default limits' };
+      return {
+        allowed: true,
+        message: 'No subscription - using default limits',
+      };
     }
 
     if (entitlements.isUnlimited) {
@@ -88,11 +95,16 @@ export class EntitlementsService {
     return { allowed: true };
   }
 
-  async canAddLead(tenantId: string): Promise<{ allowed: boolean; message?: string }> {
+  async canAddLead(
+    tenantId: string,
+  ): Promise<{ allowed: boolean; message?: string }> {
     const entitlements = await this.getTenantEntitlements(tenantId);
 
     if (!entitlements) {
-      return { allowed: true, message: 'No subscription - using default limits' };
+      return {
+        allowed: true,
+        message: 'No subscription - using default limits',
+      };
     }
 
     if (entitlements.isUnlimited) {
@@ -109,7 +121,10 @@ export class EntitlementsService {
     return { allowed: true };
   }
 
-  hasFeature(entitlements: TenantEntitlements | null, feature: string): boolean {
+  hasFeature(
+    entitlements: TenantEntitlements | null,
+    feature: string,
+  ): boolean {
     if (!entitlements) {
       return true;
     }

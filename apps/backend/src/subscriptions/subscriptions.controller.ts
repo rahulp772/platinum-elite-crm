@@ -32,7 +32,11 @@ export class SubscriptionsController {
   @UseGuards(PermissionsGuard)
   @RequirePermissions('settings:write')
   @ApiOperation({ summary: 'Subscribe to a plan' })
-  subscribe(@Body() body: { planId: string; billingCycle?: BillingCycle; addOns?: string[] }, @Request() req) {
+  subscribe(
+    @Body()
+    body: { planId: string; billingCycle?: BillingCycle; addOns?: string[] },
+    @Request() req,
+  ) {
     return this.subscriptionsService.createSubscription({
       tenantId: req.user.tenantId,
       planId: body.planId,
@@ -47,7 +51,11 @@ export class SubscriptionsController {
   @RequirePermissions('settings:write')
   @ApiOperation({ summary: 'Upgrade to a different plan' })
   upgrade(@Body() body: { planId: string }, @Request() req) {
-    return this.subscriptionsService.upgrade(req.user.tenantId, body.planId, req.user);
+    return this.subscriptionsService.upgrade(
+      req.user.tenantId,
+      body.planId,
+      req.user,
+    );
   }
 
   @Post('cancel')
@@ -63,7 +71,11 @@ export class SubscriptionsController {
   @RequirePermissions('settings:write')
   @ApiOperation({ summary: 'Add an add-on' })
   addAddOn(@Body() body: { addOnName: string }, @Request() req) {
-    return this.subscriptionsService.addAddOn(req.user.tenantId, body.addOnName, req.user);
+    return this.subscriptionsService.addAddOn(
+      req.user.tenantId,
+      body.addOnName,
+      req.user,
+    );
   }
 
   @Post('addons/remove')
@@ -71,7 +83,11 @@ export class SubscriptionsController {
   @RequirePermissions('settings:write')
   @ApiOperation({ summary: 'Remove an add-on' })
   removeAddOn(@Body() body: { addOnName: string }, @Request() req) {
-    return this.subscriptionsService.removeAddOn(req.user.tenantId, body.addOnName, req.user);
+    return this.subscriptionsService.removeAddOn(
+      req.user.tenantId,
+      body.addOnName,
+      req.user,
+    );
   }
 
   @Post(':tenantId/assign-random')

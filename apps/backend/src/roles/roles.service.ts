@@ -24,11 +24,16 @@ export class RolesService {
           { tenantId: user.tenantId },
           { tenantId: IsNull() }, // System roles
         ];
-    
+
     const roles = await this.roleRepository.find({ where });
 
     // Auto-seed if only Admin exists (for backward compatibility)
-    if (!isGlobalAdmin && user.tenantId && roles.length === 1 && roles[0].name === 'Admin') {
+    if (
+      !isGlobalAdmin &&
+      user.tenantId &&
+      roles.length === 1 &&
+      roles[0].name === 'Admin'
+    ) {
       await this.seedDefaultRoles(user.tenantId);
       return this.roleRepository.find({ where });
     }
@@ -108,58 +113,76 @@ export class RolesService {
         level: 100,
         description: 'Full system access',
         permissions: [
-          'leads:read', 'leads:write',
-          'deals:read', 'deals:write',
-          'properties:read', 'properties:write',
-          'tasks:read', 'tasks:write',
+          'leads:read',
+          'leads:write',
+          'deals:read',
+          'deals:write',
+          'properties:read',
+          'properties:write',
+          'tasks:read',
+          'tasks:write',
           'reports:read',
           'settings:write',
-          'users:read', 'users:write',
-          'roles:write'
-        ]
+          'users:read',
+          'users:write',
+          'roles:write',
+        ],
       },
       {
         name: 'Manager',
         level: 80,
         description: 'Manage operations and team members',
         permissions: [
-          'leads:read', 'leads:write',
-          'deals:read', 'deals:write',
-          'properties:read', 'properties:write',
-          'tasks:read', 'tasks:write',
+          'leads:read',
+          'leads:write',
+          'deals:read',
+          'deals:write',
+          'properties:read',
+          'properties:write',
+          'tasks:read',
+          'tasks:write',
           'reports:read',
-          'users:read', 'users:write'
-        ]
+          'users:read',
+          'users:write',
+        ],
       },
       {
         name: 'Team Lead',
         level: 50,
         description: 'Supervise agent activities',
         permissions: [
-          'leads:read', 'leads:write',
-          'deals:read', 'deals:write',
-          'properties:read', 'properties:write',
-          'tasks:read', 'tasks:write',
-          'reports:read'
-        ]
+          'leads:read',
+          'leads:write',
+          'deals:read',
+          'deals:write',
+          'properties:read',
+          'properties:write',
+          'tasks:read',
+          'tasks:write',
+          'reports:read',
+        ],
       },
       {
         name: 'Agent',
         level: 10,
         description: 'Standard agent access',
         permissions: [
-          'leads:read', 'leads:write',
+          'leads:read',
+          'leads:write',
           'properties:read',
-          'tasks:read', 'tasks:write'
-        ]
-      }
+          'tasks:read',
+          'tasks:write',
+        ],
+      },
     ];
 
-    const roles = defaultRoles.map(r => this.roleRepository.create({
-      ...r,
-      tenantId,
-      isSystem: false
-    }));
+    const roles = defaultRoles.map((r) =>
+      this.roleRepository.create({
+        ...r,
+        tenantId,
+        isSystem: false,
+      }),
+    );
 
     return this.roleRepository.save(roles);
   }

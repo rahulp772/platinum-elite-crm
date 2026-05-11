@@ -29,7 +29,9 @@ export class FloorPlan {
   @Column()
   propertyId: string;
 
-  @ManyToOne(() => Property, (property) => property.floorPlans, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Property, (property) => property.floorPlans, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: 'propertyId' })
   property: Property;
 

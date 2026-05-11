@@ -61,25 +61,27 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
       if (!token && client.handshake.headers?.cookie) {
         const cookieStr = client.handshake.headers.cookie;
-        const cookies = cookieStr.split(';').reduce((acc: Record<string, string>, cookie) => {
-          const [key, ...valueParts] = cookie.trim().split('=')
-          if (key) {
-            acc[key] = valueParts.join('=')
-          }
-          return acc
-        }, {})
-        
+        const cookies = cookieStr
+          .split(';')
+          .reduce((acc: Record<string, string>, cookie) => {
+            const [key, ...valueParts] = cookie.trim().split('=');
+            if (key) {
+              acc[key] = valueParts.join('=');
+            }
+            return acc;
+          }, {});
+
         if (cookies['token']) {
           try {
-            token = decodeURIComponent(cookies['token'])
+            token = decodeURIComponent(cookies['token']);
           } catch {
-            token = cookies['token']
+            token = cookies['token'];
           }
         }
       }
 
       if (!token) {
-        console.log('[ChatGateway] No token provided, disconnecting client')
+        console.log('[ChatGateway] No token provided, disconnecting client');
         client.disconnect();
         return;
       }
@@ -92,7 +94,9 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       });
 
       if (!user) {
-        console.log('[ChatGateway] User not found for token, disconnecting client')
+        console.log(
+          '[ChatGateway] User not found for token, disconnecting client',
+        );
         client.disconnect();
         return;
       }
@@ -103,7 +107,10 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
       client.join(`user:${user.id}`);
       console.log(`[ChatGateway] Client connected: user ${user.id}`);
     } catch (error) {
-      console.log('[ChatGateway] Token verification failed, disconnecting client:', error)
+      console.log(
+        '[ChatGateway] Token verification failed, disconnecting client:',
+        error,
+      );
       client.disconnect();
     }
   }

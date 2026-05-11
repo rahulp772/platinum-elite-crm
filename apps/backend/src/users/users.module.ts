@@ -8,10 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { EntitlementsModule } from '../entitlements/entitlements.module';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([User, Role]),
-    EntitlementsModule,
-  ],
+  imports: [TypeOrmModule.forFeature([User, Role]), EntitlementsModule],
   controllers: [UsersController],
   providers: [UsersService, ConfigService],
   exports: [UsersService],

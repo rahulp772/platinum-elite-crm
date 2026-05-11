@@ -11,9 +11,7 @@ import { Lead } from '../leads/entities/lead.entity';
 import { Plan } from '../plans/entities/plan.entity';
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([Subscription, Tenant, User, Lead, Plan]),
-  ],
+  imports: [TypeOrmModule.forFeature([Subscription, Tenant, User, Lead, Plan])],
   controllers: [EntitlementsController],
   providers: [EntitlementsService, UserLimitGuard, FeatureGuard],
   exports: [EntitlementsService, UserLimitGuard, FeatureGuard],

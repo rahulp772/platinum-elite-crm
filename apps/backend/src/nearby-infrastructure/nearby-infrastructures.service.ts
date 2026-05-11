@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { NearbyInfrastructure } from './entities/nearby-infrastructure.entity';
-import { CreateNearbyInfrastructureDto, UpdateNearbyInfrastructureDto } from './dto/create-nearby-infrastructure.dto';
+import {
+  CreateNearbyInfrastructureDto,
+  UpdateNearbyInfrastructureDto,
+} from './dto/create-nearby-infrastructure.dto';
 import { User } from '../users/entities/user.entity';
 
 @Injectable()
@@ -12,7 +15,10 @@ export class NearbyInfrastructuresService {
     private niRepository: Repository<NearbyInfrastructure>,
   ) {}
 
-  async create(createDto: CreateNearbyInfrastructureDto, user: User): Promise<NearbyInfrastructure> {
+  async create(
+    createDto: CreateNearbyInfrastructureDto,
+    user: User,
+  ): Promise<NearbyInfrastructure> {
     const entity = this.niRepository.create({
       ...createDto,
       tenantId: user.tenantId,
@@ -20,7 +26,10 @@ export class NearbyInfrastructuresService {
     return this.niRepository.save(entity);
   }
 
-  async findAllByProperty(propertyId: string, user: User): Promise<NearbyInfrastructure[]> {
+  async findAllByProperty(
+    propertyId: string,
+    user: User,
+  ): Promise<NearbyInfrastructure[]> {
     return this.niRepository.find({
       where: { propertyId, tenantId: user.tenantId },
       order: { category: 'ASC', name: 'ASC' },
@@ -32,12 +41,18 @@ export class NearbyInfrastructuresService {
       where: { id, tenantId: user.tenantId },
     });
     if (!entity) {
-      throw new NotFoundException(`NearbyInfrastructure with ID "${id}" not found`);
+      throw new NotFoundException(
+        `NearbyInfrastructure with ID "${id}" not found`,
+      );
     }
     return entity;
   }
 
-  async update(id: string, updateDto: UpdateNearbyInfrastructureDto, user: User): Promise<NearbyInfrastructure> {
+  async update(
+    id: string,
+    updateDto: UpdateNearbyInfrastructureDto,
+    user: User,
+  ): Promise<NearbyInfrastructure> {
     const entity = await this.findOne(id, user);
     Object.assign(entity, updateDto);
     return this.niRepository.save(entity);
@@ -48,7 +63,10 @@ export class NearbyInfrastructuresService {
     await this.niRepository.remove(entity);
   }
 
-  async createBulk(dtos: CreateNearbyInfrastructureDto[], user: User): Promise<NearbyInfrastructure[]> {
+  async createBulk(
+    dtos: CreateNearbyInfrastructureDto[],
+    user: User,
+  ): Promise<NearbyInfrastructure[]> {
     const entities = dtos.map((dto) =>
       this.niRepository.create({ ...dto, tenantId: user.tenantId }),
     );

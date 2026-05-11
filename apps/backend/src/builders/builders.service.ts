@@ -10,9 +10,12 @@ export class BuildersService {
   constructor(
     @InjectRepository(Builder)
     private readonly builderRepository: Repository<Builder>,
-  ) { }
+  ) {}
 
-  async create(createBuilderDto: CreateBuilderDto, user: User): Promise<Builder> {
+  async create(
+    createBuilderDto: CreateBuilderDto,
+    user: User,
+  ): Promise<Builder> {
     const builder = this.builderRepository.create({
       ...createBuilderDto,
       tenantId: user.tenantId,

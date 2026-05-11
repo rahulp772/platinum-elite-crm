@@ -56,18 +56,16 @@ export class LeadsController {
   @ApiQuery({ name: 'builderId', type: String, required: false })
   @ApiQuery({ name: 'date', type: String, required: false })
   findAll(
-
     @Request() req,
     @Query('page') page?: number,
     @Query('limit') limit?: number,
     @Query('search') search?: string,
     @Query('status') status?: string,
-     @Query('source') source?: string,
+    @Query('source') source?: string,
     @Query('assignedToId') assignedToId?: string,
     @Query('builderId') builderId?: string,
     @Query('date') date?: string,
   ) {
-
     return this.leadsService.findAll(req.user, {
       page: page ? Number(page) : 1,
       limit: limit ? Number(limit) : 20,

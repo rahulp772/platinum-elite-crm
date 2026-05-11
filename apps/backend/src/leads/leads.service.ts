@@ -246,7 +246,6 @@ export class LeadsService {
       builderId?: string;
       date?: string;
     },
-
   ) {
     const { role, tenantId, isSuperAdmin } = user;
     const roleLevel = role?.level || 0;
@@ -261,7 +260,6 @@ export class LeadsService {
       builderId,
       date,
     } = options || {};
-
 
     const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
 
@@ -284,7 +282,6 @@ export class LeadsService {
         .leftJoinAndSelect('assignedTo.role', 'role')
         .leftJoinAndSelect('lead.builder', 'builder')
         .orderBy('lead.createdAt', 'DESC');
-
 
       if (isGlobalAdmin) {
         return qb;
@@ -336,7 +333,7 @@ export class LeadsService {
         { search: `%${search}%` },
       );
     }
-    
+
     if (options?.date) {
       const timezone = user.timezone || 'Asia/Kolkata';
       const startOfDay = dateUtils.getZonedStartOfDay(options.date, timezone);

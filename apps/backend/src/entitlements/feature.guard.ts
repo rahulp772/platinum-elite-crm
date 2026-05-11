@@ -33,7 +33,9 @@ export class FeatureGuard implements CanActivate {
       return true;
     }
 
-    const entitlements = await this.entitlementsService.getTenantEntitlements(user.tenantId);
+    const entitlements = await this.entitlementsService.getTenantEntitlements(
+      user.tenantId,
+    );
 
     if (!entitlements) {
       throw new ForbiddenException({

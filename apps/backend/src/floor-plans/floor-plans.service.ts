@@ -2,7 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FloorPlan } from './entities/floor-plan.entity';
-import { CreateFloorPlanDto, UpdateFloorPlanDto } from './dto/create-floor-plan.dto';
+import {
+  CreateFloorPlanDto,
+  UpdateFloorPlanDto,
+} from './dto/create-floor-plan.dto';
 import { User } from '../users/entities/user.entity';
 
 @Injectable()
@@ -20,7 +23,10 @@ export class FloorPlansService {
     return this.floorPlanRepository.save(floorPlan);
   }
 
-  async findAllByProperty(propertyId: string, user: User): Promise<FloorPlan[]> {
+  async findAllByProperty(
+    propertyId: string,
+    user: User,
+  ): Promise<FloorPlan[]> {
     return this.floorPlanRepository.find({
       where: { propertyId, tenantId: user.tenantId },
       order: { plotSize: 'ASC' },
@@ -37,7 +43,11 @@ export class FloorPlansService {
     return floorPlan;
   }
 
-  async update(id: string, updateDto: UpdateFloorPlanDto, user: User): Promise<FloorPlan> {
+  async update(
+    id: string,
+    updateDto: UpdateFloorPlanDto,
+    user: User,
+  ): Promise<FloorPlan> {
     const floorPlan = await this.findOne(id, user);
     Object.assign(floorPlan, updateDto);
     return this.floorPlanRepository.save(floorPlan);
@@ -48,7 +58,10 @@ export class FloorPlansService {
     await this.floorPlanRepository.remove(floorPlan);
   }
 
-  async createBulk(dtos: CreateFloorPlanDto[], user: User): Promise<FloorPlan[]> {
+  async createBulk(
+    dtos: CreateFloorPlanDto[],
+    user: User,
+  ): Promise<FloorPlan[]> {
     const entities = dtos.map((dto) =>
       this.floorPlanRepository.create({ ...dto, tenantId: user.tenantId }),
     );

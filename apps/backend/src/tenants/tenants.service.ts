@@ -8,7 +8,10 @@ import { Repository } from 'typeorm';
 import { Tenant } from './entities/tenant.entity';
 import { User } from '../users/entities/user.entity';
 import { TransactionsService } from '../transactions/transactions.service';
-import { TransactionType, TransactionStatus } from '../transactions/entities/transaction.entity';
+import {
+  TransactionType,
+  TransactionStatus,
+} from '../transactions/entities/transaction.entity';
 
 @Injectable()
 export class TenantsService {
@@ -44,7 +47,9 @@ export class TenantsService {
       await this.transactionsService.createTransaction({
         tenantId: id,
         userId: currentUser.id,
-        type: oldPlanName ? TransactionType.UPGRADE : TransactionType.SUBSCRIPTION,
+        type: oldPlanName
+          ? TransactionType.UPGRADE
+          : TransactionType.SUBSCRIPTION,
         amount: 0,
         planName: newPlanName,
         status: TransactionStatus.COMPLETED,

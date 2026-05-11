@@ -11,7 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { NearbyInfrastructuresService } from './nearby-infrastructures.service';
-import { CreateNearbyInfrastructureDto, UpdateNearbyInfrastructureDto } from './dto/create-nearby-infrastructure.dto';
+import {
+  CreateNearbyInfrastructureDto,
+  UpdateNearbyInfrastructureDto,
+} from './dto/create-nearby-infrastructure.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';

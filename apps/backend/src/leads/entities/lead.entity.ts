@@ -7,6 +7,7 @@ import {
   ManyToOne,
   JoinColumn,
   OneToMany,
+  Unique
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Tenant } from '../../tenants/entities/tenant.entity';
@@ -19,8 +20,8 @@ import {
 import { LeadActivity } from './lead-activity.entity';
 import { Builder } from '../../builders/entities/builder.entity';
 
-
 @Entity('leads')
+@Unique(['tenantId', 'phone'])
 export class Lead {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -31,7 +32,7 @@ export class Lead {
   @Column()
   email: string;
 
-  @Column({ unique: true })
+  @Column()
   phone: string;
 
   @Column({
@@ -147,9 +148,15 @@ export class Lead {
   builder: Builder;
 
   @CreateDateColumn()
-
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
 }
+
+export type UpdateLeadInput = Partial<Pick<Lead,
+  'name' | 'email' | 'phone' | 'status' | 'source' | 'budgetMin' | 'budgetMax' |
+  'preferredLocation' | 'propertyType' | 'bedroom' | 'notes' | 'whatsappNumber' |
+  'assignedToId' | 'tenantId' | 'lastContact' | 'followUpAt' | 'siteVisitScheduledAt' |
+  'siteVisitDoneAt' | 'lostReason' | 'lostAt' | 'tier' | 'score' | 'builderId'
+>>;

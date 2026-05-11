@@ -81,7 +81,10 @@ export class PropertiesController {
 
   @Get(':id')
   @RequirePermissions('properties:read')
-  @ApiOperation({ summary: 'Get a property by ID with builder, floor plans and nearby infrastructure' })
+  @ApiOperation({
+    summary:
+      'Get a property by ID with builder, floor plans and nearby infrastructure',
+  })
   findOne(@Param('id') id: string, @Request() req) {
     return this.propertiesService.findOne(id, req.user);
   }
@@ -116,7 +119,13 @@ export class PropertiesController {
   @ApiOperation({ summary: 'Add floor plans to a property' })
   addFloorPlans(
     @Param('id') id: string,
-    @Body() dtos: { plotSize: number; price: number; label?: string; planImage?: string }[],
+    @Body()
+    dtos: {
+      plotSize: number;
+      price: number;
+      label?: string;
+      planImage?: string;
+    }[],
     @Request() req,
   ) {
     return this.propertiesService.addFloorPlans(id, dtos, req.user);

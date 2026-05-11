@@ -16,7 +16,6 @@ import { Subscription } from '../subscriptions/entities/subscription.entity';
 import { Plan } from '../plans/entities/plan.entity';
 import { Addon } from '../addons/entities/addon.entity';
 
-
 @Global()
 @Module({
   imports: [
@@ -36,7 +35,6 @@ import { Addon } from '../addons/entities/addon.entity';
       Plan,
       Addon,
     ]),
-
   ],
   providers: [SeedService],
   exports: [SeedService],

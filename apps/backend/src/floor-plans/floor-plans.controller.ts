@@ -11,7 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { FloorPlansService } from './floor-plans.service';
-import { CreateFloorPlanDto, UpdateFloorPlanDto } from './dto/create-floor-plan.dto';
+import {
+  CreateFloorPlanDto,
+  UpdateFloorPlanDto,
+} from './dto/create-floor-plan.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';

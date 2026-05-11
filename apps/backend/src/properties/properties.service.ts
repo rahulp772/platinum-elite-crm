@@ -29,7 +29,12 @@ export class PropertiesService {
   ) {}
 
   async create(createPropertyDto: CreatePropertyDto, user: User) {
-    const { pricePerSqft, launchDate, possessionDate, ...rest } = createPropertyDto as CreatePropertyDto & { pricePerSqft?: number; launchDate?: string; possessionDate?: string };
+    const { pricePerSqft, launchDate, possessionDate, ...rest } =
+      createPropertyDto as CreatePropertyDto & {
+        pricePerSqft?: number;
+        launchDate?: string;
+        possessionDate?: string;
+      };
 
     const dataToSave: Partial<Property> = {
       ...rest,
@@ -55,7 +60,8 @@ export class PropertiesService {
   }
 
   async findAll(user: User, options: FindAllOptions) {
-    const { page, limit, search, status, type, sortBy, builderId, favorited } = options;
+    const { page, limit, search, status, type, sortBy, builderId, favorited } =
+      options;
 
     const isGlobalAdmin = user.isSuperAdmin && !user.tenantId;
 
@@ -117,9 +123,9 @@ export class PropertiesService {
       .take(limit)
       .getMany();
 
-    const dataWithFavorited = data.map(property => ({
+    const dataWithFavorited = data.map((property) => ({
       ...property,
-      favorited: property.favoritedBy?.some(f => f.id === user.id) || false,
+      favorited: property.favoritedBy?.some((f) => f.id === user.id) || false,
     }));
 
     return {
@@ -148,14 +154,20 @@ export class PropertiesService {
     const where = isGlobalAdmin ? { id } : { id, tenantId: user.tenantId };
     const property = await this.propertyRepository.findOne({
       where,
-      relations: ['agent', 'builder', 'floorPlans', 'nearbyInfrastructures', 'favoritedBy'],
+      relations: [
+        'agent',
+        'builder',
+        'floorPlans',
+        'nearbyInfrastructures',
+        'favoritedBy',
+      ],
     });
     if (!property) {
       throw new NotFoundException(`Property with ID ${id} not found`);
     }
     return {
       ...property,
-      favorited: property.favoritedBy?.some(f => f.id === user.id) || false,
+      favorited: property.favoritedBy?.some((f) => f.id === user.id) || false,
     };
   }
 
@@ -193,13 +205,32 @@ export class PropertiesService {
     return { favorited: index === -1 };
   }
 
-  async addFloorPlans(propertyId: string, dtos: { plotSize: number; price: number; label?: string; planImage?: string }[], user: User) {
+  async addFloorPlans(
+    propertyId: string,
+    dtos: {
+      plotSize: number;
+      price: number;
+      label?: string;
+      planImage?: string;
+    }[],
+    user: User,
+  ) {
     await this.findOne(propertyId, user);
-    return this.floorPlansService.createBulk(dtos.map((d) => ({ ...d, propertyId })), user);
+    return this.floorPlansService.createBulk(
+      dtos.map((d) => ({ ...d, propertyId })),
+      user,
+    );
   }
 
-  async addNearbyInfrastructures(propertyId: string, dtos: { category: string; name: string; distance?: string }[], user: User) {
+  async addNearbyInfrastructures(
+    propertyId: string,
+    dtos: { category: string; name: string; distance?: string }[],
+    user: User,
+  ) {
     await this.findOne(propertyId, user);
-    return this.nearbyInfrastructuresService.createBulk(dtos.map((d) => ({ ...d, propertyId })) as any, user);
+    return this.nearbyInfrastructuresService.createBulk(
+      dtos.map((d) => ({ ...d, propertyId })) as any,
+      user,
+    );
   }
 }

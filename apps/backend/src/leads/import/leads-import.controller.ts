@@ -8,7 +8,7 @@ import {
   Res,
   UseGuards,
   Request,
-  StreamableFile,
+  Param,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
@@ -17,6 +17,7 @@ import { LeadsImportService } from './leads-import.service';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { PermissionsGuard } from '../../auth/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/decorators/permissions.decorator';
+import { DuplicateStrategy } from './entities/import-session.entity';
 
 @ApiTags('Leads Import')
 @Controller('leads/import')
@@ -27,22 +28,19 @@ export class LeadsImportController {
   @Get('template')
   @RequirePermissions('leads:write')
   @ApiOperation({ summary: 'Download lead import template' })
-  async downloadTemplate(@Res({ passthrough: true }) res: express.Response) {
+  async downloadTemplate(@Res() res: express.Response) {
     const buffer = await this.leadsImportService.getTemplate();
 
-    res.set({
-      'Content-Type':
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename=leads_template.xlsx',
-    });
-
-    return new StreamableFile(buffer);
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename=leads_template.xlsx');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.send(buffer);
   }
 
-  @Post('parse')
+  @Post('upload')
   @RequirePermissions('leads:write')
   @UseInterceptors(FileInterceptor('file'))
-  @ApiOperation({ summary: 'Parse uploaded lead file' })
+  @ApiOperation({ summary: 'Upload file for import' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
     schema: {
@@ -55,21 +53,78 @@ export class LeadsImportController {
       },
     },
   })
-  async parseFile(@UploadedFile() file: Express.Multer.File) {
-    return this.leadsImportService.parseFile(file);
+  async uploadFile(@UploadedFile() file: Express.Multer.File, @Request() req) {
+    return this.leadsImportService.uploadFile(file, req.user);
   }
 
-  @Post('confirm')
+  @Post('parse/:sessionId')
   @RequirePermissions('leads:write')
-  @ApiOperation({ summary: 'Confirm and import leads' })
-  async confirmImport(
-    @Body() body: { data: any[]; mapping: Record<string, string> },
-    @Request() req,
+  @ApiOperation({ summary: 'Parse uploaded file and return headers' })
+  async parseFile(@Param('sessionId') sessionId: string) {
+    return this.leadsImportService.parseFile(sessionId);
+  }
+
+  @Post('validate/:sessionId')
+  @RequirePermissions('leads:write')
+  @ApiOperation({ summary: 'Validate sample rows (100 rows)' })
+  async validateSample(
+    @Param('sessionId') sessionId: string,
+    @Body() body: { mapping: Record<string, string> },
   ) {
-    return this.leadsImportService.importLeads(
-      body.data,
+    return this.leadsImportService.validateSample(sessionId, body.mapping);
+  }
+
+  @Post('start/:sessionId')
+  @RequirePermissions('leads:write')
+  @ApiOperation({ summary: 'Start the import process' })
+  async startImport(
+    @Param('sessionId') sessionId: string,
+    @Body()
+    body: {
+      mapping: Record<string, string>;
+      duplicateStrategy?: DuplicateStrategy;
+    },
+  ) {
+    return this.leadsImportService.startImport(
+      sessionId,
       body.mapping,
-      req.user,
+      body.duplicateStrategy || DuplicateStrategy.SKIP,
     );
+  }
+
+  @Get('status/:sessionId')
+  @RequirePermissions('leads:write')
+  @ApiOperation({ summary: 'Get import status and progress' })
+  async getStatus(@Param('sessionId') sessionId: string) {
+    return this.leadsImportService.getStatus(sessionId);
+  }
+
+  @Post('cancel/:sessionId')
+  @RequirePermissions('leads:write')
+  @ApiOperation({ summary: 'Cancel a running import' })
+  async cancelImport(@Param('sessionId') sessionId: string) {
+    return this.leadsImportService.cancelImport(sessionId);
+  }
+
+  @Get('report/:sessionId')
+  @RequirePermissions('leads:write')
+  @ApiOperation({ summary: 'Download error report CSV' })
+  async getErrorReport(
+    @Param('sessionId') sessionId: string,
+    @Res() res: express.Response,
+  ) {
+    const buffer = await this.leadsImportService.generateErrorReport(sessionId);
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', `attachment; filename=import_errors_${sessionId}.csv`);
+    res.send(buffer);
+  }
+
+  @Post('delete/:sessionId')
+  @RequirePermissions('leads:write')
+  @ApiOperation({ summary: 'Delete import session and file' })
+  async deleteSession(@Param('sessionId') sessionId: string) {
+    await this.leadsImportService.deleteSessionFile(sessionId);
+    return { message: 'Session deleted' };
   }
 }

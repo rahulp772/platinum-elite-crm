@@ -103,7 +103,6 @@ export class CreateLeadDto {
   builderId?: string;
 }
 
-
 export class UpdateLeadDto {
   @ApiPropertyOptional()
   @IsString()
@@ -199,7 +198,6 @@ export class UpdateLeadDto {
   @IsOptional()
   builderId?: string;
 }
-
 
 export class LeadLookupDto {
   @ApiProperty()

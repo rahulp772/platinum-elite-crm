@@ -6,11 +6,18 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Subscription, SubscriptionStatus, BillingCycle } from './entities/subscription.entity';
+import {
+  Subscription,
+  SubscriptionStatus,
+  BillingCycle,
+} from './entities/subscription.entity';
 import { Tenant } from '../tenants/entities/tenant.entity';
 import { Plan } from '../plans/entities/plan.entity';
 import { TransactionsService } from '../transactions/transactions.service';
-import { TransactionType, TransactionStatus } from '../transactions/entities/transaction.entity';
+import {
+  TransactionType,
+  TransactionStatus,
+} from '../transactions/entities/transaction.entity';
 import { User } from '../users/entities/user.entity';
 
 @Injectable()
@@ -64,7 +71,9 @@ export class SubscriptionsService {
 
     const existing = await this.findByTenant(data.tenantId);
     if (existing) {
-      throw new BadRequestException('Tenant already has a subscription. Use upgrade instead.');
+      throw new BadRequestException(
+        'Tenant already has a subscription. Use upgrade instead.',
+      );
     }
 
     const billingCycle = data.billingCycle || BillingCycle.MONTHLY;
@@ -87,7 +96,7 @@ export class SubscriptionsService {
       autoRenew: true,
     });
 
-const saved = await this.subscriptionRepository.save(subscription);
+    const saved = await this.subscriptionRepository.save(subscription);
 
     return this.subscriptionRepository.findOne({
       where: { id: saved.id },
@@ -95,10 +104,16 @@ const saved = await this.subscriptionRepository.save(subscription);
     }) as Promise<Subscription>;
   }
 
-  async upgrade(tenantId: string, newPlanId: string, currentUser: User): Promise<Subscription> {
+  async upgrade(
+    tenantId: string,
+    newPlanId: string,
+    currentUser: User,
+  ): Promise<Subscription> {
     const subscription = await this.findByTenantOrThrow(tenantId);
     const oldPlan = subscription.plan;
-    const newPlan = await this.planRepository.findOne({ where: { id: newPlanId } });
+    const newPlan = await this.planRepository.findOne({
+      where: { id: newPlanId },
+    });
 
     if (!newPlan || !newPlan.isActive) {
       throw new NotFoundException('Plan not found or inactive');
@@ -145,7 +160,11 @@ const saved = await this.subscriptionRepository.save(subscription);
     return updated;
   }
 
-  async addAddOn(tenantId: string, addOnName: string, currentUser: User): Promise<Subscription> {
+  async addAddOn(
+    tenantId: string,
+    addOnName: string,
+    currentUser: User,
+  ): Promise<Subscription> {
     const subscription = await this.findByTenantOrThrow(tenantId);
 
     if (!subscription.addOns.includes(addOnName)) {
@@ -155,7 +174,11 @@ const saved = await this.subscriptionRepository.save(subscription);
     return this.subscriptionRepository.save(subscription);
   }
 
-  async removeAddOn(tenantId: string, addOnName: string, currentUser: User): Promise<Subscription> {
+  async removeAddOn(
+    tenantId: string,
+    addOnName: string,
+    currentUser: User,
+  ): Promise<Subscription> {
     const subscription = await this.findByTenantOrThrow(tenantId);
 
     subscription.addOns = subscription.addOns.filter((a) => a !== addOnName);

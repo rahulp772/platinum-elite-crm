@@ -11,7 +11,6 @@ export async function GET(
   const pathParams = await params
   const path = pathParams.path.join('/')
   const searchParams = request.nextUrl.search
-  // Properly handle query string - remove leading ? if present
   const queryString = searchParams.toString().replace(/^\?/, '')
   const url = queryString 
     ? `${API_BASE_URL}/${path}?${queryString}` 
@@ -20,9 +19,7 @@ export async function GET(
   const token = await getTokenFromCookies()
   const tenantId = await getTenantIdFromCookies()
 
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  }
+  const headers: HeadersInit = {}
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`
@@ -32,7 +29,6 @@ export async function GET(
     headers['X-Tenant-ID'] = tenantId
   }
 
-  // Add custom headers from request
   const requestHeaders = request.headers
   if (requestHeaders.get('x-user-id')) {
     headers['x-user-id'] = requestHeaders.get('x-user-id')!
@@ -45,8 +41,23 @@ export async function GET(
       credentials: 'include',
     })
 
-    const data = await response.json()
+    // Check if response is a file download
+    const contentType = response.headers.get('content-type') || ''
+    if (contentType.includes('spreadsheet') || contentType.includes('excel') || 
+        contentType.includes('csv') || contentType.includes('application/octet-stream')) {
+      const arrayBuffer = await response.arrayBuffer()
+      const uint8Array = new Uint8Array(arrayBuffer)
+      return new NextResponse(uint8Array, {
+        status: response.status,
+        headers: {
+          'Content-Type': contentType,
+          'Content-Disposition': response.headers.get('content-disposition') || 'attachment',
+          'Cache-Control': 'no-store',
+        }
+      })
+    }
 
+    const data = await response.json()
     return NextResponse.json(data, { 
       status: response.status,
       headers: {
