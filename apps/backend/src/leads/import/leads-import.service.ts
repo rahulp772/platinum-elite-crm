@@ -99,7 +99,10 @@ export class LeadsImportService {
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads Template');
 
     // Write to buffer
-    const xlsxBuffer = XLSX.write(workbook, { type: 'buffer', bookType: 'xlsx' });
+    const xlsxBuffer = XLSX.write(workbook, {
+      type: 'buffer',
+      bookType: 'xlsx',
+    });
     return Buffer.from(xlsxBuffer);
   }
 
@@ -183,7 +186,12 @@ export class LeadsImportService {
     if (rawData.length < 2) {
       session.status = ImportStatus.PENDING;
       await this.importSessionRepo.save(session);
-      return { validCount: 0, invalidCount: 0, duplicateCount: 0, sampleErrors: [] };
+      return {
+        validCount: 0,
+        invalidCount: 0,
+        duplicateCount: 0,
+        sampleErrors: [],
+      };
     }
 
     const headers = rawData[0] as string[];
@@ -224,7 +232,7 @@ export class LeadsImportService {
 
     // Validate ALL rows
     for (let i = 0; i < data.length; i++) {
-      const row = data[i] as unknown[];
+      const row = data[i];
       const rowIndex = i + 1;
 
       const nameValue = row[nameColumn];
@@ -295,7 +303,7 @@ export class LeadsImportService {
     const data = dataRows.map((row: unknown[]) => {
       const obj: Record<string, unknown> = {};
       for (const [systemField, colIndex] of Object.entries(columnIndexes)) {
-        obj[systemField] = (row as unknown[])[colIndex as number];
+        obj[systemField] = row[colIndex];
       }
       return obj;
     });
@@ -442,14 +450,16 @@ export class LeadsImportService {
     const headers = ['Row Number', 'Field', 'Error Message', 'Original Value'];
     const csvRows = [
       headers.join(','),
-      ...csvData.map(row => [
-        row['Row Number'],
-        `"${(row.Field || '').replace(/"/g, '""')}"`,
-        `"${(row['Error Message'] || '').replace(/"/g, '""')}"`,
-        `"${(row['Original Value'] || '').replace(/"/g, '""')}"`
-      ].join(','))
+      ...csvData.map((row) =>
+        [
+          row['Row Number'],
+          `"${(row.Field || '').replace(/"/g, '""')}"`,
+          `"${(row['Error Message'] || '').replace(/"/g, '""')}"`,
+          `"${(row['Original Value'] || '').replace(/"/g, '""')}"`,
+        ].join(','),
+      ),
     ];
-    
+
     return Buffer.from(csvRows.join('\n'));
   }
 

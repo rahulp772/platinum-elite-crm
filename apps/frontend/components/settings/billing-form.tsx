@@ -378,7 +378,7 @@ export function BillingForm() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        ₹{tx.amount.toFixed(2)}
+                        ₹{Number(tx.amount).toFixed(2)}
                       </TableCell>
                       <TableCell>
                         {getStatusBadge(tx.status)}
@@ -398,21 +398,23 @@ export function BillingForm() {
         </CardContent>
       </Card>
 
-      <Card className="bg-gradient-to-r from-realty-gold/5 to-transparent border-realty-gold/20">
-        <CardContent className="pt-6">
-          <div className="text-center">
-            <h4 className="font-semibold mb-2">Need More Resources?</h4>
-            <p className="text-sm text-muted-foreground mb-4">
-              Upgrade to Team plan for 10 users and 50,000 leads, or Scale for unlimited.
-            </p>
-            <Link href="/pricing">
-              <Button className="bg-realty-gold text-realty-navy hover:bg-realty-gold-light">
-                View All Plans <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </CardContent>
-      </Card>
+      {!subStatus?.isOnHighestPlan && (
+        <Card className="bg-gradient-to-r from-realty-gold/5 to-transparent border-realty-gold/20">
+          <CardContent className="pt-6">
+            <div className="text-center">
+              <h4 className="font-semibold mb-2">Need More Resources?</h4>
+              <p className="text-sm text-muted-foreground mb-4">
+                Upgrade to Team plan for 10 users and 50,000 leads, or Scale for unlimited.
+              </p>
+              <Link href="/pricing">
+                <Button className="bg-realty-gold text-realty-navy hover:bg-realty-gold-light">
+                  View All Plans <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

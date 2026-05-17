@@ -1,7 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Addon } from './entities/addon.entity';
@@ -11,7 +8,11 @@ const DEFAULT_ADDONS = [
     name: 'whatsapp_automation',
     displayName: 'WhatsApp Automation',
     monthlyPrice: 999,
-    features: ['whatsapp_automation', 'whatsapp_templates', 'whatsapp_scheduling'],
+    features: [
+      'whatsapp_automation',
+      'whatsapp_templates',
+      'whatsapp_scheduling',
+    ],
     description: 'Automated WhatsApp messages with templates and scheduling',
     icon: 'message-circle',
     sortOrder: 0,

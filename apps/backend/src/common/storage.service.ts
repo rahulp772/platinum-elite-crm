@@ -89,14 +89,14 @@ export class StorageService {
       });
 
       const response = await this.s3Client.send(command);
-      
+
       if (!response.Body) {
         throw new Error('S3 response body is empty');
       }
 
       const chunks: Buffer[] = [];
       const body = response.Body as any;
-      
+
       if (body.pipe) {
         // Node.js stream
         return new Promise((resolve, reject) => {

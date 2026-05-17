@@ -31,8 +31,14 @@ export class LeadsImportController {
   async downloadTemplate(@Res() res: express.Response) {
     const buffer = await this.leadsImportService.getTemplate();
 
-    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-    res.setHeader('Content-Disposition', 'attachment; filename=leads_template.xlsx');
+    res.setHeader(
+      'Content-Type',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    );
+    res.setHeader(
+      'Content-Disposition',
+      'attachment; filename=leads_template.xlsx',
+    );
     res.setHeader('Cache-Control', 'no-cache');
     res.send(buffer);
   }
@@ -116,7 +122,10 @@ export class LeadsImportController {
     const buffer = await this.leadsImportService.generateErrorReport(sessionId);
 
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename=import_errors_${sessionId}.csv`);
+    res.setHeader(
+      'Content-Disposition',
+      `attachment; filename=import_errors_${sessionId}.csv`,
+    );
     res.send(buffer);
   }
 

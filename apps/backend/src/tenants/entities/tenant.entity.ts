@@ -96,6 +96,9 @@ export class Tenant {
   @Column({ default: 'Asia/Kolkata' })
   timezone: string;
 
+  @Column({ nullable: true })
+  razorpayCustomerId: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

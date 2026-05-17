@@ -16,6 +16,7 @@ export enum SubscriptionStatus {
   PAUSED = 'paused',
   CANCELLED = 'cancelled',
   EXPIRED = 'expired',
+  PENDING = 'pending',
 }
 
 export enum BillingCycle {
@@ -76,6 +77,51 @@ export class Subscription {
 
   @Column({ nullable: true })
   externalSubscriptionId: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  lastChargedAmount: number;
+
+  @Column({ nullable: true })
+  lastPaymentId: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  prorationDetails: {
+    type: string;
+    amount: number;
+    previousPlanId?: string;
+    newPlanId?: string;
+  };
+
+  @Column({ type: 'timestamptz', nullable: true })
+  nextScheduledCharge: Date;
+
+  @Column({ type: 'int', default: 0 })
+  paymentRetryCount: number;
+
+  @Column({ type: 'timestamptz', nullable: true })
+  nextRetryDate: Date;
+
+  @Column({ type: 'jsonb', nullable: true })
+  failedPayments: {
+    paymentId: string;
+    errorCode: string;
+    errorDescription: string;
+    failedAt: Date;
+  }[];
+
+  @Column({ nullable: true })
+  currentInvoiceId: string;
+
+  @Column({ type: 'jsonb', nullable: true })
+  invoiceHistory: {
+    invoiceId: string;
+    amount: number;
+    status: string;
+    paidAt: Date;
+  }[];
+
+  @Column({ default: 'test' })
+  paymentMode: 'test' | 'live';
 
   @CreateDateColumn()
   createdAt: Date;

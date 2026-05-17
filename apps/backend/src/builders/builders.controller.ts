@@ -17,13 +17,12 @@ import { PermissionsGuard } from '../auth/guards/permissions.guard';
 import { RequirePermissions } from '../auth/decorators/permissions.decorator';
 import { User } from '../users/entities/user.entity';
 
-
 @ApiTags('builders')
 @ApiBearerAuth()
 @UseGuards(JwtAuthGuard, PermissionsGuard)
 @Controller('builders')
 export class BuildersController {
-  constructor(private readonly buildersService: BuildersService) { }
+  constructor(private readonly buildersService: BuildersService) {}
 
   @Post()
   @RequirePermissions('properties:write') // Using properties:write as builders are related to properties
@@ -32,7 +31,6 @@ export class BuildersController {
     return this.buildersService.create(createBuilderDto, req.user);
   }
 
-
   @Get()
   @RequirePermissions('properties:read')
   @ApiOperation({ summary: 'Get all builders for the current tenant' })
@@ -40,14 +38,12 @@ export class BuildersController {
     return this.buildersService.findAll(req.user);
   }
 
-
   @Get(':id')
   @RequirePermissions('properties:read')
   @ApiOperation({ summary: 'Get a builder by ID' })
   findOne(@Param('id') id: string, @Request() req) {
     return this.buildersService.findOne(id, req.user);
   }
-
 
   @Patch(':id')
   @RequirePermissions('properties:write')
@@ -60,12 +56,10 @@ export class BuildersController {
     return this.buildersService.update(id, updateBuilderDto, req.user);
   }
 
-
   @Delete(':id')
   @RequirePermissions('properties:write')
   @ApiOperation({ summary: 'Delete a builder' })
   remove(@Param('id') id: string, @Request() req) {
     return this.buildersService.remove(id, req.user);
   }
-
 }

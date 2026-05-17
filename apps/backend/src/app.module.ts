@@ -33,7 +33,7 @@ import { NearbyInfrastructuresModule } from './nearby-infrastructure/nearby-infr
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { AddonsModule } from './addons/addons.module';
 import { EntitlementsModule } from './entitlements/entitlements.module';
-
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -116,6 +116,7 @@ import { EntitlementsModule } from './entitlements/entitlements.module';
     SubscriptionsModule,
     AddonsModule,
     EntitlementsModule,
+    PaymentsModule,
   ],
 
   controllers: [AppController],

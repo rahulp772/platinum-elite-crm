@@ -6,10 +6,18 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, Sparkles, Check, PartyPopper, Users, Building, Zap, MessageCircle, Phone, TrendingUp } from "lucide-react"
+import { ArrowLeft, Sparkles, Check, PartyPopper, Users, Building, Zap, MessageCircle, Phone, TrendingUp, Loader2 } from "lucide-react"
 import api from "@/lib/api"
+import Script from "next/script"
+
+declare global {
+  interface Window {
+    Razorpay: any
+  }
+}
 
 interface Plan {
   id: string
@@ -63,6 +71,7 @@ const ROI_EXAMPLE = "Close just 1 extra property deal and recover your yearly co
 function PricingContent() {
   const { user } = useAuth()
   const router = useRouter()
+  const queryClient = useQueryClient()
   const [plans, setPlans] = React.useState<Plan[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
   const [isYearly, setIsYearly] = React.useState(false)
@@ -70,7 +79,21 @@ function PricingContent() {
   const [showWelcome, setShowWelcome] = React.useState(false)
   const [purchasedPlanName, setPurchasedPlanName] = React.useState('')
   const [subscriptionStatus, setSubscriptionStatus] = React.useState<SubscriptionStatus | null>(null)
+  const [razorpayLoaded, setRazorpayLoaded] = React.useState(false)
+  const [paymentStep, setPaymentStep] = React.useState<'idle' | 'creating' | 'processing'>('idle')
+  const [paymentCancelled, setPaymentCancelled] = React.useState(false)
+  const [pendingPlanId, setPendingPlanId] = React.useState<string | null>(null)
   const searchParams = useSearchParams()
+
+  const handleRazorpayLoaded = () => {
+    console.log('Razorpay script loaded successfully')
+    setRazorpayLoaded(true)
+  }
+
+  const handleRazorpayError = () => {
+    console.error('Failed to load Razorpay script')
+    setRazorpayLoaded(false)
+  }
 
   React.useEffect(() => {
     const fetchPlans = async () => {
@@ -109,41 +132,199 @@ function PricingContent() {
     const plan = plans.find(p => p.id === planId)
     if (!plan) return
 
-    // If user has subscription and it's not the Scale plan (custom pricing), try upgrade first
-    if (subscriptionStatus?.hasSubscription && plan.monthlyPrice > 0) {
-      setIsPurchasing(planId)
-      try {
-        await api.post('/subscriptions/upgrade', { planId })
-        setPurchasedPlanName(plan.displayName || '')
-        setShowWelcome(true)
-      } catch (error: any) {
-        // If upgrade fails (e.g., not allowed), try subscribe as fallback
-        if (error?.response?.status === 400 && error?.response?.data?.message?.includes('upgrade')) {
-          try {
-            await api.post('/subscriptions/subscribe', { planId })
-            setPurchasedPlanName(plan.displayName || '')
-            setShowWelcome(true)
-          } catch (subscribeError) {
-            console.error('Subscribe error after upgrade failed:', subscribeError)
-          }
-        } else {
-          console.error('Upgrade error:', error)
-        }
-      } finally {
-        setIsPurchasing(null)
-      }
+    const billingCycle = isYearly ? 'yearly' : 'monthly'
+    const isUpgrade = subscriptionStatus?.hasSubscription && plan.monthlyPrice > 0
+
+    if (plan.monthlyPrice === 0) {
+      alert('Please contact support to subscribe to this plan.')
       return
     }
 
     setIsPurchasing(planId)
+    setPaymentStep('creating')
+
+    if (isUpgrade) {
+      try {
+        const res = await api.post('/payments/upgrade', {
+          planId,
+          billingCycle,
+        })
+
+        const upgradeData = res.data
+
+        if (!upgradeData?.subscriptionId) {
+          alert('Failed to create upgrade. Please try again.')
+          setIsPurchasing(null)
+          setPaymentStep('idle')
+          return
+        }
+
+        // Wait for Razorpay to load if not ready
+        if (!razorpayLoaded || !window.Razorpay) {
+          console.log('Razorpay not loaded yet, waiting...', { razorpayLoaded, hasWindowRazorpay: !!window.Razorpay })
+          let retries = 0
+          const waitForRazorpay = () => {
+            return new Promise((resolve) => {
+              const check = () => {
+                if (window.Razorpay || retries > 10) {
+                  resolve(window.Razorpay)
+                } else {
+                  retries++
+                  setTimeout(check, 500)
+                }
+              }
+              check()
+            })
+          }
+          
+          await waitForRazorpay()
+          
+          if (!window.Razorpay) {
+            alert('Payment system not ready. Please refresh the page and try again.')
+            setIsPurchasing(null)
+            setPaymentStep('idle')
+            return
+          }
+        }
+
+        const rz = new window.Razorpay({
+          key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+          subscription_id: upgradeData.subscriptionId,
+          name: 'MakeitCRM',
+          description: `${plan.displayName} - ${billingCycle}`,
+          handler: async (response: any) => {
+            setPaymentStep('processing')
+            try {
+              await api.post('/payments/verify-subscription', {
+                subscriptionId: upgradeData.subscriptionId,
+                paymentId: response.razorpay_payment_id,
+                signature: response.razorpay_signature,
+              })
+              setPurchasedPlanName(plan.displayName || '')
+              setShowWelcome(true)
+              const statusRes = await api.get('/auth/subscription')
+              setSubscriptionStatus(statusRes.data)
+              queryClient.invalidateQueries({ queryKey: ['subscription'] })
+              queryClient.invalidateQueries({ queryKey: ['entitlements'] })
+              queryClient.invalidateQueries({ queryKey: ['subscriptionStatus'] })
+              queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            } catch (verifyError) {
+              console.error('Payment verification failed:', verifyError)
+              alert('Payment verification failed. Please contact support.')
+            } finally {
+              setPaymentStep('idle')
+            }
+          },
+          modal: {
+            ondismiss: () => {
+              setPaymentStep('idle')
+              setIsPurchasing(null)
+              setPaymentCancelled(true)
+              setPendingPlanId(planId)
+            }
+          },
+          theme: {
+            color: '#D4AF37',
+          },
+        })
+        rz.open()
+      } catch (error: any) {
+        console.error('Upgrade error:', error)
+        const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred'
+        alert(errorMessage)
+      } finally {
+        setIsPurchasing(null)
+        setPaymentStep('idle')
+      }
+      return
+    }
+
     try {
-      await api.post('/subscriptions/subscribe', { planId })
-      setPurchasedPlanName(plan.displayName || '')
-      setShowWelcome(true)
-    } catch (error) {
-      console.error('Subscribe error:', error)
+      const subRes = await api.post('/payments/create-subscription', {
+        planId,
+        billingCycle,
+      })
+
+      const subscriptionData = subRes.data
+
+      if (!subscriptionData) {
+        alert('Failed to create subscription. Please try again.')
+        return
+      }
+
+      if (subscriptionData.shortUrl) {
+        window.location.href = subscriptionData.shortUrl
+        return
+      }
+
+      if (!subscriptionData.subscriptionId) {
+        alert('Subscription created but no payment link available. Please contact support.')
+        return
+      }
+
+      if (!razorpayLoaded || !window.Razorpay) {
+        if (subscriptionData.shortUrl) {
+          window.location.href = subscriptionData.shortUrl
+        } else {
+          alert('Payment system not ready. Please refresh the page and try again.')
+        }
+        return
+      }
+
+      const rz = new window.Razorpay({
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        subscription_id: subscriptionData.subscriptionId,
+        name: 'MakeitCRM',
+        description: `${plan.displayName} - ${billingCycle}`,
+        handler: async (response: any) => {
+          setPaymentStep('processing')
+          try {
+            await api.post('/payments/verify-subscription', {
+              subscriptionId: subscriptionData.subscriptionId,
+              paymentId: response.razorpay_payment_id,
+              signature: response.razorpay_signature,
+            })
+            setPurchasedPlanName(plan.displayName || '')
+            setShowWelcome(true)
+            const statusRes = await api.get('/auth/subscription')
+            setSubscriptionStatus(statusRes.data)
+            queryClient.invalidateQueries({ queryKey: ['subscription'] })
+            queryClient.invalidateQueries({ queryKey: ['entitlements'] })
+            queryClient.invalidateQueries({ queryKey: ['subscriptionStatus'] })
+            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+          } catch (verifyError) {
+            console.error('Payment verification failed:', verifyError)
+            alert('Payment verification failed. Please contact support.')
+          } finally {
+            setPaymentStep('idle')
+          }
+        },
+        modal: {
+          ondismiss: () => {
+            setPaymentStep('idle')
+            setIsPurchasing(null)
+            setPaymentCancelled(true)
+            setPendingPlanId(planId)
+          }
+        },
+        readonly: {
+          customer: false,
+          subscription: false,
+          order: false,
+        },
+        remember_customer: true,
+        theme: {
+          color: '#D4AF37',
+        },
+      })
+      rz.open()
+    } catch (error: any) {
+      console.error('Subscription error:', error)
+      const errorMessage = error?.response?.data?.message || error?.message || 'An error occurred'
+      alert(errorMessage)
     } finally {
       setIsPurchasing(null)
+      setPaymentStep('idle')
     }
   }
 
@@ -170,6 +351,12 @@ function PricingContent() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      <Script
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="lazyOnload"
+        onLoad={handleRazorpayLoaded}
+        onError={handleRazorpayError}
+      />
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#D4AF37]/5 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-realty-navy/10 blur-[120px] rounded-full pointer-events-none" />
       
@@ -213,6 +400,25 @@ function PricingContent() {
             Save 2 months
           </Badge>
         </div>
+
+        {paymentCancelled && (
+          <div className="flex items-center justify-center gap-3 mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg max-w-2xl mx-auto">
+            <div className="text-amber-500">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-sm text-amber-700">
+              Payment was cancelled. Click "Try Again" on the plan above to complete your subscription.
+            </p>
+            <button 
+              onClick={() => setPaymentCancelled(false)}
+              className="text-amber-600 hover:text-amber-800 text-sm font-medium"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, i) => {
@@ -303,22 +509,32 @@ function PricingContent() {
                   className={`w-full h-12 rounded-xl font-semibold text-base transition-all ${
                     plan.recommended 
                       ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02] shadow-lg shadow-[#D4AF37]/25" 
-                      : "bg-muted hover:bg-muted/80 text-foreground"
+                      : paymentCancelled && pendingPlanId === plan.id
+                        ? "bg-amber-500 hover:bg-amber-600 text-white"
+                        : "bg-muted hover:bg-muted/80 text-foreground"
                   }`}
-                  onClick={() => handleSubscribe(plan.id)}
-                  disabled={isPurchasing === plan.id || (subscriptionStatus?.hasSubscription && plan.displayName.toLowerCase() === subscriptionStatus?.planName?.toLowerCase())}
+                  onClick={() => {
+                    setPaymentCancelled(false)
+                    handleSubscribe(plan.id)
+                  }}
+                  disabled={isPurchasing === plan.id || paymentStep !== 'idle' || (subscriptionStatus?.hasSubscription && plan.displayName.toLowerCase() === subscriptionStatus?.planName?.toLowerCase())}
                 >
-                  {isPurchasing === plan.id ? (
-                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-slate-950 border-t-transparent" />
+                  {isPurchasing === plan.id || paymentStep !== 'idle' ? (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {paymentStep === 'creating' ? 'Creating...' : paymentStep === 'processing' ? 'Processing...' : 'Loading...'}
+                    </div>
                   ) : (
                     (() => {
-                      // Check if this specific plan is the current plan
                       const isCurrentPlan = subscriptionStatus?.hasSubscription && 
                         subscriptionStatus.planName && 
                         plan.displayName.toLowerCase() === subscriptionStatus.planName.toLowerCase()
                       
                       if (isCurrentPlan) {
                         return 'Current Plan'
+                      }
+                      if (paymentCancelled && pendingPlanId === plan.id) {
+                        return 'Try Again'
                       }
                       if (subscriptionStatus?.hasSubscription) {
                         return 'Upgrade'

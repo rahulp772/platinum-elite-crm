@@ -10,18 +10,11 @@ export class TransactionsController {
 
   @Get()
   async findAll(@Request() req: { user: User }) {
-    const transactions = await this.transactionsService.findAll(
-      req.user.tenantId,
-    );
-    return { data: transactions, success: true };
+    return this.transactionsService.findAll(req.user.tenantId);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Request() req: { user: User }) {
-    const transaction = await this.transactionsService.findOne(
-      id,
-      req.user.tenantId,
-    );
-    return { data: transaction, success: true };
+    return this.transactionsService.findOne(id, req.user.tenantId);
   }
 }

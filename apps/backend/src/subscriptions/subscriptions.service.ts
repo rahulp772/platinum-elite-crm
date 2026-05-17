@@ -33,11 +33,21 @@ export class SubscriptionsService {
   ) {}
 
   async findByTenant(tenantId: string): Promise<Subscription | null> {
-    return this.subscriptionRepository.findOne({
+    const subscription = await this.subscriptionRepository.findOne({
       where: { tenantId },
-      relations: ['plan'],
       order: { createdAt: 'DESC' },
     });
+
+    if (subscription?.planId) {
+      const plan = await this.planRepository.findOne({
+        where: { id: subscription.planId },
+      });
+      if (plan) {
+        subscription.plan = plan;
+      }
+    }
+
+    return subscription;
   }
 
   async findByTenantOrThrow(tenantId: string): Promise<Subscription> {
@@ -46,6 +56,30 @@ export class SubscriptionsService {
       throw new NotFoundException('No subscription found for tenant');
     }
     return subscription;
+  }
+
+  async syncTenantPlanName(tenantId: string): Promise<void> {
+    const subscription = await this.findByTenant(tenantId);
+    if (!subscription?.planId) {
+      return;
+    }
+
+    const plan = await this.planRepository.findOne({
+      where: { id: subscription.planId },
+    });
+
+    if (!plan) {
+      return;
+    }
+
+    const tenant = await this.tenantRepository.findOne({
+      where: { id: tenantId },
+    });
+
+    if (tenant && tenant.planName !== plan.displayName) {
+      tenant.planName = plan.displayName;
+      await this.tenantRepository.save(tenant);
+    }
   }
 
   async createSubscription(data: {
@@ -120,7 +154,9 @@ export class SubscriptionsService {
     }
 
     subscription.planId = newPlanId;
+    subscription.plan = newPlan;
     const updated = await this.subscriptionRepository.save(subscription);
+    await this.syncTenantPlanName(tenantId);
 
     await this.transactionsService.createTransaction({
       tenantId,

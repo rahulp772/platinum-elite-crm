@@ -76,6 +76,10 @@ const nextConfig: NextConfig = {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
           },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com; script-src-elem 'self' 'unsafe-eval' 'unsafe-inline' https://checkout.razorpay.com https://api.razorpay.com; frame-src 'self' https://api.razorpay.com https://checkout.razorpay.com https://tds.razorpay.com; connect-src 'self' https://api.razorpay.com; img-src 'self' data: https://cdn.razorpay.com;",
+          },
         ],
       },
       {

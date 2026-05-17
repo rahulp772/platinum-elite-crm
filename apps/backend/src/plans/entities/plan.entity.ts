@@ -64,6 +64,15 @@ export class Plan {
   @Column({ nullable: true })
   minPrice: number;
 
+  @Column({ nullable: true })
+  razorpayPlanId: string;
+
+  @Column({ type: 'int', nullable: true })
+  trialDays: number;
+
+  @Column({ default: 'INR' })
+  currency: string;
+
   @OneToMany(() => Subscription, (subscription) => subscription.plan)
   subscriptions: Subscription[];
 

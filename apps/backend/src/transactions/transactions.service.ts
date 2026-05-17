@@ -52,7 +52,7 @@ export class TransactionsService {
 
     const transaction = this.transactionRepository.create({
       ...data,
-      currency: data.currency || 'USD',
+      currency: data.currency || 'INR',
       status: data.status || TransactionStatus.COMPLETED,
       tenant: tenant,
       invoiceNumber,

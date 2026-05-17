@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress"
 import { useImportStatus, ImportProgress } from "@/hooks/use-import-status"
 import { cn } from "@/lib/utils"
 import { toast } from "sonner"
+import api from "@/lib/api"
 
 interface ImportProgressDashboardProps {
     sessionId: string

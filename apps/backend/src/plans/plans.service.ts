@@ -16,6 +16,7 @@ const DEFAULT_PLANS = [
     yearlyPrice: 12990,
     userLimit: 3,
     leadLimit: 5000,
+    razorpayPlanId: 'plan_So9UqEpVNZpvAp',
     features: [
       'leads_management',
       'properties_management',
@@ -40,6 +41,7 @@ const DEFAULT_PLANS = [
     yearlyPrice: 29990,
     userLimit: 10,
     leadLimit: 50000,
+    razorpayPlanId: 'plan_So9VE2VHvGtq7C',
     features: [
       'leads_management',
       'properties_management',
@@ -73,6 +75,7 @@ const DEFAULT_PLANS = [
     yearlyPrice: 99990,
     userLimit: -1,
     leadLimit: -1,
+    razorpayPlanId: 'plan_So9VcddhA78gQk',
     features: [
       'leads_management',
       'properties_management',
@@ -125,6 +128,10 @@ export class PlansService {
         const plan = this.planRepository.create(planData);
         await this.planRepository.save(plan);
         console.log(`[Plans] Seeded plan: ${planData.displayName}`);
+      } else if (!existing.razorpayPlanId && (planData as any).razorpayPlanId) {
+        existing.razorpayPlanId = (planData as any).razorpayPlanId;
+        await this.planRepository.save(existing);
+        console.log(`[Plans] Updated razorpayPlanId for: ${planData.displayName}`);
       }
     }
   }

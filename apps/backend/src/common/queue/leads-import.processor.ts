@@ -3,7 +3,12 @@ import { Job } from 'bullmq';
 import { Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ImportSession, ImportStatus, DuplicateStrategy, ImportError } from '../../leads/import/entities/import-session.entity';
+import {
+  ImportSession,
+  ImportStatus,
+  DuplicateStrategy,
+  ImportError,
+} from '../../leads/import/entities/import-session.entity';
 import { Lead, UpdateLeadInput } from '../../leads/entities/lead.entity';
 import { LeadStatus, LeadSource, LeadTier } from '../../leads/enums/lead.enum';
 
@@ -52,14 +57,16 @@ export class LeadsImportProcessor extends WorkerHost {
     });
 
     if (!session || session.status === ImportStatus.CANCELLED) {
-      this.logger.log(`Session ${sessionId} was cancelled, stopping processing`);
+      this.logger.log(
+        `Session ${sessionId} was cancelled, stopping processing`,
+      );
       return { successCount: 0, errorCount: 0, skippedCount: 0, errors: [] };
     }
 
     const batchSize = session.batchSize || 500;
 
     for (let i = 0; i < batchData.length; i++) {
-      const row = batchData[i] as Record<string, unknown>;
+      const row = batchData[i];
       const rowIndex = batchIndex * batchSize + i;
 
       try {
@@ -119,7 +126,7 @@ export class LeadsImportProcessor extends WorkerHost {
               if (propType) updateData.propertyType = propType;
               const notes = getString('notes');
               if (notes) updateData.notes = notes;
-              
+
               await this.leadRepository.update(existingLead.id, updateData);
               successCount++;
               break;
@@ -132,7 +139,8 @@ export class LeadsImportProcessor extends WorkerHost {
               newLead.phone = phoneValue;
               newLead.whatsappNumber = getString('whatsappNumber');
               newLead.status = this.parseStatus(getString('status', 'new'));
-              newLead.source = (getString('source') as LeadSource) || LeadSource.WEBSITE;
+              newLead.source =
+                (getString('source') as LeadSource) || LeadSource.WEBSITE;
               newLead.budgetMin = getNumber('budgetMin');
               newLead.budgetMax = getNumber('budgetMax');
               newLead.preferredLocation = getString('preferredLocation');
@@ -153,7 +161,8 @@ export class LeadsImportProcessor extends WorkerHost {
           newLead.phone = phoneValue;
           newLead.whatsappNumber = getString('whatsappNumber');
           newLead.status = this.parseStatus(getString('status', 'new'));
-          newLead.source = (getString('source') as LeadSource) || LeadSource.WEBSITE;
+          newLead.source =
+            (getString('source') as LeadSource) || LeadSource.WEBSITE;
           newLead.budgetMin = getNumber('budgetMin');
           newLead.budgetMax = getNumber('budgetMax');
           newLead.preferredLocation = getString('preferredLocation');
@@ -166,7 +175,8 @@ export class LeadsImportProcessor extends WorkerHost {
         }
       } catch (err: unknown) {
         errorCount++;
-        const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+        const errorMessage =
+          err instanceof Error ? err.message : 'Unknown error';
         errors.push({
           row: rowIndex + 1,
           field: 'general',
@@ -176,7 +186,14 @@ export class LeadsImportProcessor extends WorkerHost {
       }
     }
 
-    await this.updateSessionProgress(sessionId, batchData.length, successCount, errorCount, skippedCount, errors);
+    await this.updateSessionProgress(
+      sessionId,
+      batchData.length,
+      successCount,
+      errorCount,
+      skippedCount,
+      errors,
+    );
 
     this.logger.log(
       `Batch ${batchIndex} completed: ${successCount} success, ${errorCount} errors, ${skippedCount} skipped`,
@@ -188,8 +205,8 @@ export class LeadsImportProcessor extends WorkerHost {
   private parseStatus(status: string): LeadStatus {
     const validStatuses = Object.values(LeadStatus);
     const lowerStatus = status?.toLowerCase();
-    return validStatuses.includes(lowerStatus as LeadStatus) 
-      ? lowerStatus as LeadStatus 
+    return validStatuses.includes(lowerStatus as LeadStatus)
+      ? (lowerStatus as LeadStatus)
       : LeadStatus.NEW;
   }
 
@@ -201,14 +218,16 @@ export class LeadsImportProcessor extends WorkerHost {
     _skippedCount: number,
     batchErrors: ImportError[],
   ): Promise<void> {
-    const session = await this.importSessionRepo.findOne({ where: { id: sessionId } });
+    const session = await this.importSessionRepo.findOne({
+      where: { id: sessionId },
+    });
     if (!session) return;
 
     session.processedRows += processedRows;
     session.successCount += successCount;
     session.errorCount += errorCount;
     session.currentBatch += 1;
-    
+
     const existingErrors = Array.isArray(session.errors) ? session.errors : [];
     session.errors = [...existingErrors, ...batchErrors].slice(-1000);
 
@@ -224,7 +243,9 @@ export class LeadsImportProcessor extends WorkerHost {
 
   @OnWorkerEvent('completed')
   onCompleted(job: Job<ImportBatchJobData>): void {
-    this.logger.log(`Job ${job.id} completed for session ${job.data.sessionId}`);
+    this.logger.log(
+      `Job ${job.id} completed for session ${job.data.sessionId}`,
+    );
   }
 
   @OnWorkerEvent('failed')
