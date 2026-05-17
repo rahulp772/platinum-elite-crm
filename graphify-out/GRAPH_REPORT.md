@@ -1,7 +1,8 @@
-# Graph Report - C:\Users\Rahul\Documents\CRM\platinum-elite-crm  (2026-05-17)
+# Graph Report - platinum-elite-crm  (2026-05-17)
 
 ## Corpus Check
-- Large corpus: 386 files · ~322,313 words. Semantic extraction will be expensive (many Claude tokens). Consider running on a subfolder, or use --no-semantic to run AST-only.
+- 367 files · ~330,519 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
 - 1387 nodes · 1562 edges · 137 communities detected
@@ -9,36 +10,36 @@
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- [[_COMMUNITY_Payments Subscriptions Chat Gateway|Payments Subscriptions Chat Gateway]]
-- [[_COMMUNITY_Form Handlers Auth Routes Filters|Form Handlers Auth Routes Filters]]
-- [[_COMMUNITY_Activity Logging Audit Interceptors|Activity Logging Audit Interceptors]]
-- [[_COMMUNITY_Error Handling Exception Filters|Error Handling Exception Filters]]
-- [[_COMMUNITY_Mock Data API Schemas|Mock Data API Schemas]]
-- [[_COMMUNITY_Storage Import Lead Validation|Storage Import Lead Validation]]
-- [[_COMMUNITY_Lead Service Scoring Controller|Lead Service Scoring Controller]]
-- [[_COMMUNITY_Auth Guards Permissions Redirects|Auth Guards Permissions Redirects]]
-- [[_COMMUNITY_Analytics Dashboard Stats Service|Analytics Dashboard Stats Service]]
-- [[_COMMUNITY_Entitlements Feature Guards Tasks|Entitlements Feature Guards Tasks]]
-- [[_COMMUNITY_Lead Assignment Algorithm Design|Lead Assignment Algorithm Design]]
-- [[_COMMUNITY_Architecture Concepts Overview|Architecture Concepts Overview]]
-- [[_COMMUNITY_Auth Service Roles Login|Auth Service Roles Login]]
-- [[_COMMUNITY_Nearby Infrastructure Property Service|Nearby Infrastructure Property Service]]
-- [[_COMMUNITY_Lead Bulk Actions Edit Dialog|Lead Bulk Actions Edit Dialog]]
-- [[_COMMUNITY_Calendar Date Filtering Handlers|Calendar Date Filtering Handlers]]
-- [[_COMMUNITY_Lead Filters UI Component|Lead Filters UI Component]]
-- [[_COMMUNITY_Lead SLA Cron Assignment|Lead SLA Cron Assignment]]
-- [[_COMMUNITY_Plans Subscription Service|Plans Subscription Service]]
-- [[_COMMUNITY_Properties Controller Endpoints|Properties Controller Endpoints]]
-- [[_COMMUNITY_Addons Service Module|Addons Service Module]]
-- [[_COMMUNITY_Analytics Controller Endpoints|Analytics Controller Endpoints]]
-- [[_COMMUNITY_Plans Controller Endpoints|Plans Controller Endpoints]]
-- [[_COMMUNITY_Deals Controller Endpoints|Deals Controller Endpoints]]
-- [[_COMMUNITY_Users Controller Endpoints|Users Controller Endpoints]]
-- [[_COMMUNITY_Chat Conversation Messages UI|Chat Conversation Messages UI]]
-- [[_COMMUNITY_Floor Plans Service|Floor Plans Service]]
-- [[_COMMUNITY_Calendar Tasks Page|Calendar Tasks Page]]
-- [[_COMMUNITY_Builders Controller|Builders Controller]]
-- [[_COMMUNITY_Builders Service|Builders Service]]
+- [[_COMMUNITY_Community 0|Community 0]]
+- [[_COMMUNITY_Community 1|Community 1]]
+- [[_COMMUNITY_Community 2|Community 2]]
+- [[_COMMUNITY_Community 3|Community 3]]
+- [[_COMMUNITY_Community 4|Community 4]]
+- [[_COMMUNITY_Community 5|Community 5]]
+- [[_COMMUNITY_Community 6|Community 6]]
+- [[_COMMUNITY_Community 7|Community 7]]
+- [[_COMMUNITY_Community 8|Community 8]]
+- [[_COMMUNITY_Community 9|Community 9]]
+- [[_COMMUNITY_Community 10|Community 10]]
+- [[_COMMUNITY_Community 11|Community 11]]
+- [[_COMMUNITY_Community 12|Community 12]]
+- [[_COMMUNITY_Community 13|Community 13]]
+- [[_COMMUNITY_Community 14|Community 14]]
+- [[_COMMUNITY_Community 15|Community 15]]
+- [[_COMMUNITY_Community 16|Community 16]]
+- [[_COMMUNITY_Community 17|Community 17]]
+- [[_COMMUNITY_Community 18|Community 18]]
+- [[_COMMUNITY_Community 19|Community 19]]
+- [[_COMMUNITY_Community 20|Community 20]]
+- [[_COMMUNITY_Community 21|Community 21]]
+- [[_COMMUNITY_Community 22|Community 22]]
+- [[_COMMUNITY_Community 23|Community 23]]
+- [[_COMMUNITY_Community 24|Community 24]]
+- [[_COMMUNITY_Community 25|Community 25]]
+- [[_COMMUNITY_Community 26|Community 26]]
+- [[_COMMUNITY_Community 27|Community 27]]
+- [[_COMMUNITY_Community 28|Community 28]]
+- [[_COMMUNITY_Community 29|Community 29]]
 - [[_COMMUNITY_Community 30|Community 30]]
 - [[_COMMUNITY_Community 31|Community 31]]
 - [[_COMMUNITY_Community 32|Community 32]]
@@ -167,9 +168,9 @@
 - `MakeitCRM Design System` --conceptually_related_to--> `Frontend About Page Image (Marketing/Branding Asset)`  [INFERRED]
   DESIGN.md → apps/frontend/public/images/about-v2.png
 - `handleValidate()` --calls--> `POST()`  [INFERRED]
-  C:\Users\Rahul\Documents\CRM\platinum-elite-crm\apps\frontend\app\(dashboard)\leads\import\page.tsx → C:\Users\Rahul\Documents\CRM\platinum-elite-crm\apps\frontend\app\api\v1\[...path]\route.ts
+  apps\frontend\app\(dashboard)\leads\import\page.tsx → apps\frontend\app\api\v1\[...path]\route.ts
 - `handleStartImport()` --calls--> `POST()`  [INFERRED]
-  C:\Users\Rahul\Documents\CRM\platinum-elite-crm\apps\frontend\app\(dashboard)\leads\import\page.tsx → C:\Users\Rahul\Documents\CRM\platinum-elite-crm\apps\frontend\app\api\v1\[...path]\route.ts
+  apps\frontend\app\(dashboard)\leads\import\page.tsx → apps\frontend\app\api\v1\[...path]\route.ts
 
 ## Hyperedges (group relationships)
 - **Lead Assignment Pipeline** — algo_lead_scoring, algo_agent_profiling, algo_tier_assignment, algo_smart_matching, algo_availability_check [EXTRACTED 1.00]
@@ -178,123 +179,123 @@
 
 ## Communities
 
-### Community 0 - "Payments Subscriptions Chat Gateway"
+### Community 0 - "Community 0"
 Cohesion: 0.04
 Nodes (10): ChatGateway, ChatService, LeadsImportProcessor, handleSendMessage(), PaymentsController, PaymentsService, RazorpayService, SubscriptionsController (+2 more)
 
-### Community 1 - "Form Handlers Auth Routes Filters"
+### Community 1 - "Community 1"
 Cohesion: 0.05
 Nodes (39): handleSubmit(), handleSubmit(), getTenantIdFromCookies(), getTokenFromCookies(), getUserFromCookies(), getCurrentTenantId(), fetchCompany(), onSubmit() (+31 more)
 
-### Community 2 - "Activity Logging Audit Interceptors"
+### Community 2 - "Community 2"
 Cohesion: 0.07
 Nodes (15): ActivityLoggerService, AuditService, createDemoTenants(), deleteDemoTenants(), main(), refreshDemoTenants(), seedDemoData(), showStatus() (+7 more)
 
-### Community 3 - "Error Handling Exception Filters"
+### Community 3 - "Community 3"
 Cohesion: 0.06
 Nodes (29): handleSubmit(), AllExceptionsFilter, formatDateInTimezone(), formatDateOnly(), formatDateTimeInTimezone(), formatRelativeTime(), formatTimeOnly(), getDateLabel() (+21 more)
 
-### Community 4 - "Mock Data API Schemas"
+### Community 4 - "Community 4"
 Cohesion: 0.07
 Nodes (32): handleSubmit(), parseBudget(), handleSubmit(), authFetch(), getAuthHeaders(), getCurrentUser(), getCurrentUserId(), hasPermission() (+24 more)
 
-### Community 5 - "Storage Import Lead Validation"
+### Community 5 - "Community 5"
 Cohesion: 0.06
 Nodes (7): HttpExceptionFilter, formatTime(), getElapsedTime(), handleCancel(), LeadsImportController, LeadsImportService, StorageService
 
-### Community 6 - "Lead Service Scoring Controller"
+### Community 6 - "Community 6"
 Cohesion: 0.08
 Nodes (3): LeadScoringService, LeadsController, LeadsService
 
-### Community 7 - "Auth Guards Permissions Redirects"
+### Community 7 - "Community 7"
 Cohesion: 0.06
 Nodes (19): useAppRedirect(), getUserFromCookie(), isLoggedIn(), useAuth(), getCookie(), isAuthenticated(), setCookie(), AuthGuard() (+11 more)
 
-### Community 8 - "Analytics Dashboard Stats Service"
+### Community 8 - "Community 8"
 Cohesion: 0.1
 Nodes (3): AnalyticsService, DealsService, TasksController
 
-### Community 9 - "Entitlements Feature Guards Tasks"
+### Community 9 - "Community 9"
 Cohesion: 0.08
 Nodes (5): EntitlementsController, EntitlementsService, FeatureGuard, TasksService, UserLimitGuard
 
-### Community 10 - "Lead Assignment Algorithm Design"
+### Community 10 - "Community 10"
 Cohesion: 0.07
 Nodes (30): Agent Profiling (Experience, Closing Rate, Workload, Specialization, Recent Performance), Availability & Load Check (Active Leads + Pending Follow-ups â†’ Availability Score), Lead Scoring (Budget, Source, Intent, Location, Response Speed â†’ 0-100 Score), Manual Override Layer (Team Lead Reassign, Manager Force Assign, Admin Define Rules), SLA Rules (5-min No Contactâ†’Reassign, Missed Follow-upâ†’Notify, 24hr Idleâ†’Escalate), Smart Matching Layer (Location, Budget, Language, Property Type Filters), Tier-Based Assignment Strategy (HIGHâ†’Top Agents, MEDIUMâ†’Weighted Round Robin, LOWâ†’Juniors), Lead & Deal Pipeline Tracking (+22 more)
 
-### Community 11 - "Architecture Concepts Overview"
+### Community 11 - "Community 11"
 Cohesion: 0.08
 Nodes (30): Analytics Engine for Dashboard Stats, JWT Authentication & RBAC, Internal Chat with Read Receipts, NestJS Backend Architecture, Property Management CRUD, Swagger/OpenAPI Auto-generated Documentation, Task Management (Polymorphic Relationships), Activity Tracking (Calls, Notes, Status Changes, Visits Timeline) (+22 more)
 
-### Community 12 - "Auth Service Roles Login"
+### Community 12 - "Community 12"
 Cohesion: 0.1
 Nodes (3): AuthController, AuthService, RolesService
 
-### Community 13 - "Nearby Infrastructure Property Service"
+### Community 13 - "Community 13"
 Cohesion: 0.14
 Nodes (2): NearbyInfrastructuresService, PropertiesService
 
-### Community 14 - "Lead Bulk Actions Edit Dialog"
+### Community 14 - "Community 14"
 Cohesion: 0.12
 Nodes (5): BulkActionsDialog(), EditLeadDialog(), useLeads(), useUpdateLead(), useUsers()
 
-### Community 15 - "Calendar Date Filtering Handlers"
+### Community 15 - "Community 15"
 Cohesion: 0.14
 Nodes (5): handleGoToToday(), handleLimitChange(), handleNextDay(), handlePageChange(), handlePrevDay()
 
-### Community 16 - "Lead Filters UI Component"
+### Community 16 - "Community 16"
 Cohesion: 0.2
 Nodes (12): handleAssignedToChange(), handleBudgetMaxChange(), handleBudgetMinChange(), handleBuilderChange(), handleCreatedFromChange(), handleCreatedToChange(), handleFollowUpFromChange(), handleFollowUpToChange() (+4 more)
 
-### Community 17 - "Lead SLA Cron Assignment"
+### Community 17 - "Community 17"
 Cohesion: 0.22
 Nodes (2): LeadAssignmentService, LeadSlaCron
 
-### Community 18 - "Plans Subscription Service"
+### Community 18 - "Community 18"
 Cohesion: 0.24
 Nodes (1): PlansService
 
-### Community 19 - "Properties Controller Endpoints"
+### Community 19 - "Community 19"
 Cohesion: 0.18
 Nodes (1): PropertiesController
 
-### Community 20 - "Addons Service Module"
+### Community 20 - "Community 20"
 Cohesion: 0.29
 Nodes (1): AddonsService
 
-### Community 21 - "Analytics Controller Endpoints"
+### Community 21 - "Community 21"
 Cohesion: 0.18
 Nodes (1): AnalyticsController
 
-### Community 22 - "Plans Controller Endpoints"
+### Community 22 - "Community 22"
 Cohesion: 0.18
 Nodes (1): PlansController
 
-### Community 23 - "Deals Controller Endpoints"
+### Community 23 - "Community 23"
 Cohesion: 0.2
 Nodes (1): DealsController
 
-### Community 24 - "Users Controller Endpoints"
+### Community 24 - "Community 24"
 Cohesion: 0.2
 Nodes (1): UsersController
 
-### Community 25 - "Chat Conversation Messages UI"
+### Community 25 - "Community 25"
 Cohesion: 0.22
 Nodes (3): handleConnect(), handleNewMessageFn(), transformMessage()
 
-### Community 26 - "Floor Plans Service"
+### Community 26 - "Community 26"
 Cohesion: 0.28
 Nodes (1): FloorPlansService
 
-### Community 27 - "Calendar Tasks Page"
+### Community 27 - "Community 27"
 Cohesion: 0.25
 Nodes (3): CalendarPage(), useTasks(), useTasksInfinite()
 
-### Community 28 - "Builders Controller"
+### Community 28 - "Community 28"
 Cohesion: 0.25
 Nodes (1): BuildersController
 
-### Community 29 - "Builders Service"
+### Community 29 - "Community 29"
 Cohesion: 0.32
 Nodes (1): BuildersService
 
@@ -729,29 +730,29 @@ Nodes (1): Verification Plan (Unit Tests for Scoring/Assignment, Manual Flow/Web
 ## Knowledge Gaps
 - **119 isolated node(s):** `AppModule`, `AddonsModule`, `Addon`, `AnalyticsModule`, `AuditModule` (+114 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **Thin community `Nearby Infrastructure Property Service`** (20 nodes): `nearby-infrastructures.service.ts`, `properties.service.ts`, `NearbyInfrastructuresService`, `.constructor()`, `.create()`, `.createBulk()`, `.findAllByProperty()`, `.findOne()`, `.remove()`, `.update()`, `PropertiesService`, `.addFloorPlans()`, `.addNearbyInfrastructures()`, `.constructor()`, `.create()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
+- **Thin community `Community 13`** (20 nodes): `nearby-infrastructures.service.ts`, `properties.service.ts`, `NearbyInfrastructuresService`, `.constructor()`, `.create()`, `.createBulk()`, `.findAllByProperty()`, `.findOne()`, `.remove()`, `.update()`, `PropertiesService`, `.addFloorPlans()`, `.addNearbyInfrastructures()`, `.constructor()`, `.create()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Lead SLA Cron Assignment`** (13 nodes): `lead-sla.cron.ts`, `lead-assignment.service.ts`, `LeadAssignmentService`, `.assignAgent()`, `.constructor()`, `.filterEligibleAgents()`, `.getBalancedAgent()`, `.getBestAgent()`, `.getJuniorAgent()`, `LeadSlaCron`, `.constructor()`, `.handleMissedFollowUps()`, `.handleNewLeadSla()`
+- **Thin community `Community 17`** (13 nodes): `lead-sla.cron.ts`, `lead-assignment.service.ts`, `LeadAssignmentService`, `.assignAgent()`, `.constructor()`, `.filterEligibleAgents()`, `.getBalancedAgent()`, `.getBestAgent()`, `.getJuniorAgent()`, `LeadSlaCron`, `.constructor()`, `.handleMissedFollowUps()`, `.handleNewLeadSla()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Plans Subscription Service`** (13 nodes): `plans.service.ts`, `PlansService`, `.constructor()`, `.create()`, `.delete()`, `.findAll()`, `.findAllAdmin()`, `.findBySlug()`, `.findOne()`, `.onModuleInit()`, `.seedDefaultPlans()`, `.toggleActive()`, `.update()`
+- **Thin community `Community 18`** (13 nodes): `plans.service.ts`, `PlansService`, `.constructor()`, `.create()`, `.delete()`, `.findAll()`, `.findAllAdmin()`, `.findBySlug()`, `.findOne()`, `.onModuleInit()`, `.seedDefaultPlans()`, `.toggleActive()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Properties Controller Endpoints`** (12 nodes): `properties.controller.ts`, `PropertiesController`, `.addFloorPlans()`, `.addNearbyInfrastructures()`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
+- **Thin community `Community 19`** (12 nodes): `properties.controller.ts`, `PropertiesController`, `.addFloorPlans()`, `.addNearbyInfrastructures()`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.findRelated()`, `.remove()`, `.toggleFavorite()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Addons Service Module`** (11 nodes): `AddonsService`, `.constructor()`, `.create()`, `.findAll()`, `.findByName()`, `.findOne()`, `.onModuleInit()`, `.seedDefaultAddons()`, `.toggleActive()`, `.update()`, `addons.service.ts`
+- **Thin community `Community 20`** (11 nodes): `AddonsService`, `.constructor()`, `.create()`, `.findAll()`, `.findByName()`, `.findOne()`, `.onModuleInit()`, `.seedDefaultAddons()`, `.toggleActive()`, `.update()`, `addons.service.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Analytics Controller Endpoints`** (11 nodes): `AnalyticsController`, `.constructor()`, `.getDashboardStats()`, `.getLeadFunnelStats()`, `.getLeadResponseTime()`, `.getLeadStats()`, `.getPipelineValue()`, `.getPropertyStats()`, `.getRevenueTrend()`, `.getTeamPerformance()`, `analytics.controller.ts`
+- **Thin community `Community 21`** (11 nodes): `AnalyticsController`, `.constructor()`, `.getDashboardStats()`, `.getLeadFunnelStats()`, `.getLeadResponseTime()`, `.getLeadStats()`, `.getPipelineValue()`, `.getPropertyStats()`, `.getRevenueTrend()`, `.getTeamPerformance()`, `analytics.controller.ts`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Plans Controller Endpoints`** (11 nodes): `plans.controller.ts`, `PlansController`, `.constructor()`, `.create()`, `.delete()`, `.findAll()`, `.findAllAdmin()`, `.findBySlug()`, `.findOne()`, `.toggleActive()`, `.update()`
+- **Thin community `Community 22`** (11 nodes): `plans.controller.ts`, `PlansController`, `.constructor()`, `.create()`, `.delete()`, `.findAll()`, `.findAllAdmin()`, `.findBySlug()`, `.findOne()`, `.toggleActive()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Deals Controller Endpoints`** (10 nodes): `deals.controller.ts`, `DealsController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getActivities()`, `.reassign()`, `.remove()`, `.update()`
+- **Thin community `Community 23`** (10 nodes): `deals.controller.ts`, `DealsController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.getActivities()`, `.reassign()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Users Controller Endpoints`** (10 nodes): `users.controller.ts`, `UsersController`, `.constructor()`, `.findAll()`, `.findOne()`, `.invite()`, `.remove()`, `.update()`, `.uploadAvatar()`, `.updateAvatar()`
+- **Thin community `Community 24`** (10 nodes): `users.controller.ts`, `UsersController`, `.constructor()`, `.findAll()`, `.findOne()`, `.invite()`, `.remove()`, `.update()`, `.uploadAvatar()`, `.updateAvatar()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Floor Plans Service`** (9 nodes): `floor-plans.service.ts`, `FloorPlansService`, `.constructor()`, `.create()`, `.createBulk()`, `.findAllByProperty()`, `.findOne()`, `.remove()`, `.update()`
+- **Thin community `Community 26`** (9 nodes): `floor-plans.service.ts`, `FloorPlansService`, `.constructor()`, `.create()`, `.createBulk()`, `.findAllByProperty()`, `.findOne()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Builders Controller`** (8 nodes): `builders.controller.ts`, `BuildersController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.remove()`, `.update()`
+- **Thin community `Community 28`** (8 nodes): `builders.controller.ts`, `BuildersController`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
-- **Thin community `Builders Service`** (8 nodes): `builders.service.ts`, `BuildersService`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.remove()`, `.update()`
+- **Thin community `Community 29`** (8 nodes): `builders.service.ts`, `BuildersService`, `.constructor()`, `.create()`, `.findAll()`, `.findOne()`, `.remove()`, `.update()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
 - **Thin community `Community 30`** (8 nodes): `chat.controller.ts`, `ChatController`, `.constructor()`, `.createConversation()`, `.getConversations()`, `.getMessages()`, `.sendMessage()`, `.uploadFile()`
   Too small to be a meaningful cluster - may be noise or needs more connections extracted.
@@ -951,17 +952,17 @@ Nodes (1): Verification Plan (Unit Tests for Scoring/Assignment, Manual Flow/Web
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `GET()` connect `Form Handlers Auth Routes Filters` to `Payments Subscriptions Chat Gateway`, `Activity Logging Audit Interceptors`, `Community 35`, `Mock Data API Schemas`, `Storage Import Lead Validation`, `Analytics Dashboard Stats Service`, `Entitlements Feature Guards Tasks`?**
+- **Why does `GET()` connect `Community 1` to `Community 0`, `Community 2`, `Community 35`, `Community 4`, `Community 5`, `Community 8`, `Community 9`?**
   _High betweenness centrality (0.075) - this node is a cross-community bridge._
-- **Why does `toISOString()` connect `Error Handling Exception Filters` to `Form Handlers Auth Routes Filters`, `Activity Logging Audit Interceptors`, `Storage Import Lead Validation`, `Lead Service Scoring Controller`?**
+- **Why does `toISOString()` connect `Community 3` to `Community 1`, `Community 2`, `Community 5`, `Community 6`?**
   _High betweenness centrality (0.043) - this node is a cross-community bridge._
-- **Why does `PropertiesService` connect `Nearby Infrastructure Property Service` to `Analytics Dashboard Stats Service`?**
+- **Why does `PropertiesService` connect `Community 13` to `Community 8`?**
   _High betweenness centrality (0.037) - this node is a cross-community bridge._
 - **Are the 37 inferred relationships involving `GET()` (e.g. with `.getDashboardStats()` and `.getTeamPerformance()`) actually correct?**
   _`GET()` has 37 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 22 inferred relationships involving `getAuthHeaders()` (e.g. with `createDeal()` and `updateDeal()`) actually correct?**
   _`getAuthHeaders()` has 22 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 11 inferred relationships involving `POST()` (e.g. with `.catch()` and `handleFileUpload()`) actually correct?**
+- **Are the 11 inferred relationships involving `POST()` (e.g. with `handleFileUpload()` and `handleValidate()`) actually correct?**
   _`POST()` has 11 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `AppModule`, `AddonsModule`, `Addon` to the rest of the system?**
   _119 weakly-connected nodes found - possible documentation gaps or missing edges._
