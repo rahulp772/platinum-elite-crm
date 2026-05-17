@@ -4,8 +4,10 @@ import * as React from "react"
 
 export function useMediaQuery(query: string): boolean {
   const [matches, setMatches] = React.useState<boolean>(false)
+  const [isClient, setIsClient] = React.useState(false)
 
   React.useEffect(() => {
+    setIsClient(true)
     const mediaQuery = window.matchMedia(query)
     setMatches(mediaQuery.matches)
 
@@ -28,7 +30,7 @@ export function useMediaQuery(query: string): boolean {
     }
   }, [query])
 
-  return matches
+  return isClient ? matches : false
 }
 
 export const useIsMobile = () => useMediaQuery("(max-width: 767px)")

@@ -22,6 +22,8 @@ export type LeadSource =
   | "housing.com"
   | "google_ads"
   | "facebook"
+  | "instagram"
+  | "walk_in"
   | "channel_partner"
 
 export type LostReason = 

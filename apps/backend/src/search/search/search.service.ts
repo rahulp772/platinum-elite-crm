@@ -4,6 +4,7 @@ import { Repository, Like } from 'typeorm';
 import { Property } from '../../properties/entities/property.entity';
 import { Lead } from '../../leads/entities/lead.entity';
 import { Deal } from '../../deals/entities/deal.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Injectable()
 export class SearchService {
@@ -16,23 +17,34 @@ export class SearchService {
     private dealRepository: Repository<Deal>,
   ) {}
 
-  async globalSearch(query: string) {
+  async globalSearch(query: string, user: User) {
     if (!query) return [];
 
     const q = `%${query}%`;
 
     const properties = await this.propertyRepository.find({
-      where: [{ title: Like(q) }, { address: Like(q) }, { city: Like(q) }],
+      where: [
+        { tenantId: user.tenantId, title: Like(q) },
+        { tenantId: user.tenantId, address: Like(q) },
+        { tenantId: user.tenantId, city: Like(q) },
+      ],
       take: 3,
     });
 
     const leads = await this.leadRepository.find({
-      where: [{ name: Like(q) }, { email: Like(q) }, { phone: Like(q) }],
+      where: [
+        { tenantId: user.tenantId, name: Like(q) },
+        { tenantId: user.tenantId, email: Like(q) },
+        { tenantId: user.tenantId, phone: Like(q) },
+      ],
       take: 3,
     });
 
     const deals = await this.dealRepository.find({
-      where: [{ title: Like(q) }, { customerName: Like(q) }],
+      where: [
+        { tenantId: user.tenantId, title: Like(q) },
+        { tenantId: user.tenantId, customerName: Like(q) },
+      ],
       relations: ['property'],
       take: 3,
     });

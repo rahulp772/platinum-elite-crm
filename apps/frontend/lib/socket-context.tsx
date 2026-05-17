@@ -81,6 +81,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
       if (globalSocket) {
         globalSocket.disconnect()
         globalSocket = null
+        toastIds.clear()
+        for (const timeout of toastIdsTimeout.values()) {
+          clearTimeout(timeout)
+        }
+        toastIdsTimeout.clear()
         setIsConnected(false)
       }
       return

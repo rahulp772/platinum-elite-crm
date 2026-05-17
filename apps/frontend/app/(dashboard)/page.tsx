@@ -20,12 +20,12 @@ export default function DashboardPage() {
     const { user } = useAuth()
 
     const { data: stats, isLoading } = useQuery({
-        queryKey: ["dashboard-stats"],
+        queryKey: ["dashboard-stats", user?.tenantId],
         queryFn: async () => {
             const res = await api.get("/analytics/dashboard")
             return res.data
         },
-        enabled: user?.role?.level ? user.role.level > 50 : true,
+        enabled: !!user?.tenantId && (user?.role?.level === undefined || user.role.level > 50),
     })
 
     if (!user) return null

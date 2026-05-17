@@ -7,18 +7,21 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Building2, DollarSign, TrendingUp, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface StatsOverviewWidgetProps {
   period: PeriodType
 }
 
 export function StatsOverviewWidget({ period }: StatsOverviewWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery({
-    queryKey: ['dashboard-stats', period],
+    queryKey: ['dashboard-stats', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/analytics/dashboard?period=${period}`)
       return res.data
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const overview = data?.overview || {

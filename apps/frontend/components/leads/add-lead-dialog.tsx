@@ -45,6 +45,8 @@ const LEAD_SOURCES: { value: LeadSource; label: string }[] = [
     { value: "housing.com", label: "Housing.com" },
     { value: "google_ads", label: "Google Ads" },
     { value: "facebook", label: "Facebook" },
+    { value: "instagram", label: "Instagram" },
+    { value: "walk_in", label: "Walk In" },
     { value: "channel_partner", label: "Channel Partner" },
     { value: "referral", label: "Referral" },
     { value: "social", label: "Social Media" },

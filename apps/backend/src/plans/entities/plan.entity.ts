@@ -67,6 +67,9 @@ export class Plan {
   @Column({ nullable: true })
   razorpayPlanId: string;
 
+  @Column({ nullable: true })
+  razorpayYearlyPlanId: string;
+
   @Column({ type: 'int', nullable: true })
   trialDays: number;
 

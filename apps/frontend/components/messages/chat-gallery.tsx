@@ -112,6 +112,7 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
                                 src={imageUrl}
                                 alt={currentImage.name}
                                 fill
+                                sizes="100vw"
                                 className="object-contain"
                                 priority
                             />
@@ -141,6 +142,7 @@ export function ChatGallery({ open, onOpenChange, images, initialIndex = 0 }: Ch
                                                 src={thumbUrl}
                                                 alt={`Thumbnail ${idx + 1}`}
                                                 fill
+                                                sizes="80px"
                                                 className="object-cover"
                                             />
                                         </button>

@@ -364,6 +364,7 @@ export class AuthService {
       subscriptionEndDate:
         subscription?.currentPeriodEnd || tenant.subscriptionEndDate,
       planTier,
+      billingCycle: subscription?.billingCycle || null,
       isOnHighestPlan,
       hasSubscription: !!subscription,
       subscriptionId: subscription?.id || null,

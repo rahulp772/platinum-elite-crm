@@ -86,9 +86,9 @@ export default function MessagesPage() {
     }, [globalSocket])
 
     const { data: conversationsData, isLoading: conversationsLoading, error: conversationsError } = useQuery({
-        queryKey: ['conversations'],
+        queryKey: ['conversations', user?.tenantId],
         queryFn: chatApi.getConversations,
-        enabled: !!user,
+        enabled: !!user?.tenantId,
     })
 
     React.useEffect(() => {
@@ -105,7 +105,7 @@ export default function MessagesPage() {
             return data
         },
         onSuccess: async (newConv) => {
-            await queryClient.invalidateQueries({ queryKey: ['conversations'] })
+            await queryClient.invalidateQueries({ queryKey: ['conversations', user?.tenantId] })
             setSelectedId(newConv.id)
             toast.success('Conversation created')
         },

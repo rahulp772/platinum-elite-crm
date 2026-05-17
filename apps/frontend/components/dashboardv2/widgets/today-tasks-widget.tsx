@@ -11,6 +11,7 @@ import { Clock, Calendar, Loader2, ArrowRight, Plus } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface TodayTasksWidgetProps {
   period: PeriodType
@@ -39,13 +40,15 @@ const PRIORITY_COLORS = {
 
 export function TodayTasksWidget({ period }: TodayTasksWidgetProps) {
   const queryClient = useQueryClient()
+  const { user } = useAuth()
   
   const { data, isLoading } = useQuery<Task[]>({
-    queryKey: ['tasks-today', period],
+    queryKey: ['tasks-today', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/tasks?filter=today&limit=6`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const toggleMutation = useMutation({
@@ -53,7 +56,7 @@ export function TodayTasksWidget({ period }: TodayTasksWidgetProps) {
       await api.patch(`/tasks/${id}`, { completed })
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tasks-today'] })
+      queryClient.invalidateQueries({ queryKey: ['tasks-today', user?.tenantId] })
     }
   })
 

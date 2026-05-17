@@ -14,11 +14,12 @@ export function AgentDashboardView() {
     const { user } = useAuth()
     const timezone = getUserTimezone(user)
     const { data: leads, isLoading } = useQuery({
-        queryKey: ["my-leads"],
+        queryKey: ["my-leads", user?.tenantId],
         queryFn: async () => {
             const res = await api.get("/leads/my-leads")
             return res.data
-        }
+        },
+        enabled: !!user?.tenantId,
     })
 
     if (isLoading) {

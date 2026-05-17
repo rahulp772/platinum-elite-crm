@@ -10,6 +10,7 @@ import { Clock, Loader2, AlertCircle, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface ClosingSoonWidgetProps {
   period: PeriodType
@@ -25,12 +26,14 @@ interface Deal {
 }
 
 export function ClosingSoonWidget({ period }: ClosingSoonWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Deal[]>({
-    queryKey: ['deals-closing-soon', period],
+    queryKey: ['deals-closing-soon', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/deals?filter=closing-soon&days=30&limit=5`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const formatCurrency = (value: number) => {

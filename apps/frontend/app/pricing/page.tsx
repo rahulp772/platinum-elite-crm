@@ -43,6 +43,7 @@ interface SubscriptionStatus {
   planName: string | null
   subscriptionStatus: string | null
   isOnHighestPlan: boolean
+  billingCycle: string | null
 }
 
 const FEATURE_LABELS: Record<string, string> = {
@@ -176,9 +177,9 @@ function PricingContent() {
               check()
             })
           }
-          
+
           await waitForRazorpay()
-          
+
           if (!window.Razorpay) {
             alert('Payment system not ready. Please refresh the page and try again.')
             setIsPurchasing(null)
@@ -204,10 +205,10 @@ function PricingContent() {
               setShowWelcome(true)
               const statusRes = await api.get('/auth/subscription')
               setSubscriptionStatus(statusRes.data)
-              queryClient.invalidateQueries({ queryKey: ['subscription'] })
-              queryClient.invalidateQueries({ queryKey: ['entitlements'] })
-              queryClient.invalidateQueries({ queryKey: ['subscriptionStatus'] })
-              queryClient.invalidateQueries({ queryKey: ['transactions'] })
+              queryClient.invalidateQueries({ queryKey: ['subscription', user?.tenantId] })
+              queryClient.invalidateQueries({ queryKey: ['entitlements', user?.tenantId] })
+              queryClient.invalidateQueries({ queryKey: ['subscriptionStatus', user?.tenantId] })
+              queryClient.invalidateQueries({ queryKey: ['transactions', user?.tenantId] })
             } catch (verifyError) {
               console.error('Payment verification failed:', verifyError)
               alert('Payment verification failed. Please contact support.')
@@ -247,28 +248,39 @@ function PricingContent() {
 
       const subscriptionData = subRes.data
 
-      if (!subscriptionData) {
+      if (!subscriptionData?.subscriptionId) {
         alert('Failed to create subscription. Please try again.')
+        setIsPurchasing(null)
+        setPaymentStep('idle')
         return
       }
 
-      if (subscriptionData.shortUrl) {
-        window.location.href = subscriptionData.shortUrl
-        return
-      }
-
-      if (!subscriptionData.subscriptionId) {
-        alert('Subscription created but no payment link available. Please contact support.')
-        return
-      }
-
+      // Wait for Razorpay to load if not ready
       if (!razorpayLoaded || !window.Razorpay) {
-        if (subscriptionData.shortUrl) {
-          window.location.href = subscriptionData.shortUrl
-        } else {
-          alert('Payment system not ready. Please refresh the page and try again.')
+        console.log('Razorpay not loaded yet, waiting...', { razorpayLoaded, hasWindowRazorpay: !!window.Razorpay })
+        let retries = 0
+        const waitForRazorpay = () => {
+          return new Promise((resolve) => {
+            const check = () => {
+              if (window.Razorpay || retries > 10) {
+                resolve(window.Razorpay)
+              } else {
+                retries++
+                setTimeout(check, 500)
+              }
+            }
+            check()
+          })
         }
-        return
+
+        await waitForRazorpay()
+
+        if (!window.Razorpay) {
+          alert('Payment system not ready. Please refresh the page and try again.')
+          setIsPurchasing(null)
+          setPaymentStep('idle')
+          return
+        }
       }
 
       const rz = new window.Razorpay({
@@ -288,10 +300,10 @@ function PricingContent() {
             setShowWelcome(true)
             const statusRes = await api.get('/auth/subscription')
             setSubscriptionStatus(statusRes.data)
-            queryClient.invalidateQueries({ queryKey: ['subscription'] })
-            queryClient.invalidateQueries({ queryKey: ['entitlements'] })
-            queryClient.invalidateQueries({ queryKey: ['subscriptionStatus'] })
-            queryClient.invalidateQueries({ queryKey: ['transactions'] })
+            queryClient.invalidateQueries({ queryKey: ['subscription', user?.tenantId] })
+            queryClient.invalidateQueries({ queryKey: ['entitlements', user?.tenantId] })
+            queryClient.invalidateQueries({ queryKey: ['subscriptionStatus', user?.tenantId] })
+            queryClient.invalidateQueries({ queryKey: ['transactions', user?.tenantId] })
           } catch (verifyError) {
             console.error('Payment verification failed:', verifyError)
             alert('Payment verification failed. Please contact support.')
@@ -359,7 +371,7 @@ function PricingContent() {
       />
       <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#D4AF37]/5 blur-[150px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-realty-navy/10 blur-[120px] rounded-full pointer-events-none" />
-      
+
       <div className="container mx-auto px-6 py-12 relative z-10">
         <div className="flex items-center gap-4 mb-8">
           <Link href="/">
@@ -383,14 +395,12 @@ function PricingContent() {
           </span>
           <button
             onClick={() => setIsYearly(!isYearly)}
-            className={`relative w-14 h-7 rounded-full transition-colors ${
-              isYearly ? 'bg-realty-gold' : 'bg-muted'
-            }`}
+            className={`relative w-14 h-7 rounded-full transition-colors ${isYearly ? 'bg-realty-gold' : 'bg-muted'
+              }`}
           >
             <div
-              className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${
-                isYearly ? 'translate-x-8' : 'translate-x-1'
-              }`}
+              className={`absolute top-1 w-5 h-5 rounded-full bg-white shadow transition-transform ${isYearly ? 'translate-x-8' : 'translate-x-1'
+                }`}
             />
           </button>
           <span className={`text-sm font-medium ${isYearly ? 'text-foreground' : 'text-muted-foreground'}`}>
@@ -411,7 +421,7 @@ function PricingContent() {
             <p className="text-sm text-amber-700">
               Payment was cancelled. Click "Try Again" on the plan above to complete your subscription.
             </p>
-            <button 
+            <button
               onClick={() => setPaymentCancelled(false)}
               className="text-amber-600 hover:text-amber-800 text-sm font-medium"
             >
@@ -424,20 +434,36 @@ function PricingContent() {
           {plans.map((plan, i) => {
             const price = getDisplayPrice(plan)
             const yearlyTotal = plan.yearlyPrice > 0 ? plan.yearlyPrice : 0
-            
+            const currentPlanName = subscriptionStatus?.planName?.toLowerCase() ?? ''
+            const currentBillingCycle = subscriptionStatus?.billingCycle ?? 'monthly'
+            const viewingCycle = isYearly ? 'yearly' : 'monthly'
+            const isCurrentPlan = subscriptionStatus?.hasSubscription &&
+              subscriptionStatus.planName &&
+              plan.displayName.toLowerCase() === currentPlanName &&
+              currentBillingCycle === viewingCycle
+
             return (
               <motion.div
                 key={plan.id}
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
-                className={`relative p-8 rounded-3xl border transition-all ${
-                  plan.recommended
+                className={`relative p-8 rounded-3xl border transition-all ${isCurrentPlan
+                  ? "bg-card border-emerald-500/50 shadow-sm"
+                  : plan.recommended
                     ? "bg-gradient-to-b from-slate-900 to-slate-950 border-[#D4AF37] shadow-[0_25px_60px_rgba(212,175,55,0.2)]"
                     : "bg-card border-border hover:border-realty-gold/30"
-                }`}
+                  }`}
               >
-                {plan.recommended && (
+                {isCurrentPlan && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white text-xs font-black px-5 py-2 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1.5">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Current Plan
+                  </div>
+                )}
+                {plan.recommended && !isCurrentPlan && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 text-xs font-black px-5 py-2 rounded-full uppercase tracking-widest shadow-lg">
                     Most Popular
                   </div>
@@ -488,9 +514,8 @@ function PricingContent() {
                 <div className="space-y-3 mb-8">
                   {plan.features.slice(0, 6).map((feature, idx) => (
                     <div key={idx} className="flex items-center gap-3">
-                      <div className={`shrink-0 h-5 w-5 rounded-full flex items-center justify-center ${
-                        plan.recommended ? "bg-[#D4AF37]/20" : "bg-realty-gold/10"
-                      }`}>
+                      <div className={`shrink-0 h-5 w-5 rounded-full flex items-center justify-center ${plan.recommended ? "bg-[#D4AF37]/20" : "bg-realty-gold/10"
+                        }`}>
                         <Check className={`h-3 w-3 ${plan.recommended ? "text-[#D4AF37]" : "text-realty-gold"}`} />
                       </div>
                       <span className={`text-sm ${plan.recommended ? "text-slate-300" : "text-muted-foreground"}`}>
@@ -505,19 +530,33 @@ function PricingContent() {
                   )}
                 </div>
 
-                <Button 
-                  className={`w-full h-12 rounded-xl font-semibold text-base transition-all ${
-                    plan.recommended 
-                      ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02] shadow-lg shadow-[#D4AF37]/25" 
+                <Button
+                  className={`w-full h-12 rounded-xl font-semibold text-base transition-all ${isCurrentPlan
+                    ? "bg-muted/50 text-muted-foreground cursor-default"
+                    : plan.recommended
+                      ? "bg-gradient-to-r from-[#D4AF37] to-[#B8962F] text-slate-950 hover:scale-[1.02] shadow-lg shadow-[#D4AF37]/25"
                       : paymentCancelled && pendingPlanId === plan.id
                         ? "bg-amber-500 hover:bg-amber-600 text-white"
                         : "bg-muted hover:bg-muted/80 text-foreground"
-                  }`}
+                    }`}
                   onClick={() => {
                     setPaymentCancelled(false)
                     handleSubscribe(plan.id)
                   }}
-                  disabled={isPurchasing === plan.id || paymentStep !== 'idle' || (subscriptionStatus?.hasSubscription && plan.displayName.toLowerCase() === subscriptionStatus?.planName?.toLowerCase())}
+                  disabled={(() => {
+                    if (isPurchasing === plan.id || paymentStep !== 'idle') return true
+                    if (!subscriptionStatus?.hasSubscription) return false
+
+                    const tierMap: Record<string, number> = { lite: 0, team: 1, scale: 2 }
+                    const currentTier = tierMap[currentPlanName] ?? -1
+                    const viewingTier = tierMap[plan.name?.toLowerCase() ?? ''] ?? -1
+                    const viewingCycle = isYearly ? 'yearly' : 'monthly'
+                    const isSamePlanAndCycle = plan.displayName.toLowerCase() === currentPlanName && currentBillingCycle === viewingCycle
+
+                    if (isSamePlanAndCycle) return true
+                    if (viewingTier < currentTier) return true
+                    return false
+                  })()}
                 >
                   {isPurchasing === plan.id || paymentStep !== 'idle' ? (
                     <div className="flex items-center gap-2">
@@ -526,20 +565,23 @@ function PricingContent() {
                     </div>
                   ) : (
                     (() => {
-                      const isCurrentPlan = subscriptionStatus?.hasSubscription && 
-                        subscriptionStatus.planName && 
-                        plan.displayName.toLowerCase() === subscriptionStatus.planName.toLowerCase()
-                      
-                      if (isCurrentPlan) {
-                        return 'Current Plan'
-                      }
                       if (paymentCancelled && pendingPlanId === plan.id) {
                         return 'Try Again'
                       }
-                      if (subscriptionStatus?.hasSubscription) {
-                        return 'Upgrade'
+
+                      if (!subscriptionStatus?.hasSubscription) {
+                        return plan.ctaText || 'Get Started'
                       }
-                      return plan.ctaText || 'Get Started'
+
+                      const tierMap: Record<string, number> = { lite: 0, team: 1, scale: 2 }
+                      const currentTier = tierMap[currentPlanName] ?? -1
+                      const viewingTier = tierMap[plan.name?.toLowerCase() ?? ''] ?? -1
+                      const viewingCycle = isYearly ? 'yearly' : 'monthly'
+                      const isSamePlanAndCycle = plan.displayName.toLowerCase() === currentPlanName && currentBillingCycle === viewingCycle
+
+                      if (isSamePlanAndCycle) return 'Current Plan'
+                      if (viewingTier < currentTier) return 'Already on higher plan'
+                      return 'Upgrade'
                     })()
                   )}
                 </Button>

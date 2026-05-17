@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Lead, LeadActivity, LeadLookupResult } from "@/types/lead"
+import { useAuth } from "@/lib/auth-context"
 
 export interface PaginatedResponse<T> {
     data: T[]
@@ -25,34 +26,40 @@ interface LeadsFilters {
 
 
 export function useLeads(filters?: LeadsFilters, queryKeyDeps?: unknown[]) {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["leads", filters, ...(queryKeyDeps || [])],
+        queryKey: ["leads", user?.tenantId, filters, ...(queryKeyDeps || [])],
         queryFn: async () => {
             const { data } = await api.get<PaginatedResponse<Lead>>("/leads", { params: filters })
             return data
         },
         staleTime: 0,
         placeholderData: (previousData) => previousData,
+        enabled: !!user?.tenantId,
     })
 }
 
 export function useMyLeads() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["leads", "my"],
+        queryKey: ["leads", user?.tenantId, "my"],
         queryFn: async () => {
             const { data } = await api.get<Lead[]>("/leads/my")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 
 export function useUpcomingFollowUps() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["leads", "followups"],
+        queryKey: ["leads", user?.tenantId, "followups"],
         queryFn: async () => {
             const { data } = await api.get<Lead[]>("/leads/followups")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 
@@ -68,13 +75,14 @@ export function useLeadLookup() {
 }
 
 export function useLeadActivities(leadId: string) {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["leads", leadId, "activities"],
+        queryKey: ["leads", user?.tenantId, leadId, "activities"],
         queryFn: async () => {
             const { data } = await api.get<LeadActivity[]>(`/leads/${leadId}/activities`)
             return data
         },
-        enabled: !!leadId,
+        enabled: !!leadId && !!user?.tenantId,
     })
 }
 
@@ -137,12 +145,14 @@ export function useBulkAssignLead() {
 }
 
 export function useUsers() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["users"],
+        queryKey: ["users", user?.tenantId],
         queryFn: async () => {
             const { data } = await api.get<{ id: string; name: string }[]>("/users")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 
@@ -177,12 +187,14 @@ export function useLogLeadActivity() {
 }
 
 export function useLeadProperties() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["lead-properties"],
+        queryKey: ["lead-properties", user?.tenantId],
         queryFn: async () => {
             const { data } = await api.get<{ id: string; title: string }[]>("/properties?status=available")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 

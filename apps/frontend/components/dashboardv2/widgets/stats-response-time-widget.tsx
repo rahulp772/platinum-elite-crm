@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Clock, TrendingUp, TrendingDown, AlertCircle, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface StatsResponseTimeWidgetProps {
   period: PeriodType
@@ -21,12 +22,14 @@ interface ResponseTimeData {
 }
 
 export function StatsResponseTimeWidget({ period }: StatsResponseTimeWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<ResponseTimeData>({
-    queryKey: ['analytics-response-time', period],
+    queryKey: ['analytics-response-time', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/analytics/lead-response-time?period=${period}`)
       return res.data
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   if (isLoading) {

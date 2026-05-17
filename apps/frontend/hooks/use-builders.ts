@@ -1,25 +1,29 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Builder } from "@/types/builder"
+import { useAuth } from "@/lib/auth-context"
 
 export function useBuilders() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["builders"],
+        queryKey: ["builders", user?.tenantId],
         queryFn: async () => {
             const { data } = await api.get<Builder[]>("/builders")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 
 export function useBuilder(id: string) {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["builders", id],
+        queryKey: ["builders", user?.tenantId, id],
         queryFn: async () => {
             const { data } = await api.get<Builder>(`/builders/${id}`)
             return data
         },
-        enabled: !!id,
+        enabled: !!id && !!user?.tenantId,
     })
 }
 

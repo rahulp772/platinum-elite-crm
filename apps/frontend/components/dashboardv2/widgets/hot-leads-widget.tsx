@@ -10,6 +10,7 @@ import { Phone, Mail, Loader2, Flame, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface HotLeadsWidgetProps {
   period: PeriodType
@@ -37,12 +38,14 @@ const SOURCE_BADGES: Record<string, string> = {
 }
 
 export function HotLeadsWidget({ period }: HotLeadsWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Lead[]>({
-    queryKey: ['leads-hot', period],
+    queryKey: ['leads-hot', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/leads?status=new&sort=createdAt&order=desc&limit=5`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const formatTimeAgo = (dateStr: string) => {

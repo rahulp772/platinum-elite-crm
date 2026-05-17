@@ -4,6 +4,7 @@ import * as React from "react"
 import { useRouter } from "next/navigation"
 import { User, AuthResponse } from "@/types/user"
 import { getCookie, setCookie, deleteCookie } from "./auth-cookies"
+import { clearAllLocalStorage } from "./storage"
 
 interface TenantInfo {
   tenantId: string
@@ -173,7 +174,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logout = async () => {
     try {
-      // Call logout API to invalidate token on server
       await fetch('/api/v1/auth/logout', {
         method: 'POST',
         credentials: 'include',
@@ -181,12 +181,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error('Logout API error:', error)
     } finally {
-      // Clear client-side cookies regardless of API result
       deleteCookie(COOKIE_NAMES.TOKEN)
       deleteCookie(COOKIE_NAMES.USER)
       deleteCookie(COOKIE_NAMES.TENANT_ID)
       
+      clearAllLocalStorage()
+      
+      window.dispatchEvent(new CustomEvent('auth:logout'))
+      
       setUser(null)
+      router.refresh()
       router.push('/login')
     }
   }

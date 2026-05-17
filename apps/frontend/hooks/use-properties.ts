@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Property } from "@/types/property"
+import { useAuth } from "@/lib/auth-context"
 
 export interface PropertiesFilters {
     page?: number
@@ -24,8 +25,9 @@ interface PaginatedResponse<T> {
 }
 
 export function useProperties(filters?: PropertiesFilters) {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["properties", filters],
+        queryKey: ["properties", user?.tenantId, filters],
         queryFn: async () => {
             const params = Object.fromEntries(
                 Object.entries(filters || {}).filter(([, v]) => v !== undefined && v !== "")
@@ -35,28 +37,31 @@ export function useProperties(filters?: PropertiesFilters) {
             })
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 
 export function useProperty(id: string) {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["properties", id],
+        queryKey: ["properties", user?.tenantId, id],
         queryFn: async () => {
             const { data } = await api.get<Property>(`/properties/${id}`)
             return data
         },
-        enabled: !!id,
+        enabled: !!id && !!user?.tenantId,
     })
 }
 
 export function useRelatedProperties(id: string) {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["properties", id, "related"],
+        queryKey: ["properties", user?.tenantId, id, "related"],
         queryFn: async () => {
             const { data } = await api.get<Property[]>(`/properties/${id}/related`)
             return data
         },
-        enabled: !!id,
+        enabled: !!id && !!user?.tenantId,
     })
 }
 

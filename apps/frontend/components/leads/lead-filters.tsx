@@ -44,7 +44,7 @@ const statusOptions: LeadStatus[] = [
 const sourceOptions: LeadSource[] = [
     "website", "referral", "social", "cold_call", "event",
     "99acres", "magicbricks", "housing.com", "google_ads",
-    "facebook", "channel_partner"
+    "facebook", "instagram", "walk_in", "channel_partner"
 ]
 
 const propertyTypeOptions: PropertyType[] = [

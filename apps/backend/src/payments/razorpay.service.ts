@@ -31,7 +31,6 @@ export interface CreateSubscriptionOptions {
   customerId?: string;
   totalCount: number;
   quantity?: number;
-  trialDays?: number;
   expireBy?: number;
   notes?: Record<string, string>;
   idempotencyKey?: string;
@@ -99,10 +98,6 @@ export class RazorpayService {
 
     if (options.customerId) {
       createData.customer_id = options.customerId;
-    }
-
-    if (options.trialDays !== undefined && options.trialDays > 0) {
-      createData.trial_days = options.trialDays;
     }
 
     const subscription: any = await this.razorpay.subscriptions.create(createData);

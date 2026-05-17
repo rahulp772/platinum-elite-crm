@@ -17,6 +17,7 @@ const DEFAULT_PLANS = [
     userLimit: 3,
     leadLimit: 5000,
     razorpayPlanId: 'plan_So9UqEpVNZpvAp',
+    razorpayYearlyPlanId: 'plan_SqP9W3mMkKt0ul',
     features: [
       'leads_management',
       'properties_management',
@@ -42,6 +43,7 @@ const DEFAULT_PLANS = [
     userLimit: 10,
     leadLimit: 50000,
     razorpayPlanId: 'plan_So9VE2VHvGtq7C',
+    razorpayYearlyPlanId: 'plan_SqP7UblxzUdrV9',
     features: [
       'leads_management',
       'properties_management',
@@ -76,6 +78,7 @@ const DEFAULT_PLANS = [
     userLimit: -1,
     leadLimit: -1,
     razorpayPlanId: 'plan_So9VcddhA78gQk',
+    razorpayYearlyPlanId: 'plan_SqP8UhHDt3ge8R',
     features: [
       'leads_management',
       'properties_management',
@@ -128,10 +131,20 @@ export class PlansService {
         const plan = this.planRepository.create(planData);
         await this.planRepository.save(plan);
         console.log(`[Plans] Seeded plan: ${planData.displayName}`);
-      } else if (!existing.razorpayPlanId && (planData as any).razorpayPlanId) {
-        existing.razorpayPlanId = (planData as any).razorpayPlanId;
-        await this.planRepository.save(existing);
-        console.log(`[Plans] Updated razorpayPlanId for: ${planData.displayName}`);
+      } else {
+        let updated = false;
+        if (!existing.razorpayPlanId && (planData as any).razorpayPlanId) {
+          existing.razorpayPlanId = (planData as any).razorpayPlanId;
+          updated = true;
+        }
+        if (!existing.razorpayYearlyPlanId && (planData as any).razorpayYearlyPlanId) {
+          existing.razorpayYearlyPlanId = (planData as any).razorpayYearlyPlanId;
+          updated = true;
+        }
+        if (updated) {
+          await this.planRepository.save(existing);
+          console.log(`[Plans] Updated Razorpay plan IDs for: ${planData.displayName}`);
+        }
       }
     }
   }

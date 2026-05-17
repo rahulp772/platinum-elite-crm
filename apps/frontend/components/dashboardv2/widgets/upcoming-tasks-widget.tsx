@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Clock, Loader2, Calendar } from "lucide-react"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface UpcomingTasksWidgetProps {
   period: PeriodType
@@ -27,12 +28,14 @@ const PRIORITY_COLORS = {
 }
 
 export function UpcomingTasksWidget({ period }: UpcomingTasksWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Task[]>({
-    queryKey: ['tasks-upcoming', period],
+    queryKey: ['tasks-upcoming', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/tasks?filter=upcoming&limit=5`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const formatDate = (dateStr: string) => {

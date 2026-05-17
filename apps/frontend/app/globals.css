@@ -310,12 +310,6 @@
   }
 }
 
-/* content-visibility: auto skips off-screen rendering for long lists */
-.cv-auto {
-  content-visibility: auto;
-  contain-intrinsic-size: 0 280px; /* Estimated card height */
-}
-
 /* iOS momentum scrolling on overflow containers */
 .scroll-smooth-ios {
   -webkit-overflow-scrolling: touch;

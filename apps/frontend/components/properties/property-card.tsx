@@ -82,13 +82,14 @@ type PropertyCardVariant = "grid" | "compact" | "list"
 interface PropertyCardProps {
     property: Property
     onFavoriteToggle?: (id: string) => void
+    onToggleFavorite?: (id: string) => void
     onClick?: (property: Property) => void
     variant?: PropertyCardVariant
 }
 
-function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "grid" }: PropertyCardProps) {
+function PropertyCardInner({ property, onFavoriteToggle, onToggleFavorite, onClick, variant = "grid" }: PropertyCardProps) {
     const router = useRouter()
-    const toggleFavorite = useToggleFavorite()
+    const toggleFavorite = onToggleFavorite
 
     const handleClick = () => {
         if (onClick) {
@@ -127,6 +128,7 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                                         fill
                                         sizes="128px"
                                         className="object-cover desktop-hover-scale"
+                                        loading="lazy"
                                     />
                                 ) : (
                                     <div className="absolute inset-0 flex items-center justify-center bg-muted">
@@ -227,7 +229,7 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                             )}
                             onClick={(e) => {
                                 e.stopPropagation()
-                                toggleFavorite.mutate(property.id)
+                                toggleFavorite?.(property.id)
                             }}
                         >
                             <Heart className={cn("h-4 w-4", property.favorited && "fill-current")} />
@@ -256,7 +258,6 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                             className="object-cover desktop-hover-scale"
-                            loading="lazy"
                         />
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-muted">
@@ -326,7 +327,7 @@ function PropertyCardInner({ property, onFavoriteToggle, onClick, variant = "gri
                             )}
                             onClick={(e) => {
                                 e.stopPropagation()
-                                toggleFavorite.mutate(property.id)
+                                toggleFavorite?.(property.id)
                             }}
                         >
                             <Heart className={cn("h-3.5 w-3.5 sm:h-4 sm:w-4", property.favorited && "fill-current")} />
@@ -382,5 +383,17 @@ export const PropertyCard = React.memo(PropertyCardInner, (prevProps, nextProps)
         prevProps.property.price === nextProps.property.price &&
         prevProps.property.status === nextProps.property.status &&
         prevProps.property.favorited === nextProps.property.favorited &&
-        prevProps.variant === nextProps.variant
+        prevProps.property.images === nextProps.property.images &&
+        prevProps.property.title === nextProps.property.title &&
+        prevProps.property.address === nextProps.property.address &&
+        prevProps.property.city === nextProps.property.city &&
+        prevProps.property.sqft === nextProps.property.sqft &&
+        prevProps.property.bedrooms === nextProps.property.bedrooms &&
+        prevProps.property.bathrooms === nextProps.property.bathrooms &&
+        prevProps.property.type === nextProps.property.type &&
+        prevProps.property.builder === nextProps.property.builder &&
+        prevProps.property.reraNumber === nextProps.property.reraNumber &&
+        prevProps.property.ratePerSqft === nextProps.property.ratePerSqft &&
+        prevProps.variant === nextProps.variant &&
+        prevProps.onToggleFavorite === nextProps.onToggleFavorite
 })

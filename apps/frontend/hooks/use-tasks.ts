@@ -1,6 +1,7 @@
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Task } from "@/types/task"
+import { useAuth } from "@/lib/auth-context"
 
 export interface PaginatedTasks {
     data: Task[]
@@ -12,8 +13,9 @@ export interface PaginatedTasks {
 }
 
 export function useTasksInfinite() {
+    const { user } = useAuth()
     return useInfiniteQuery({
-        queryKey: ["tasks"],
+        queryKey: ["tasks", user?.tenantId],
         initialPageParam: 1,
         queryFn: async ({ pageParam }) => {
             const { data } = await api.get<PaginatedTasks>("/tasks", {
@@ -22,27 +24,32 @@ export function useTasksInfinite() {
             return data
         },
         getNextPageParam: (lastPage) => lastPage.hasMore ? lastPage.page + 1 : undefined,
+        enabled: !!user?.tenantId,
     })
 }
 
 export function useTaskCounts() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["tasks", "counts"],
+        queryKey: ["tasks", user?.tenantId, "counts"],
         queryFn: async () => {
             const { data } = await api.get<{ total: number; overdue: number; today: number; tomorrow: number }>("/tasks/count")
             return data
         },
         staleTime: 30 * 1000,
+        enabled: !!user?.tenantId,
     })
 }
 
 export function useTasks() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["tasks"],
+        queryKey: ["tasks", user?.tenantId],
         queryFn: async () => {
             const { data } = await api.get<Task[]>("/tasks")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 

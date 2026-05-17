@@ -4,11 +4,10 @@ import * as React from "react"
 import { PropertyCard } from "@/components/properties/property-card"
 import { PropertyFilters } from "@/components/properties/property-filters"
 import { AddPropertyDialog } from "@/components/properties/add-property-dialog"
-import { useProperties, PropertiesFilters } from "@/hooks/use-properties"
+import { useProperties, useToggleFavorite, PropertiesFilters } from "@/hooks/use-properties"
 import { Button } from "@/components/ui/button"
 import { LayoutGrid, List, LoaderCircle, Plus, Filter } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useVirtualizer } from "@tanstack/react-virtual"
 import { useIsMobile } from "@/lib/hooks/use-media-query"
 import {
     Select,
@@ -27,11 +26,11 @@ export default function PropertiesPage() {
     const [typeFilter, setTypeFilter] = React.useState("all")
     const [sortBy, setSortBy] = React.useState("newest")
     const [showFavorited, setShowFavorited] = React.useState(false)
-    // Default to list view on mobile: 2-col grid forces two images side-by-side
-    // with hover-transform compositing layers per card — list is ~60% faster to render.
     const [view, setView] = React.useState<"grid" | "list">(isMobile ? "list" : "grid")
     const [isAddOpen, setIsAddOpen] = React.useState(false)
     const [filtersOpen, setFiltersOpen] = React.useState(false)
+
+    const toggleFavorite = useToggleFavorite()
 
     const filters = React.useMemo<PropertiesFilters>(() => ({
         page,
@@ -43,7 +42,7 @@ export default function PropertiesPage() {
         favorited: showFavorited ? true : undefined,
     }), [page, limit, searchQuery, statusFilter, typeFilter, sortBy, showFavorited])
 
-const { data: propertiesData, isLoading, isError } = useProperties(filters)
+    const { data: propertiesData, isLoading, isError } = useProperties(filters)
     const properties = propertiesData?.data || []
     const metadata = propertiesData?.metadata
 
@@ -155,14 +154,12 @@ const { data: propertiesData, isLoading, isError } = useProperties(filters)
                         : "flex flex-col gap-4"
                 }>
                     {properties.map((property) => (
-                        // cv-auto: content-visibility:auto skips off-screen card rendering.
-                        // The browser skips layout+paint for cards outside the viewport.
-                        <div key={property.id} className="cv-auto">
-                            <PropertyCard
-                                property={property}
-                                variant={view === "list" ? "list" : "grid"}
-                            />
-                        </div>
+                        <PropertyCard
+                            key={property.id}
+                            property={property}
+                            variant={view === "list" ? "list" : "grid"}
+                            onToggleFavorite={toggleFavorite.mutate}
+                        />
                     ))}
                 </div>
             ) : (

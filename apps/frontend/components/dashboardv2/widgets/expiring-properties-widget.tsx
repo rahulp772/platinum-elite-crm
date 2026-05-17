@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertCircle, Loader2, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface ExpiringPropertiesWidgetProps {
   period: PeriodType
@@ -20,12 +21,14 @@ interface Property {
 }
 
 export function ExpiringPropertiesWidget({ period }: ExpiringPropertiesWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Property[]>({
-    queryKey: ['properties-expiring', period],
+    queryKey: ['properties-expiring', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/properties?filter=expiring&days=30&limit=4`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const getDaysUntil = (dateStr: string) => {

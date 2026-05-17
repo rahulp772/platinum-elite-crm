@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/api"
 import { Deal, DealStage } from "@/types/deal"
+import { useAuth } from "@/lib/auth-context"
 
 interface PaginatedResponse<T> {
     data: T[]
@@ -13,12 +14,14 @@ interface PaginatedResponse<T> {
 }
 
 export function useDeals() {
+    const { user } = useAuth()
     return useQuery({
-        queryKey: ["deals"],
+        queryKey: ["deals", user?.tenantId],
         queryFn: async () => {
             const { data } = await api.get<PaginatedResponse<Deal>>("/deals")
             return data
         },
+        enabled: !!user?.tenantId,
     })
 }
 

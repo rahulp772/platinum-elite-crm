@@ -124,11 +124,12 @@ export default function SettingsPage() {
   const [createRoleError, setCreateRoleError] = React.useState<string | null>(null)
 
   const { data: usersData, isLoading: usersLoading, refetch: refetchUsers } = useQuery({
-    queryKey: ["users", teamPage],
+    queryKey: ["users", currentUser?.tenantId, teamPage],
     queryFn: async () => {
       const res = await api.get("/users")
       return res.data as User[]
     },
+    enabled: !!currentUser?.tenantId,
   })
 
   const { data: roles, isLoading: rolesLoading } = useQuery({
@@ -172,7 +173,7 @@ export default function SettingsPage() {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] })
+      queryClient.invalidateQueries({ queryKey: ["roles", currentUser?.tenantId] })
       setAddRoleOpen(false)
       setRoleName("")
       setRoleDescription("")
@@ -190,7 +191,7 @@ export default function SettingsPage() {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] })
+      queryClient.invalidateQueries({ queryKey: ["roles", currentUser?.tenantId] })
       setAddRoleOpen(false)
       setEditingRole(null)
       resetRoleForm()
@@ -205,7 +206,7 @@ export default function SettingsPage() {
       await api.delete(`/roles/${id}`)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["roles"] })
+      queryClient.invalidateQueries({ queryKey: ["roles", currentUser?.tenantId] })
       setDeleteRole(null)
     },
   })
@@ -216,7 +217,7 @@ export default function SettingsPage() {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] })
+      queryClient.invalidateQueries({ queryKey: ["users", currentUser?.tenantId] })
       setEditUser(null)
     },
   })
@@ -226,7 +227,7 @@ export default function SettingsPage() {
       await api.delete(`/users/${id}`)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] })
+      queryClient.invalidateQueries({ queryKey: ["users", currentUser?.tenantId] })
       setDeleteUser(null)
     },
   })

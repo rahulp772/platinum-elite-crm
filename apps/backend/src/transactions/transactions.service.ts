@@ -66,4 +66,15 @@ export class TransactionsService {
       where: { id, tenantId },
     });
   }
+
+  async findPendingByTenant(tenantId: string): Promise<Transaction | null> {
+    return this.transactionRepository.findOne({
+      where: { tenantId, status: TransactionStatus.PENDING },
+      order: { createdAt: 'DESC' },
+    });
+  }
+
+  async updateTransaction(transaction: Transaction): Promise<Transaction> {
+    return this.transactionRepository.save(transaction);
+  }
 }

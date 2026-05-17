@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Loader2, Trophy, TrendingUp, DollarSign, Target } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface TeamPerformanceWidgetProps {
   period: PeriodType
@@ -25,12 +26,14 @@ interface Agent {
 }
 
 export function TeamPerformanceWidget({ period }: TeamPerformanceWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Agent[]>({
-    queryKey: ['analytics-team-performance', period],
+    queryKey: ['analytics-team-performance', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/analytics/team/performance?period=${period}`)
       return res.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const formatCurrency = (value: number) => {

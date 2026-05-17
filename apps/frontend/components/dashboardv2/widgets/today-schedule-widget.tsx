@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { Clock, MapPin, Loader2, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface TodayScheduleWidgetProps {
   period: PeriodType
@@ -33,12 +34,14 @@ const TYPE_COLORS = {
 }
 
 export function TodayScheduleWidget({ period }: TodayScheduleWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Appointment[]>({
-    queryKey: ['schedule-today', period],
+    queryKey: ['schedule-today', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/tasks?filter=schedule-today&limit=5`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   if (isLoading) {

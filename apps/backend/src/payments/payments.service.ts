@@ -81,10 +81,12 @@ export class PaymentsService {
       );
     }
 
-    const razorpayPlanId = plan.razorpayPlanId;
+    const razorpayPlanId = billingCycle === BillingCycle.YEARLY
+      ? plan.razorpayYearlyPlanId
+      : plan.razorpayPlanId;
     if (!razorpayPlanId) {
       throw new BadRequestException(
-        'Plan not configured for payment. Please contact support.',
+        `Plan not configured for payment (${billingCycle}). Please contact support.`,
       );
     }
 
@@ -102,7 +104,7 @@ export class PaymentsService {
       );
     }
 
-    const totalCount = 1;
+    const totalCount = billingCycle === BillingCycle.YEARLY ? 10 : 120;
 
     const customerEmail = user?.email || `${tenant.name.toLowerCase().replace(/\s+/g, '.')}@makeitcrm.com`;
 
@@ -139,7 +141,6 @@ export class PaymentsService {
         planId: razorpayPlanId,
         customerId,
         totalCount,
-        trialDays: planTrialDays,
         idempotencyKey,
         notes: {
           tenantId,
@@ -190,7 +191,7 @@ export class PaymentsService {
             ? plan.yearlyPrice
             : plan.monthlyPrice,
         planName: plan.displayName,
-        description: `Subscription initiated (Trial until ${trialEnd.toDateString()})`,
+        description: `${plan.displayName} - Subscription initiated`,
         status: TransactionStatus.PENDING,
         paymentMethod: 'razorpay',
         transactionId: subscription.id,
@@ -217,8 +218,8 @@ export class PaymentsService {
       const payment = await this.razorpayService.getPayment(paymentId);
       console.log({ payment })
 
-      if (payment.status !== 'captured') {
-        throw new BadRequestException('Payment not captured');
+      if (payment.status !== 'captured' && payment.status !== 'authorized') {
+        throw new BadRequestException('Payment not captured or authorized');
       }
 
       if (payment.subscriptionId && payment.subscriptionId !== subscriptionId) {
@@ -266,22 +267,32 @@ export class PaymentsService {
 
       if (user) {
         const plan = subscription.plan;
-        await this.transactionsService.createTransaction({
-          tenantId,
-          userId: user.id,
-          type: TransactionType.SUBSCRIPTION,
-          amount:
-            subscription.billingCycle === BillingCycle.YEARLY
-              ? plan?.yearlyPrice || 0
-              : plan?.monthlyPrice || 0,
-          planName: plan?.displayName,
-          description: 'Payment received - Subscription activated',
-          status: TransactionStatus.COMPLETED,
-          paymentMethod: 'razorpay',
-          transactionId: paymentId,
-          billingDate: now,
-          nextBillingDate: periodEnd,
-        });
+        const pendingTx = await this.transactionsService.findPendingByTenant(tenantId);
+        if (pendingTx) {
+          pendingTx.status = TransactionStatus.COMPLETED;
+          pendingTx.description = `${plan?.displayName} - Subscription activated`;
+          pendingTx.transactionId = paymentId;
+          pendingTx.billingDate = now;
+          pendingTx.nextBillingDate = periodEnd;
+          await this.transactionsService.updateTransaction(pendingTx);
+        } else {
+          await this.transactionsService.createTransaction({
+            tenantId,
+            userId: user.id,
+            type: TransactionType.SUBSCRIPTION,
+            amount:
+              subscription.billingCycle === BillingCycle.YEARLY
+                ? plan?.yearlyPrice || 0
+                : plan?.monthlyPrice || 0,
+            planName: plan?.displayName,
+            description: `${plan?.displayName} - Subscription activated`,
+            status: TransactionStatus.COMPLETED,
+            paymentMethod: 'razorpay',
+            transactionId: paymentId,
+            billingDate: now,
+            nextBillingDate: periodEnd,
+          });
+        }
       }
 
       return { success: true, subscription: updated };
@@ -493,7 +504,10 @@ export class PaymentsService {
         const notes = subscription.notes || {};
 
         const newPlan = await this.planRepository.findOne({
-          where: { razorpayPlanId: rzpPlanId },
+          where: [
+            { razorpayPlanId: rzpPlanId },
+            { razorpayYearlyPlanId: rzpPlanId },
+          ],
         });
 
         if (newPlan && existingSub.planId !== newPlan.id) {
@@ -607,7 +621,9 @@ export class PaymentsService {
     }
 
     const oldPlan = subscription.plan;
-    if (oldPlan && newPlan.id === oldPlan.id) {
+    const isSamePlan = oldPlan && newPlan.id === oldPlan.id;
+    const isSameBillingCycle = subscription.billingCycle === billingCycle;
+    if (isSamePlan && isSameBillingCycle) {
       throw new BadRequestException('You are already on this plan.');
     }
 
@@ -617,10 +633,12 @@ export class PaymentsService {
       );
     }
 
-    const razorpayPlanId = newPlan.razorpayPlanId;
+    const razorpayPlanId = billingCycle === BillingCycle.YEARLY
+      ? newPlan.razorpayYearlyPlanId
+      : newPlan.razorpayPlanId;
     if (!razorpayPlanId) {
       throw new BadRequestException(
-        'New plan not configured for payment. Please contact support.',
+        `New plan not configured for payment (${billingCycle}). Please contact support.`,
       );
     }
 
@@ -633,7 +651,7 @@ export class PaymentsService {
     }
 
     const oldPlanName = oldPlan?.displayName || 'Previous';
-    const totalCount = 1;
+    const totalCount = billingCycle === BillingCycle.YEARLY ? 10 : 120;
     const customerId = tenant.razorpayCustomerId;
 
     if (!customerId) {
@@ -650,7 +668,6 @@ export class PaymentsService {
         planId: razorpayPlanId,
         customerId,
         totalCount,
-        trialDays: 0,
         idempotencyKey,
         notes: {
           tenantId,
@@ -674,8 +691,13 @@ export class PaymentsService {
           true,
         );
         this.logger.log(`Cancelled old subscription ${subscription.externalSubscriptionId} at cycle end`);
-      } catch (error) {
-        this.logger.warn('Failed to cancel old subscription', error);
+      } catch (error: any) {
+        if (error.error?.code === 'BAD_REQUEST_ERROR' &&
+            error.error?.description?.includes('not cancellable')) {
+          this.logger.log(`Old subscription ${subscription.externalSubscriptionId} already in terminal state, skipping cancel`);
+        } else {
+          this.logger.warn('Failed to cancel old subscription', error);
+        }
       }
     }
 

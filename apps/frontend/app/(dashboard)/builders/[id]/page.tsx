@@ -87,7 +87,7 @@ export default function BuilderDetailsPage() {
                 <div className="px-8 pb-8 -mt-12 flex flex-col md:flex-row gap-8 items-end">
                     <div className="relative h-32 w-32 rounded-3xl overflow-hidden bg-card border-4 border-background shadow-xl flex items-center justify-center shrink-0">
                         {builder.logo ? (
-                            <Image src={builder.logo} alt={builder.name} fill className="object-cover" />
+                            <Image src={builder.logo} alt={builder.name} fill sizes="128px" className="object-cover" />
                         ) : (
                             <Building2 className="h-12 w-12 text-realty-gold" />
                         )}

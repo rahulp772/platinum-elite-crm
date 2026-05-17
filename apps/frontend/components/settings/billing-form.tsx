@@ -104,7 +104,7 @@ export function BillingForm() {
   })
 
   const { data: transactionsData, isLoading: txLoading } = useQuery<Transaction[]>({
-    queryKey: ['transactions'],
+    queryKey: ['transactions', user?.tenantId],
     queryFn: async () => {
       try {
         const res = await api.get('/transactions')
@@ -113,6 +113,7 @@ export function BillingForm() {
         return []
       }
     },
+    enabled: !!user?.tenantId,
   })
 
   const upgradeMutation = useMutation({
@@ -121,8 +122,8 @@ export function BillingForm() {
       return res.data
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['subscription'] })
-      queryClient.invalidateQueries({ queryKey: ['entitlements'] })
+      queryClient.invalidateQueries({ queryKey: ['subscription', user?.tenantId] })
+      queryClient.invalidateQueries({ queryKey: ['entitlements', user?.tenantId] })
     },
   })
 

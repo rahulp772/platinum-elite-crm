@@ -10,6 +10,7 @@ import { MoreHorizontal, TrendingUp, Building2, Loader2, ArrowRight } from "luci
 import Link from "next/link"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface ActiveDealsWidgetProps {
   period: PeriodType
@@ -35,12 +36,14 @@ const STAGE_COLORS: Record<string, string> = {
 }
 
 export function ActiveDealsWidget({ period }: ActiveDealsWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Deal[]>({
-    queryKey: ['deals-active', period],
+    queryKey: ['deals-active', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/deals?status=active&limit=5&period=${period}`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const formatCurrency = (value: number) => {

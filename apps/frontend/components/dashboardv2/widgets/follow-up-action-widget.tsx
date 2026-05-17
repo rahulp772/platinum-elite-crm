@@ -15,27 +15,30 @@ export function FollowUpActionWidget() {
   const { user } = useAuth()
   const timezone = getUserTimezone(user)
   const { data: overdue, isLoading: loadingOverdue } = useQuery({
-    queryKey: ["dashboard", "followups", "overdue"],
+    queryKey: ["dashboard", user?.tenantId, "followups", "overdue"],
     queryFn: async () => {
       const res = await api.get("/leads/followups/overdue")
       return res.data as any[]
     },
+    enabled: !!user?.tenantId,
   })
 
   const { data: today, isLoading: loadingToday } = useQuery({
-    queryKey: ["dashboard", "followups", "today"],
+    queryKey: ["dashboard", user?.tenantId, "followups", "today"],
     queryFn: async () => {
       const res = await api.get("/leads/followups")
       return res.data as any[]
     },
+    enabled: !!user?.tenantId,
   })
 
   const { data: newLeads, isLoading: loadingNew } = useQuery({
-    queryKey: ["dashboard", "leads", "new"],
+    queryKey: ["dashboard", user?.tenantId, "leads", "new"],
     queryFn: async () => {
       const res = await api.get("/leads/new")
       return res.data as any[]
     },
+    enabled: !!user?.tenantId,
   })
 
   const isLoading = loadingOverdue || loadingToday || loadingNew

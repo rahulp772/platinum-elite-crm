@@ -6,6 +6,7 @@ import { api } from "@/lib/api"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Loader2, TrendingUp } from "lucide-react"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface LeadFunnelWidgetProps {
   period: PeriodType
@@ -17,20 +18,22 @@ interface FunnelStage {
 }
 
 const STAGE_COLORS = [
-  '#0A192F', // Discovery - Navy
-  '#1E3A5F', // Engagement
-  '#2D5A87', // Qualification
-  '#4A7DB0', // Negotiation
-  '#D4AF37', // Conversion - Gold
+  '#0A192F',
+  '#1E3A5F',
+  '#2D5A87',
+  '#4A7DB0',
+  '#D4AF37',
 ]
 
 export function LeadFunnelWidget({ period }: LeadFunnelWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<FunnelStage[]>({
-    queryKey: ['analytics-lead-funnel', period],
+    queryKey: ['analytics-lead-funnel', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/analytics/leads/funnel?period=${period}`)
       return res.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   if (isLoading) {

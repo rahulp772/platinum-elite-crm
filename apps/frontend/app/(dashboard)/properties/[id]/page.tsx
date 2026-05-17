@@ -215,8 +215,10 @@ export default function PropertyDetailPage() {
                             src={firstImage}
                             alt={property.title}
                             fill
+                            sizes="(max-width: 768px) 100vw, 66vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                             priority
+                            loading="eager"
                         />
                     ) : (
                         <div className="absolute inset-0 flex items-center justify-center bg-muted">
@@ -233,6 +235,7 @@ export default function PropertyDetailPage() {
                             src={parsedImages[1]}
                             alt={property.title}
                             fill
+                            sizes="33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : firstImage ? (
@@ -240,6 +243,7 @@ export default function PropertyDetailPage() {
                             src={firstImage}
                             alt={property.title}
                             fill
+                            sizes="33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
@@ -257,6 +261,7 @@ export default function PropertyDetailPage() {
                             src={parsedImages[2]}
                             alt={property.title}
                             fill
+                            sizes="33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : firstImage ? (
@@ -264,6 +269,7 @@ export default function PropertyDetailPage() {
                             src={firstImage}
                             alt={property.title}
                             fill
+                            sizes="33vw"
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                         />
                     ) : (
@@ -324,6 +330,7 @@ export default function PropertyDetailPage() {
                                         src={parsedImages[currentImageIndex]}
                                         alt={`${property.title} - Image ${currentImageIndex + 1}`}
                                         fill
+                                        sizes="100vw"
                                         className="object-contain"
                                         priority
                                     />
@@ -360,6 +367,7 @@ export default function PropertyDetailPage() {
                                             src={img}
                                             alt={`Thumbnail ${idx + 1}`}
                                             fill
+                                            sizes="96px"
                                             className="object-cover"
                                         />
                                     </button>

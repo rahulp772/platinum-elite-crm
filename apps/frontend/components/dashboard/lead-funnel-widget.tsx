@@ -5,14 +5,17 @@ import { useQuery } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { FunnelSVG } from "./funnel-svg"
 import { Loader2 } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
 
 export function LeadFunnelWidget() {
+    const { user } = useAuth()
     const { data: funnelData, isLoading } = useQuery({
-        queryKey: ["lead-funnel"],
+        queryKey: ["lead-funnel", user?.tenantId],
         queryFn: async () => {
             const res = await api.get("/analytics/leads/funnel")
             return res.data
-        }
+        },
+        enabled: !!user?.tenantId,
     })
 
     return (

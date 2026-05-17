@@ -68,9 +68,16 @@ export class PropertiesService {
     const query = this.propertyRepository
       .createQueryBuilder('property')
       .leftJoin('property.agent', 'agent')
-      .leftJoinAndSelect('property.builder', 'builder')
-      .leftJoinAndSelect('property.favoritedBy', 'favoritedBy')
-      .select(['property', 'agent.id', 'agent.name', 'agent.email', 'builder']);
+      .leftJoin('property.builder', 'builder')
+      .leftJoin('property.favoritedBy', 'favoritedBy')
+      .select([
+        'property',
+        'agent.id',
+        'agent.name',
+        'agent.email',
+        'builder.id',
+        'builder.name',
+      ]);
 
     if (!isGlobalAdmin) {
       query.where('property.tenantId = :tenantId', { tenantId: user.tenantId });

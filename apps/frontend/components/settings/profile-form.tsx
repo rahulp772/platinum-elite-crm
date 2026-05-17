@@ -93,10 +93,7 @@ export function ProfileForm() {
             const updatedUser = response.data
 
             if (setUser && updatedUser) {
-                const currentUser = JSON.parse(localStorage.getItem("user") || "{}")
-                const newUser = { ...currentUser, ...updatedUser }
-                localStorage.setItem("user", JSON.stringify(newUser))
-                setUser(newUser)
+                setUser(updatedUser)
             }
 
             toast.success("Profile updated successfully")

@@ -54,7 +54,7 @@ export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
   const [error, setError] = React.useState<string | null>(null)
 
   const { data: teamMembers = [] } = useQuery({
-    queryKey: ["teamMembers", open],
+    queryKey: ["teamMembers", currentUser?.tenantId, open],
     queryFn: async () => {
       try {
         const res = await api.get("/users")
@@ -64,7 +64,7 @@ export function AddTaskDialog({ open, onOpenChange }: AddTaskDialogProps) {
         return []
       }
     },
-    enabled: open,
+    enabled: open && !!currentUser?.tenantId,
   })
 
   React.useEffect(() => {

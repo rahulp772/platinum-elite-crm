@@ -29,6 +29,8 @@ export enum LeadSource {
   HOUSING = 'housing.com',
   GOOGLE_ADS = 'google_ads',
   FACEBOOK = 'facebook',
+  INSTAGRAM = 'instagram',
+  WALK_IN = 'walk_in',
   CHANNEL_PARTNER = 'channel_partner',
 }
 

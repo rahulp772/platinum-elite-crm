@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Building2, Loader2, ArrowRight } from "lucide-react"
 import Link from "next/link"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface ActiveListingsWidgetProps {
   period: PeriodType
@@ -24,12 +25,14 @@ interface Property {
 }
 
 export function ActiveListingsWidget({ period }: ActiveListingsWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<Property[]>({
-    queryKey: ['properties-active', period],
+    queryKey: ['properties-active', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/properties?status=available&limit=4`)
       return res.data.data || []
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   const formatCurrency = (value: number) => {

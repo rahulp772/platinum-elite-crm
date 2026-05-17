@@ -114,7 +114,6 @@ export class AnalyticsService {
       roleLevel,
       'assignedToId',
     );
-    // Unassigned only makes sense for Admins/Managers to see
     const unassignedLeads = await unassignedLeadsQuery
       .andWhere('lead.assignedToId IS NULL')
       .getCount();
@@ -168,6 +167,17 @@ export class AnalyticsService {
 
     await this.cacheManager.set(cacheKey, result, this.CACHE_TTL);
     return result;
+  }
+
+  async clearUserCache(user: User) {
+    const keysToClear = [
+      `dashboard:${user.id}:${user.tenantId}:${user.isSuperAdmin}`,
+      `team-performance:${user.id}:${user.tenantId}`,
+    ];
+    for (const key of keysToClear) {
+      await this.cacheManager.del(key);
+    }
+    this.logger.log(`Cleared ${keysToClear.length} cache entries for user ${user.id}`);
   }
 
   async getLeadStats(user: User) {

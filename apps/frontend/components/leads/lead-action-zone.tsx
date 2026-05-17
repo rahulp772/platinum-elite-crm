@@ -7,6 +7,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Loader2, AlertTriangle, Calendar, UserPlus } from "lucide-react"
 import { LeadStatus } from "@/types/lead"
+import { useAuth } from "@/lib/auth-context"
 
 interface ActionZoneProps {
   onFilterChange: (filter: "overdue" | "today" | "new" | "all") => void
@@ -14,28 +15,32 @@ interface ActionZoneProps {
 }
 
 export function LeadActionZone({ onFilterChange, activeFilter }: ActionZoneProps) {
+  const { user } = useAuth()
   const { data: overdueData, isLoading: loadingOverdue } = useQuery({
-    queryKey: ["leads", "action-zone", "overdue"],
+    queryKey: ["leads", user?.tenantId, "action-zone", "overdue"],
     queryFn: async () => {
       const res = await api.get("/leads/followups/overdue")
       return res.data
     },
+    enabled: !!user?.tenantId,
   })
 
   const { data: todayData, isLoading: loadingToday } = useQuery({
-    queryKey: ["leads", "action-zone", "today"],
+    queryKey: ["leads", user?.tenantId, "action-zone", "today"],
     queryFn: async () => {
       const res = await api.get("/leads/followups")
       return res.data
     },
+    enabled: !!user?.tenantId,
   })
 
   const { data: newData, isLoading: loadingNew } = useQuery({
-    queryKey: ["leads", "action-zone", "new"],
+    queryKey: ["leads", user?.tenantId, "action-zone", "new"],
     queryFn: async () => {
       const res = await api.get("/leads/new")
       return res.data
     },
+    enabled: !!user?.tenantId,
   })
 
   const overdue = overdueData?.length || 0

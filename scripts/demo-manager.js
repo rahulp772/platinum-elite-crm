@@ -24,6 +24,118 @@ const BASE_PERMISSIONS = [
   'builders:read', 'builders:write',
 ];
 
+const RAZORPAY_PLANS = [
+  {
+    name: 'lite',
+    displayName: 'Lite',
+    slug: 'lite',
+    monthlyPrice: 1299,
+    yearlyPrice: 12990,
+    userLimit: 3,
+    leadLimit: 5000,
+    razorpayPlanId: 'plan_So9UqEpVNZpvAp',
+    razorpayYearlyPlanId: 'plan_SqP9W3mMkKt0ul',
+    features: JSON.stringify([
+      'leads_management',
+      'properties_management',
+      'tasks_management',
+      'basic_reminders',
+      'mobile_responsive',
+      'basic_reports',
+      'whatsapp_click_to_chat',
+    ]),
+    addOns: JSON.stringify(['whatsapp_automation', 'ai_calling']),
+    sortOrder: 0,
+    recommended: false,
+    tagline: 'Perfect for solo brokers',
+    description: 'Everything you need to manage your deals efficiently',
+    ctaText: 'Start Free Trial',
+    trialDays: 14,
+    currency: 'INR',
+    isActive: true,
+  },
+  {
+    name: 'team',
+    displayName: 'Team',
+    slug: 'team',
+    monthlyPrice: 2999,
+    yearlyPrice: 29990,
+    userLimit: 10,
+    leadLimit: 50000,
+    razorpayPlanId: 'plan_So9VE2VHvGtq7C',
+    razorpayYearlyPlanId: 'plan_SqP7UblxzUdrV9',
+    features: JSON.stringify([
+      'leads_management',
+      'properties_management',
+      'tasks_management',
+      'basic_reminders',
+      'mobile_responsive',
+      'basic_reports',
+      'whatsapp_click_to_chat',
+      'team_dashboard',
+      'auto_lead_assignment',
+      'role_permissions',
+      'facebook_integration',
+      '99acres_sync',
+      'magicbricks_sync',
+      'whatsapp_automation',
+      'ai_calling',
+      'ai_lead_scoring',
+    ]),
+    addOns: JSON.stringify([]),
+    sortOrder: 1,
+    recommended: true,
+    tagline: 'Most popular for growing agencies',
+    description: 'Scale your team with advanced automation and integrations',
+    ctaText: 'Start Free Trial',
+    trialDays: 14,
+    currency: 'INR',
+    isActive: true,
+  },
+  {
+    name: 'scale',
+    displayName: 'Scale',
+    slug: 'scale',
+    monthlyPrice: 9999,
+    yearlyPrice: 99990,
+    userLimit: -1,
+    leadLimit: -1,
+    razorpayPlanId: 'plan_So9VcddhA78gQk',
+    razorpayYearlyPlanId: 'plan_SqP8UhHDt3ge8R',
+    features: JSON.stringify([
+      'leads_management',
+      'properties_management',
+      'tasks_management',
+      'basic_reminders',
+      'mobile_responsive',
+      'basic_reports',
+      'whatsapp_click_to_chat',
+      'team_dashboard',
+      'auto_lead_assignment',
+      'role_permissions',
+      'facebook_integration',
+      '99acres_sync',
+      'magicbricks_sync',
+      'whatsapp_automation',
+      'ai_calling',
+      'ai_lead_scoring',
+      'multi_branch',
+      'custom_branding',
+    ]),
+    addOns: JSON.stringify([]),
+    sortOrder: 2,
+    recommended: false,
+    tagline: 'For large brokerages',
+    description: 'Unlimited power with multi-branch support and custom branding',
+    ctaText: 'Contact Sales',
+    ctaLink: '/contact',
+    minPrice: 9999,
+    trialDays: 14,
+    currency: 'INR',
+    isActive: true,
+  },
+];
+
 
 async function main() {
   const args = process.argv.slice(2);
@@ -79,6 +191,12 @@ async function main() {
         await showStatus(db);
         break;
 
+      case 'seed-plans':
+        console.log('║  Seeding Razorpay plans...                                   ║');
+        console.log('╚═══════════════════════════════════════════════════════════════╝');
+        await seedPlans(db);
+        break;
+
       case 'help':
         console.log('║  Available Commands                                          ║');
         console.log('╚═══════════════════════════════════════════════════════════════╝');
@@ -88,13 +206,15 @@ async function main() {
         console.log('     refresh      Refresh all demo tenant data');
         console.log('     delete       Delete all demo tenants');
         console.log('     status       Show current demo tenant status');
+        console.log('     seed-plans   Seed Razorpay subscription plans');
         console.log('     help         Show this help message');
         console.log('\n   Examples:');
         console.log('     node scripts/demo-manager.js create      # Create 1 tenant');
         console.log('     node scripts/demo-manager.js create 3    # Create 3 tenants');
         console.log('     node scripts/demo-manager.js refresh     # Refresh demo data');
         console.log('     node scripts/demo-manager.js delete      # Delete all demo tenants');
-        console.log('     node scripts/demo-manager.js status      # View status\n');
+        console.log('     node scripts/demo-manager.js status      # View status');
+        console.log('     node scripts/demo-manager.js seed-plans  # Seed Razorpay plans\n');
         break;
 
       default:
@@ -104,7 +224,8 @@ async function main() {
         console.log('   2. Refresh Demo Data (Reset all demo data to defaults)');
         console.log('   3. Delete Demo Tenants (Clean up all demo data)');
         console.log('   4. View Current Demo Status');
-        console.log('   5. Exit');
+        console.log('   5. Seed Razorpay Plans');
+        console.log('   6. Exit');
         console.log('\n   Run with arguments: node scripts/demo-manager.js <command>');
         console.log('   For help: node scripts/demo-manager.js help\n');
     }
@@ -118,6 +239,8 @@ async function main() {
 }
 
 async function createDemoTenants(db, count) {
+  await seedPlans(db);
+
   const hashedPassword = await bcrypt.hash(DEMO_PASSWORD, 10);
 
   for (let i = 1; i <= count; i++) {
@@ -192,6 +315,69 @@ async function createDemoTenants(db, count) {
   console.log(`   Login credentials: admin@demo1.com / ${DEMO_PASSWORD}`);
   console.log(`                      manager@demo1.com / ${DEMO_PASSWORD}`);
   console.log(`                      agent1@demo1.com / ${DEMO_PASSWORD}`);
+}
+
+async function seedPlans(db) {
+  console.log('   📋 Checking Razorpay subscription plans...');
+
+  const existingPlans = await db.query('SELECT id, name, slug FROM plans');
+  const existingSlugs = new Set(existingPlans.rows.map(r => r.slug));
+
+  let seededCount = 0;
+  let updatedCount = 0;
+
+  for (const plan of RAZORPAY_PLANS) {
+    if (existingSlugs.has(plan.slug)) {
+      await db.query(
+        `UPDATE plans SET 
+          "displayName" = $1, "monthlyPrice" = $2, "yearlyPrice" = $3,
+          "userLimit" = $4, "leadLimit" = $5, "razorpayPlanId" = $6,
+          "razorpayYearlyPlanId" = $7,
+          features = $8, "addOns" = $9, "sortOrder" = $10,
+          recommended = $11, tagline = $12, description = $13,
+          "ctaText" = $14, "ctaLink" = $15, "minPrice" = $16,
+          "trialDays" = $17, currency = $18, "isActive" = $19
+        WHERE slug = $20`,
+        [
+          plan.displayName, plan.monthlyPrice, plan.yearlyPrice,
+          plan.userLimit, plan.leadLimit, plan.razorpayPlanId,
+          plan.razorpayYearlyPlanId,
+          plan.features, plan.addOns, plan.sortOrder,
+          plan.recommended, plan.tagline, plan.description,
+          plan.ctaText, plan.ctaLink, plan.minPrice || null,
+          plan.trialDays, plan.currency, plan.isActive,
+          plan.slug,
+        ]
+      );
+      updatedCount++;
+      console.log(`      ✅ Updated plan: ${plan.displayName} (${plan.slug})`);
+    } else {
+      await db.query(
+        `INSERT INTO plans (
+          name, "displayName", slug, "monthlyPrice", "yearlyPrice",
+          "userLimit", "leadLimit", "razorpayPlanId", "razorpayYearlyPlanId",
+          features, "addOns", "sortOrder",
+          recommended, tagline, description,
+          "ctaText", "ctaLink", "minPrice",
+          "trialDays", currency, "isActive"
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
+        [
+          plan.name, plan.displayName, plan.slug,
+          plan.monthlyPrice, plan.yearlyPrice,
+          plan.userLimit, plan.leadLimit, plan.razorpayPlanId,
+          plan.razorpayYearlyPlanId,
+          plan.features, plan.addOns, plan.sortOrder,
+          plan.recommended, plan.tagline, plan.description,
+          plan.ctaText, plan.ctaLink, plan.minPrice || null,
+          plan.trialDays, plan.currency, plan.isActive,
+        ]
+      );
+      seededCount++;
+      console.log(`      ✅ Seeded plan: ${plan.displayName} (${plan.slug}) — ₹${plan.monthlyPrice}/mo`);
+    }
+  }
+
+  console.log(`   📋 Plans: ${seededCount} created, ${updatedCount} updated`);
 }
 
 async function seedDemoData(db, tenantId) {

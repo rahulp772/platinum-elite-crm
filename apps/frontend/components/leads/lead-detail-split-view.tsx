@@ -179,20 +179,21 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const [pendingFollowUp, setPendingFollowUp] = React.useState<Date | undefined>(undefined)
     
     const { data: lead, isLoading } = useQuery({
-        queryKey: ["lead", leadId],
+        queryKey: ["lead", user?.tenantId, leadId],
         queryFn: async () => {
             const res = await api.get(`/leads/${leadId}`)
             return res.data
-        }
+        },
+        enabled: !!leadId && !!user?.tenantId,
     })
 
     const { data: activities } = useQuery({
-        queryKey: ["lead-activities", leadId],
+        queryKey: ["lead-activities", user?.tenantId, leadId],
         queryFn: async () => {
             const res = await api.get(`/leads/${leadId}/activities`)
             return res.data
         },
-        enabled: !!leadId,
+        enabled: !!leadId && !!user?.tenantId,
     })
 
     const { data: users } = useUsers()
@@ -270,7 +271,7 @@ export function LeadDetailSplitView({ leadId }: { leadId: string }) {
     const handleModalComplete = () => {
         setShowFollowUpModal(false)
         setPendingStatus(null)
-        queryClient.invalidateQueries({ queryKey: ["lead-suggestion", leadId] })
+        queryClient.invalidateQueries({ queryKey: ["lead-suggestion", user?.tenantId, leadId] })
     }
 
     const handleModalSkip = () => {

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { DollarSign, TrendingUp, Target, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PeriodType } from "../period-selector"
+import { useAuth } from "@/lib/auth-context"
 
 interface StatsPipelineValueWidgetProps {
   period: PeriodType
@@ -29,12 +30,14 @@ const STAGE_PROBABILITIES: Record<string, number> = {
 }
 
 export function StatsPipelineValueWidget({ period }: StatsPipelineValueWidgetProps) {
+  const { user } = useAuth()
   const { data, isLoading } = useQuery<PipelineData>({
-    queryKey: ['analytics-pipeline-value', period],
+    queryKey: ['analytics-pipeline-value', user?.tenantId, period],
     queryFn: async () => {
       const res = await api.get(`/analytics/pipeline-value?period=${period}`)
       return res.data
-    }
+    },
+    enabled: !!user?.tenantId,
   })
 
   if (isLoading) {

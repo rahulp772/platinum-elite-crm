@@ -145,8 +145,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @MessageBody()
     data: { conversationId: string; content?: string; attachments?: any[] },
   ) {
-    const user = client.data.user as User;
+    const user = await this.userRepository.findOne({
+      where: { id: client.data.user?.id },
+      relations: ['role', 'tenant'],
+    });
     if (!user) return;
+
+    client.data.user = user;
 
     try {
       const message = await this.chatService.sendMessage(
@@ -179,8 +184,13 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { conversationId: string },
   ) {
-    const user = client.data.user as User;
+    const user = await this.userRepository.findOne({
+      where: { id: client.data.user?.id },
+      relations: ['role', 'tenant'],
+    });
     if (!user) return;
+
+    client.data.user = user;
 
     try {
       await this.chatService.markMessagesAsRead(data.conversationId, user.id);

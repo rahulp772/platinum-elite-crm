@@ -21,6 +21,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { cn } from "@/lib/utils"
 import { ImportProgressDashboard } from "@/components/leads/import-progress-dashboard"
 import { ImportValidationSummary } from "@/components/leads/import-validation-summary"
+import { useAuth } from "@/lib/auth-context"
 
 const SYSTEM_FIELDS = [
     { value: "name", label: "Name *" },
@@ -79,6 +80,7 @@ interface ImportProgress {
 export default function ImportLeadsPage() {
     const router = useRouter()
     const queryClient = useQueryClient()
+    const { user } = useAuth()
     
     const [step, setStep] = React.useState<Step>("upload")
     const [file, setFile] = React.useState<File | null>(null)
@@ -235,7 +237,7 @@ export default function ImportLeadsPage() {
     const handleImportComplete = (result: ImportProgress) => {
         setImportResult(result)
         setStep("complete")
-        queryClient.invalidateQueries({ queryKey: ["leads"] })
+        queryClient.invalidateQueries({ queryKey: ["leads", user?.tenantId] })
         // Clear localStorage on completion
         localStorage.removeItem('lastImportSessionId')
     }
